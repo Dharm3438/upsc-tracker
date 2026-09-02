@@ -1,0 +1,509 @@
+{
+  "paper": "ANTHRO2",
+  "sections": [
+    {
+      "title": "Evolution of Indian culture and civilization",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Prehistoric and protohistoric India",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Palaeolithic and Mesolithic cultures of India",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Neolithic and Neolithic-Chalcolithic cultures",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Indus civilization — pre-Harappan, Harappan and post-Harappan",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Contributions of tribal cultures to Indian civilization",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Palaeo-anthropological evidence from India",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Siwalik fossils — Ramapithecus and Sivapithecus",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Narmada basin and Narmada man",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Ethno-archaeology in India",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "Concept of ethno-archaeology",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Survivals and parallels among hunting, foraging and fishing communities",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Pastoral, peasant and craft-producing communities",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Demographic and social structure of India",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Demographic profile",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Ethnic elements in the Indian population",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Linguistic elements and their distribution",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Factors influencing the structure and growth of Indian population",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Traditional Indian social system",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Varnashrama dharma",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Purushartha, karma, rina and rebirth",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Caste system in India",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Structure and characteristics — varna and caste",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Theories of origin of the caste system",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Dominant caste and caste mobility",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Jajmani system",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Tribe-caste continuum",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Future of the caste system",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Sacred and nature-man-spirit complex",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Sacred complex",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Nature-man-spirit complex",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Religions and Indian society",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Impact of Buddhism and Jainism on Indian society",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Impact of Islam and Christianity on Indian society",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Anthropology in India and its thinkers",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Growth of anthropology in India",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Scholar-administrators of the 18th to early 20th century",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Contributions of Indian anthropologists to tribal studies",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Contributions of Indian anthropologists to caste studies",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Indian thinkers",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "H.H. Risley",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "S.C. Roy",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "G.S. Ghurye",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "N.K. Bose",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "D.N. Majumdar",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Iravati Karve",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "M.N. Srinivas",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Verrier Elwin",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "L.P. Vidyarthi",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "S.C. Dube",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Andre Beteille",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Indian village, minorities and social change",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Indian village",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Significance of village studies in India",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Indian village as a social system",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Settlement patterns and inter-caste relations",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Agrarian relations in Indian villages",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Impact of globalisation on Indian villages",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Minorities",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Linguistic minorities and their status",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Religious minorities and their status",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Processes of socio-cultural change",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Sanskritization",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Westernization and modernization",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Little and great traditions",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Panchayati raj and social change",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Media and social change",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Tribal situation in India",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Tribal populations",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Bio-genetic variability among tribal populations",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Linguistic and socio-economic characteristics of tribes",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Distribution of tribal populations in India",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            }
+          ]
+        },
+        {
+          "title": "Problems of tribal communities",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Land alienation and indebtedness",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Poverty, unemployment and underemployment",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Low literacy and educational facilities",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Health and nutrition among tribes",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Displacement and development projects",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Development projects and tribal displacement",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Rehabilitation and resettlement",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Forest policy and tribals",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Impact of urbanisation and industrialisation on tribes",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Social justice and contemporary tribal society",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Exploitation and safeguards",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Exploitation and deprivation of SCs, STs and OBCs",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Constitutional safeguards for scheduled tribes",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Constitutional safeguards for scheduled castes",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Social change among tribes",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Impact of democratic institutions and development programmes",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Welfare measures for tribals and weaker sections",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Social change among tribes in colonial and post-independence India",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Ethnicity and political movements",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Concept of ethnicity",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Ethnic conflicts and political developments",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Unrest among tribal communities",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Regionalism and demands for autonomy",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Pseudo-tribalism",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Religion, the state and tribal development",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Religion and tribal societies",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Impact of Hinduism and Buddhism on tribal societies",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Impact of Christianity and Islam on tribal societies",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Tribe and nation state — comparative study",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Tribal administration and development",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "History of administration of tribal areas",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Tribal policies, plans and programmes",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Particularly vulnerable tribal groups and special programmes",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Role of NGOs in tribal development",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Anthropology in development",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Role of anthropology in tribal and rural development",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Anthropology and the understanding of regionalism and communalism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Anthropology and ethnic and political movements",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
