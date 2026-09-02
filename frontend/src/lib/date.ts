@@ -50,3 +50,19 @@ export function weekdayIST(day: string): number {
   const [year, month, date] = day.split('-').map(Number)
   return new Date(Date.UTC(year, month - 1, date)).getUTCDay()
 }
+
+/** The Monday on or before a study day, matching the server's week. Weeks
+ *  start on Monday because the review is written at the weekend about the week
+ *  that has just ended. */
+export function weekStartIST(day: string = todayIST()): string {
+  // weekdayIST is 0 = Sunday, so Monday is 1 and Sunday is six days in.
+  const back = (weekdayIST(day) + 6) % 7
+  return shiftDay(day, -back)
+}
+
+/** Move a study day by whole days, staying in the YYYY-MM-DD form. */
+export function shiftDay(day: string, days: number): string {
+  const [year, month, date] = day.split('-').map(Number)
+  const moved = new Date(Date.UTC(year, month - 1, date + days))
+  return moved.toISOString().slice(0, 10)
+}
