@@ -3,7 +3,9 @@ import { Route, Routes } from 'react-router-dom'
 
 import { getApiKey, UNAUTHORIZED_EVENT } from '@/api/client'
 import { Unlock } from '@/components/Unlock'
+import { LogButton } from '@/components/log/LogButton'
 import { TabBar } from '@/components/shell/TabBar'
+import { Toaster } from '@/components/shell/Toast'
 import { Placeholder } from '@/screens/Placeholder'
 import { NodeDetail } from '@/screens/NodeDetail'
 import { Syllabus } from '@/screens/Syllabus'
@@ -32,6 +34,8 @@ export function App() {
         <Route path="/progress" element={<Placeholder title="Progress" phase="phase 7" />} />
         <Route path="*" element={<Placeholder title="Not found" phase="a later phase" />} />
       </Routes>
+      <LogButton />
+      <Toaster />
       <TabBar />
     </div>
   )

@@ -65,7 +65,8 @@ class SyllabusNode(SyllabusNodeBase):
 class TreeNode(SyllabusNode):
     """A node plus its children, as returned by /syllabus/tree.
 
-    Rollup fields are placeholders until logging lands in phase 2.
+    The first block is the node's own activity; the leaf_* block is summed from
+    everything beneath it, so a section row can show how much of itself is done.
     """
 
     children: list["TreeNode"] = Field(default_factory=list)
@@ -74,6 +75,12 @@ class TreeNode(SyllabusNode):
     mcq_accuracy: float | None = None
     next_due: str | None = None
     last_touched: str | None = None
+    #: Confidence from the most recent grading, 1-5. None until first revised.
+    confidence: int | None = None
+
+    leaf_count: int = 0
+    leaf_started: int = 0
+    leaf_revised: int = 0
 
 
 TreeNode.model_rebuild()
