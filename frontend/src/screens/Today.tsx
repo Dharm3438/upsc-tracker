@@ -11,13 +11,15 @@ import { GradeSheet } from '@/components/review/GradeSheet'
 import { Header } from '@/components/shell/Header'
 import { useAnswersOn, useRedoQueue } from '@/hooks/useAnswers'
 import { useCaInbox } from '@/hooks/useCa'
+import { useCountdown } from '@/hooks/useProgress'
 import { useDue, useUpcoming } from '@/hooks/useReview'
 import { todayIST } from '@/lib/date'
 
 /**
  * The default landing screen. What is due and grading it is the half that
- * matters most; answer writing and the current-affairs inbox sit under it. The
- * countdown and the reading shortcuts arrive with the phases that own them.
+ * matters most; the countdown sits above it, and answer writing and the
+ * current-affairs inbox under it. The reading shortcuts arrive with the phase
+ * that owns them.
  */
 export function Today() {
   const [grading, setGrading] = useState<DueNode | null>(null)
@@ -30,6 +32,8 @@ export function Today() {
   return (
     <>
       <Header />
+
+      <Countdown />
 
       {offline && (
         <p className="mx-4 rounded border border-line bg-surface px-3 py-2 text-sm text-overdue">
@@ -62,6 +66,25 @@ export function Today() {
 
       {grading && <GradeSheet node={grading} onClose={() => setGrading(null)} />}
     </>
+  )
+}
+
+/** The countdown, in the two numbers that matter: the calendar one everybody
+ *  quotes, and the honest one underneath it that has her off-days taken out.
+ *  Mains is not shown here — it is a year out, and two countdowns at six in the
+ *  morning is one too many. */
+function Countdown() {
+  const countdown = useCountdown()
+  if (!countdown.data) return null
+
+  const { days, study_days } = countdown.data.prelims
+  if (days < 0) return null
+
+  return (
+    <div className="px-4 pb-2">
+      <p className="text-xl">{days} days to Prelims</p>
+      <p className="text-sm text-slate">{study_days} of them are study days</p>
+    </div>
   )
 }
 
