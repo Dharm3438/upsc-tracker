@@ -11,7 +11,8 @@ const ymd = new Intl.DateTimeFormat('en-CA', {
   day: '2-digit',
 })
 
-const parts = new Intl.DateTimeFormat('en-GB', {
+// en-US rather than en-GB: the latter abbreviates September to "Sept".
+const parts = new Intl.DateTimeFormat('en-US', {
   timeZone: IST,
   weekday: 'short',
   day: 'numeric',
