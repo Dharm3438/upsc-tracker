@@ -1,0 +1,839 @@
+{
+  "paper": "ANTHRO1",
+  "sections": [
+    {
+      "title": "Foundations of anthropology",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Nature and scope",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Meaning, scope and development of anthropology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Relationship with other disciplines",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Main branches — socio-cultural anthropology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Main branches — biological anthropology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Main branches — archaeological anthropology",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Main branches — linguistic anthropology",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Human evolution and primatology",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Theories of evolution",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Biological and cultural factors in human evolution",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Pre-Darwinian and Darwinian theories",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Post-Darwinian and the synthetic theory",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Concepts of evolutionary biology — Dollo, Cope, Gause, mosaic evolution",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Primates",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Characteristics of primates and primate taxonomy",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Primate adaptations — arboreal and terrestrial",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Primate behaviour and living major primates",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Tertiary and quaternary fossil primates",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Comparative anatomy of man and apes",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Skeletal changes due to erect posture",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fossil hominids",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Plio-Pleistocene hominids",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Australopithecines of South and East Africa",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Homo habilis and early Homo",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Homo erectus and later forms",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Homo erectus — Africa, Europe and Asia",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Neanderthal man — classical and progressive types",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Rhodesian man",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Homo sapiens — Cromagnon, Grimaldi and Chancelade",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Prehistoric archaeology",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Principles and chronology",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Principles of prehistoric archaeology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Relative dating methods",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Absolute dating methods",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Cultural evolution",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Palaeolithic cultures",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Mesolithic cultures",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Neolithic cultures",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Chalcolithic and Copper-Bronze age",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Iron age",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Culture, society and social institutions",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Nature of culture and society",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Concept and characteristics of culture and civilization",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Ethnocentrism and cultural relativism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Concept of society, social institutions and social groups",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Social stratification",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Marriage",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Definition, universality and functions of marriage",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Laws of marriage — endogamy, exogamy, hypergamy, incest taboo",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Types of marriage — monogamy, polygamy, polyandry, group marriage",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Marriage regulations and marriage payments",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Family",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Definition, universality and functions of family",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Family, household and domestic groups",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Types of family",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Impact of urbanisation, industrialisation and feminism on family",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Kinship",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Consanguinity and affinity",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Principles and types of descent",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Forms of descent groups — lineage, clan, phratry, moiety, kindred",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Kinship terminology — descriptive and classificatory",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Descent, filiation and complementary filiation",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Descent and alliance theories",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Economic, political and religious organisation",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Economic organisation",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Meaning, scope and relevance of economic anthropology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Formalist and substantivist debate",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Reciprocity, redistribution and market exchange",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Subsistence types — hunting, fishing, swiddening, pastoralism, agriculture",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Globalisation and indigenous economic systems",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Political organisation and social control",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Band, tribe, chiefdom, kingdom and state",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Power, authority and legitimacy",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Social control, law and justice in simple societies",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Religion",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Anthropological approaches to religion",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Monism, monotheism, polytheism, sacred and profane",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Mana, taboo, totemism, animism, animatism, fetishism, bongaism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Magic, religion and science",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Magico-religious functionaries",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Anthropological theories and thinkers",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Schools of theory",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Classical evolutionism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Historical particularism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Diffusionism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Functionalism and structural functionalism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Structuralism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Culture and personality",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Neo-evolutionism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Cultural materialism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Symbolic and interpretive theories",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Cognitive theories",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Post-modernism in anthropology",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Thinkers and theories",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "E.B. Tylor",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "L.H. Morgan",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "James Frazer",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Franz Boas",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "A.L. Kroeber",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Emile Durkheim",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Bronislaw Malinowski",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "A.R. Radcliffe-Brown",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "E.E. Evans-Pritchard",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Claude Levi-Strauss",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Edmund Leach",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Leslie White and Julian Steward",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Marvin Harris",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Clifford Geertz",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Victor Turner",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Margaret Mead and Ruth Benedict",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Sigmund Freud and Abram Kardiner",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Language and research methods",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Culture, language and communication",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "Nature, origin and characteristics of language",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Verbal and non-verbal communication",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Social context of language use",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Research methods in anthropology",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Fieldwork tradition in anthropology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Technique, method and methodology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Observation, interview, schedule and questionnaire",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Case study, genealogy, life history and oral history",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Participatory methods and secondary sources",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Analysis, interpretation and presentation of data",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Human genetics and variation",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Biological basis of life",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Cell, cell division and chromosomes",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "DNA structure, replication and protein synthesis",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Gene and mutation",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Methods of human genetics",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Family study — pedigree, twin, foster child and co-twin methods",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Cytogenetic, chromosomal and karyotype analysis",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Biochemical and immunological methods",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "DNA technology and recombinant technologies",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Mendelian and population genetics",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Mendelian genetics in man — single factor and multifactor inheritance",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Lethal, sub-lethal and polygenic inheritance",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Genetic polymorphism and selection",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Mendelian population and the Hardy-Weinberg law",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Mutation, isolation, migration, selection, inbreeding and genetic drift",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Consanguineous marriage, genetic load and its effects",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Chromosomal aberrations",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Numerical and structural aberrations",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Sex chromosomal aberrations — Klinefelter, Turner, super female",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Autosomal aberrations — Down, Patau, Edward, Cri-du-chat",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Genetic screening, counselling, DNA profiling and genome study",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Race and human variation",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Race and racism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Metric and non-metric morphological variation",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Racial criteria, classification and race crossing",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Heredity, environment and racial traits",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Genetic markers and physiological variation",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Blood groups — ABO, Rh and HLA",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Serum proteins and blood enzymes as markers",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Physiological characteristics across groups",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Age, sex and population variation",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Human ecology, health and growth",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Ecological anthropology",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Concepts and methods of ecological anthropology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Bio-cultural adaptations — genetic and non-genetic",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Physiological responses to hot desert, cold and high altitude",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Epidemiological anthropology",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Health and disease — anthropological perspectives",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Infectious and non-infectious diseases",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Nutritional deficiency diseases",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Growth and development",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Stages of growth from pre-natal to senescence",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Factors affecting growth and development",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Ageing, senescence and longevity",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Human physique and somatotypes",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Methodologies for growth studies",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Fertility and demography",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Menarche, menopause and bioevents in fertility",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Fertility patterns and differentials",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Demographic theories — biological, social and cultural",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Factors influencing fecundity, natality and mortality",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Applications of anthropology",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Applied fields",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Anthropology of sports",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Nutritional anthropology",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Anthropology in design of defence and other equipment",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Forensic anthropology and personal identification",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Applied human genetics — paternity, counselling and eugenics",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "DNA technology in disease and medicine",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Serogenetics and cytogenetics in reproductive biology",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

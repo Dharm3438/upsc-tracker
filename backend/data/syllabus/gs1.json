@@ -1,0 +1,945 @@
+{
+  "paper": "GS1",
+  "sections": [
+    {
+      "title": "Indian heritage and culture",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Architecture and sculpture",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Indus Valley art and town planning",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Mauryan art — pillars, stupas and caves",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Buddhist and Jain rock-cut architecture",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Temple architecture — Nagara style",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Temple architecture — Dravida and Vesara",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Indo-Islamic architecture",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Colonial and modern architecture",
+              "pyq_weight": "low"
+            },
+            {
+              "title": "Bronze sculpture and the Chola tradition",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Performing arts",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Classical dance forms",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Folk dance, puppetry and theatre",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Hindustani and Carnatic music",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Musical instruments and gharanas",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Painting and handicrafts",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "Prehistoric and mural painting — Ajanta, Ellora, Bagh",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Miniature schools — Mughal, Rajasthani, Pahari, Deccan",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Folk painting traditions",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Handicrafts, textiles and GI tags",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Literature and languages",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "Sanskrit, Pali and Prakrit literature",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Sangam literature and the Tamil tradition",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Bhakti and Sufi literature",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Modern Indian literature and classical languages",
+              "pyq_weight": "low"
+            }
+          ]
+        },
+        {
+          "title": "Religion and philosophy",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Vedic religion and the six schools of philosophy",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Buddhism — doctrine, schools and councils",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Jainism — doctrine, councils and spread",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Bhakti movement — saints and streams",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Sufi movement — silsilas and syncretism",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Heritage management",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "UNESCO World Heritage sites in India",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Fairs, festivals and calendars",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Institutions and law for heritage protection",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Modern Indian history, 1750 to 1857",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Advent of Europeans and Company rule",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Advent of the European trading powers",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Expansion of Company rule — Bengal, Mysore, Marathas, Sikhs",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Company administration, army and judiciary",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Economic impact of colonialism",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Land revenue settlements — Permanent, Ryotwari, Mahalwari",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Deindustrialisation and the drain of wealth",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Commercialisation of agriculture and colonial famines",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Railways, trade and monetary policy",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Social and religious reform movements",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Brahmo Samaj and the Bengal renaissance",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Arya Samaj, Prarthana Samaj and the Ramakrishna mission",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Muslim, Sikh and Parsi reform movements",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Anti-caste movements — Phule, Periyar, Narayana Guru, Ambedkar",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Women's reform and social legislation",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Revolt of 1857",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Causes, course and leadership",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Consequences and the transfer to Crown rule",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "The freedom struggle",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Early nationalism, 1885 to 1905",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Formation of the Congress and the Moderates",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Economic critique of colonialism",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Swadeshi and extremism, 1905 to 1917",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Partition of Bengal and the Swadeshi movement",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Surat split, Morley-Minto and the Home Rule leagues",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Early revolutionary nationalism",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "The Gandhian era, 1917 to 1939",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Champaran, Kheda and Ahmedabad",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Rowlatt, Jallianwala Bagh and Non-cooperation",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Khilafat, the Swarajists and the Simon commission",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Civil disobedience, Dandi and the Round Table conferences",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Poona pact and the depressed classes question",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Later revolutionary nationalism — HSRA and Bhagat Singh",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Government of India Act 1935 and the provincial ministries",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Towards independence, 1939 to 1947",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Congress and the Second World War, the August offer",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Quit India movement",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Subhas Chandra Bose and the INA",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Cabinet mission, Direct Action and the Mountbatten plan",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Partition — causes, migration and violence",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Other streams of the struggle",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Peasant movements",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Tribal revolts",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Working class and the trade union movement",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Left, socialist and communist streams",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Press, education and the growth of nationalism",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Women in the freedom struggle",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Princely states and the people's movements",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Post-independence consolidation",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Consolidation and reorganisation",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Integration of the princely states",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Linguistic reorganisation of states",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Framing of the Constitution",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Rehabilitation after partition",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Nation building",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Land reforms and their outcomes",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Planning, the public sector and the Nehruvian model",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Green revolution, White revolution and food security",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Tribal and north-east integration",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Politics since 1947",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "One-party dominance to the coalition era",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Emergency and its aftermath",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Economic reforms of 1991",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "External relations after 1947",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "Non-aligned movement and Panchsheel",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Wars — 1962, 1965, 1971 and Kargil",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Nuclear policy and its evolution",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "World history",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Revolutions and the enlightenment",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "American revolution",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "French revolution",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Industrial revolution",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Imperialism and colonisation",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Colonisation of Asia",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Scramble for Africa",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Decolonisation and national liberation movements",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "The world wars",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "First World War — causes and consequences",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Inter-war years and the Great Depression",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Second World War — causes and consequences",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "The post-war world",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Russian revolution and the Soviet experiment",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Cold war — phases, blocs and proxy conflicts",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "United Nations and the Bretton Woods institutions",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Redrawal of boundaries and the disintegration of the USSR",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Political philosophies",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Capitalism and liberalism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Socialism and communism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Fascism and Nazism",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Indian society",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Salient features of Indian society",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Unity in diversity",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Family, marriage and kinship",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Caste system and its transformations",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Tribal communities in India",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Religious diversity and pluralism",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Role of women and women's organisations",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Status of women — historical and contemporary",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Women's movements and organisations",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Gender, work and the care economy",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Violence against women and legal safeguards",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Population and associated issues",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Population dynamics and the demographic dividend",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Population policy, ageing and the sex ratio",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Health, nutrition and human development indicators",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Poverty and developmental issues",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Measurement and dimensions of poverty",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Poverty alleviation programmes and outcomes",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Urbanisation",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Trends and problems of urbanisation",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Urban planning, housing and remedies",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Migration and urban livelihoods",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Social empowerment, communalism, regionalism and secularism",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Social empowerment and affirmative action",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Communalism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Regionalism",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Secularism — Indian and western conceptions",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Effects of globalisation on Indian society",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Globalisation and social change",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Media, technology and consumer culture",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Geography — physical",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Geomorphology",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Earth's interior and plate tectonics",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Earthquakes, volcanoes and their distribution",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Landforms and the cycle of erosion",
+              "pyq_weight": "medium",
+              "needs_diagram": true
+            },
+            {
+              "title": "Rocks, minerals and the rock cycle",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Climatology",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Composition of the atmosphere and the heat budget",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Pressure belts, winds and jet streams",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Cyclones — tropical and temperate",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Indian monsoon — mechanism and variability",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Climate classification, El Nino and La Nina",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Precipitation types and world climate regions",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Oceanography",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Ocean floor relief, temperature and salinity",
+              "pyq_weight": "medium",
+              "needs_diagram": true
+            },
+            {
+              "title": "Ocean currents and their effects",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Tides, waves and coral reefs",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Biogeography and soils",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "World biomes and natural vegetation",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Indian soils, degradation and conservation",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Physiography of India",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Himalayas and the northern plains",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Peninsular plateau, coasts and islands",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Drainage systems of India",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Geography — resources and economic geography",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Distribution of key natural resources",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "World distribution of minerals and energy",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Indian mineral and energy resources",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Water resources and river basins",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Forest and biodiversity resources",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Location of industries",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Factors in industrial location",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Industrial regions of India and the world",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Changing location of industries — primary, secondary, tertiary",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Agriculture and cropping patterns",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Cropping seasons and patterns in India",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Agro-climatic zones and crop geography",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Irrigation, food processing and agro-industry location",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Geographical phenomena and human geography",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Important geophysical phenomena",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Tsunami, floods, droughts and landslides",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Glacier retreat, sea-level change and desertification",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Changes in critical geographical features — flora and fauna",
+              "pyq_weight": "high"
+            }
+          ]
+        },
+        {
+          "title": "Human geography",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "Population distribution, density and migration",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Settlement patterns — rural and urban",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Transport and communication networks",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Maps and mapping",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "Important places in the news — map work",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Latitude, longitude and time zones",
+              "pyq_weight": "medium",
+              "needs_diagram": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

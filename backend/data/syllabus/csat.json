@@ -1,0 +1,205 @@
+{
+  "paper": "CSAT",
+  "sections": [
+    {
+      "title": "Comprehension",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Reading comprehension",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Passage comprehension — factual and inferential",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Assumption, inference and conclusion questions",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Tone, theme and author's argument",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Speed reading and elimination strategy",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Interpersonal and communication skills",
+      "pyq_weight": "medium",
+      "children": [
+        {
+          "title": "Interpersonal skills",
+          "pyq_weight": "medium",
+          "children": [
+            {
+              "title": "Interpersonal skills including communication skills",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Logical reasoning and analytical ability",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Verbal and analytical reasoning",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Syllogisms and logical deductions",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Statements, assumptions, arguments and courses of action",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Blood relations and direction sense",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Seating arrangement and puzzles",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Coding-decoding and series",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Venn diagrams and set-based reasoning",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Cubes, dice and figure-based reasoning",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Calendars and clocks",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Decision making and problem solving",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Decision making",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Decision making situations in administration",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Problem solving approaches",
+              "pyq_weight": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "General mental ability and numeracy",
+      "pyq_weight": "high",
+      "children": [
+        {
+          "title": "Basic numeracy",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Number system, LCM, HCF and divisibility",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Percentage, profit and loss",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Ratio, proportion, mixtures and alligation",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Averages and ages",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Time, speed, distance and trains",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Time and work, pipes and cisterns",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Simple and compound interest",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Permutation, combination and probability",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Mensuration, geometry and areas",
+              "pyq_weight": "medium"
+            },
+            {
+              "title": "Orders of magnitude and approximation",
+              "pyq_weight": "medium"
+            }
+          ]
+        },
+        {
+          "title": "Data interpretation",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Tables and caselet data",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Bar charts, line graphs and pie charts",
+              "pyq_weight": "high",
+              "needs_diagram": true
+            },
+            {
+              "title": "Data sufficiency",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Test strategy",
+      "pyq_weight": "medium",
+      "children": [
+        {
+          "title": "Paper strategy",
+          "pyq_weight": "high",
+          "children": [
+            {
+              "title": "Sectional time allocation and question selection",
+              "pyq_weight": "high"
+            },
+            {
+              "title": "Qualifying threshold and error analysis",
+              "pyq_weight": "high"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
