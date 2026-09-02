@@ -16,7 +16,9 @@ from app.routers import (
     health,
     logs,
     mistakes,
+    progress,
     review,
+    settings as settings_router,
     syllabus,
     tests,
 )
@@ -77,6 +79,8 @@ def create_app() -> FastAPI:
     app.include_router(mistakes.router, prefix="/api")
     app.include_router(answers.router, prefix="/api")
     app.include_router(ca.router, prefix="/api")
+    app.include_router(progress.router, prefix="/api")
+    app.include_router(settings_router.router, prefix="/api")
     return app
 
 
