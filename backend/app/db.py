@@ -49,6 +49,9 @@ INDEXES: dict[str, list[IndexModel]] = {
     "mistakes": [
         IndexModel([("node_id", ASCENDING), ("date", DESCENDING)]),
         IndexModel([("tag", ASCENDING)]),
+        IndexModel([("paper", ASCENDING), ("date", DESCENDING)]),
+        # Counting a test's mistakes for its row, and cascading them on delete.
+        IndexModel([("source_id", ASCENDING)]),
         IndexModel([("resolved", ASCENDING)]),
         IndexModel([("question", TEXT), ("note", TEXT)]),
     ],
