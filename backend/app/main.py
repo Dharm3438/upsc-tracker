@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 from app import db as database
 from app.config import get_settings
-from app.routers import auth, health, logs, syllabus
+from app.routers import auth, health, logs, review, syllabus
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -62,6 +62,7 @@ def create_app() -> FastAPI:
     app.include_router(auth.router, prefix="/api")
     app.include_router(syllabus.router, prefix="/api")
     app.include_router(logs.router, prefix="/api")
+    app.include_router(review.router, prefix="/api")
     return app
 
 
