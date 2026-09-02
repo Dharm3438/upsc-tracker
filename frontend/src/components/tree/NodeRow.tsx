@@ -18,8 +18,9 @@ export function NodeRow({
 
   const body = (
     <div className="flex min-h-tap w-full items-center gap-3 pr-4 text-left">
-      <span className={`w-3 shrink-0 text-slate ${hasChildren ? '' : 'opacity-0'}`}>
-        {expanded ? '▾' : '▸'}
+      {/* Leaves keep the same indent as their siblings but no caret to read. */}
+      <span className="w-3 shrink-0 text-slate" aria-hidden={!hasChildren}>
+        {hasChildren ? (expanded ? '▾' : '▸') : ''}
       </span>
       <span className="min-w-0 flex-1 truncate text-sm">{node.title}</span>
       {node.needs_diagram && (
