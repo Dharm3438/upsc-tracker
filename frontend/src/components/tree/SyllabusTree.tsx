@@ -3,7 +3,13 @@ import { useState } from 'react'
 import type { TreeNode } from '@/api/syllabus'
 import { NodeRow } from './NodeRow'
 
-export function SyllabusTree({ nodes }: { nodes: TreeNode[] }) {
+export function SyllabusTree({
+  nodes,
+  onLongPress,
+}: {
+  nodes: TreeNode[]
+  onLongPress: (node: TreeNode) => void
+}) {
   // Sections start open, topics closed: the whole paper on one screen would be
   // a wall, and a fully collapsed tree hides that anything exists.
   const [collapsed, setCollapsed] = useState<Set<string>>(
@@ -20,16 +26,18 @@ export function SyllabusTree({ nodes }: { nodes: TreeNode[] }) {
   }
 
   function render(items: TreeNode[]): React.ReactNode {
-    return items.map((node) => {
+    return items.flatMap((node) => {
       const expanded = !collapsed.has(node._id)
-      return (
-        <li key={node._id} className="contents">
-          <ul className="contents">
-            <NodeRow node={node} expanded={expanded} onToggle={() => toggle(node._id)} />
-            {expanded && node.children.length > 0 && render(node.children)}
-          </ul>
-        </li>
-      )
+      return [
+        <NodeRow
+          key={node._id}
+          node={node}
+          expanded={expanded}
+          onToggle={() => toggle(node._id)}
+          onLongPress={() => onLongPress(node)}
+        />,
+        ...(expanded ? [render(node.children)] : []),
+      ]
     })
   }
 

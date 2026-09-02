@@ -23,8 +23,20 @@ class SyllabusNodeBase(BaseModel):
     notes: str = ""
 
 
-class SyllabusNodeCreate(SyllabusNodeBase):
+class SyllabusNodeCreate(BaseModel):
+    """Level and order are derived from the parent, so they are not accepted."""
+
+    paper: Paper
+    title: str = Field(min_length=1, max_length=300)
     parent_id: PyObjectId | None = None
+    pyq_weight: PyqWeight = PyqWeight.MEDIUM
+    needs_diagram: bool = False
+    notes: str = ""
+
+
+class NodeMove(BaseModel):
+    parent_id: PyObjectId | None = None
+    order: int | None = None
 
 
 class SyllabusNodeUpdate(BaseModel):

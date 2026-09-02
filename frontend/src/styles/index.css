@@ -30,3 +30,10 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+@keyframes slide-up {
+  from {
+    transform: translateY(8%);
+    opacity: 0;
+  }
+}
