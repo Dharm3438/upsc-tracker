@@ -6,9 +6,12 @@ import { Unlock } from '@/components/Unlock'
 import { LogButton } from '@/components/log/LogButton'
 import { TabBar } from '@/components/shell/TabBar'
 import { Toaster } from '@/components/shell/Toast'
-import { Placeholder } from '@/screens/Placeholder'
 import { NodeDetail } from '@/screens/NodeDetail'
+import { Notes } from '@/screens/Notes'
+import { Placeholder } from '@/screens/Placeholder'
+import { Practice } from '@/screens/Practice'
 import { Syllabus } from '@/screens/Syllabus'
+import { TestDetail } from '@/screens/TestDetail'
 import { Today } from '@/screens/Today'
 
 export function App() {
@@ -29,8 +32,9 @@ export function App() {
         <Route path="/" element={<Today />} />
         <Route path="/syllabus" element={<Syllabus />} />
         <Route path="/syllabus/node/:nodeId" element={<NodeDetail />} />
-        <Route path="/practice" element={<Placeholder title="Practice" phase="phases 4 and 5" />} />
-        <Route path="/notes" element={<Placeholder title="Notes" phase="phases 4 and 6" />} />
+        <Route path="/practice" element={<Practice />} />
+        <Route path="/practice/tests/:testId" element={<TestDetail />} />
+        <Route path="/notes" element={<Notes />} />
         <Route path="/progress" element={<Placeholder title="Progress" phase="phase 7" />} />
         <Route path="*" element={<Placeholder title="Not found" phase="a later phase" />} />
       </Routes>
