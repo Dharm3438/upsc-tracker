@@ -4,8 +4,8 @@ import { createLog, deleteLog, getLogs, getRecentNodes, type NewLog } from '@/ap
 
 /**
  * A log changes the node's counts, its next-due date and therefore its row in
- * the tree, so a write invalidates the lot rather than trying to patch caches
- * that the server has already recomputed.
+ * the tree and its place in the revision queue, so a write invalidates the lot
+ * rather than trying to patch caches that the server has already recomputed.
  */
 function useLogInvalidation() {
   const client = useQueryClient()
@@ -14,6 +14,8 @@ function useLogInvalidation() {
     void client.invalidateQueries({ queryKey: ['recent-nodes'] })
     void client.invalidateQueries({ queryKey: ['tree'] })
     void client.invalidateQueries({ queryKey: ['node'] })
+    void client.invalidateQueries({ queryKey: ['due'] })
+    void client.invalidateQueries({ queryKey: ['upcoming'] })
   }
 }
 
