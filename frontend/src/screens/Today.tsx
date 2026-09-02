@@ -10,13 +10,14 @@ import { Forecast } from '@/components/review/Forecast'
 import { GradeSheet } from '@/components/review/GradeSheet'
 import { Header } from '@/components/shell/Header'
 import { useAnswersOn, useRedoQueue } from '@/hooks/useAnswers'
+import { useCaInbox } from '@/hooks/useCa'
 import { useDue, useUpcoming } from '@/hooks/useReview'
 import { todayIST } from '@/lib/date'
 
 /**
  * The default landing screen. What is due and grading it is the half that
- * matters most; answer writing sits under it. The countdown, the reading
- * shortcuts and the current-affairs row arrive with the phases that own them.
+ * matters most; answer writing and the current-affairs inbox sit under it. The
+ * countdown and the reading shortcuts arrive with the phases that own them.
  */
 export function Today() {
   const [grading, setGrading] = useState<DueNode | null>(null)
@@ -57,6 +58,8 @@ export function Today() {
 
       <AnswerWriting />
 
+      <CurrentAffairs />
+
       {grading && <GradeSheet node={grading} onClose={() => setGrading(null)} />}
     </>
   )
@@ -86,6 +89,31 @@ function AnswerWriting() {
           Start an answer
         </Link>
       </div>
+    </Section>
+  )
+}
+
+/** Current affairs on Today is an inbox count, not a feed: the question the
+ *  screen answers is "is there anything of yesterday's left to place?" */
+function CurrentAffairs() {
+  const inbox = useCaInbox()
+  const waiting = inbox.data?.total ?? 0
+
+  return (
+    <Section label="Current affairs" count={inbox.data ? waiting : undefined}>
+      <Link
+        to="/notes?tab=ca"
+        className="flex min-h-tap items-center justify-between gap-3 px-4 py-2.5"
+      >
+        <span className="text-sm">
+          {waiting === 0
+            ? 'Inbox clear.'
+            : `${waiting} ${waiting === 1 ? 'item' : 'items'} to tag`}
+        </span>
+        <span className="shrink-0 text-sm text-signal">
+          {waiting === 0 ? 'Add one' : 'Tag them'}
+        </span>
+      </Link>
     </Section>
   )
 }
