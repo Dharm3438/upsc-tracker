@@ -26,12 +26,17 @@ export type TreeNode = {
   is_custom: boolean
   is_archived: boolean
   children: TreeNode[]
-  // Rollups: server returns defaults until logging lands in phase 2.
+  // This node's own activity.
   read_count: number
   revise_count: number
   mcq_accuracy: number | null
   next_due: string | null
   last_touched: string | null
+  confidence: number | null
+  // Summed from everything beneath it, so a section row can show its own share.
+  leaf_count: number
+  leaf_started: number
+  leaf_revised: number
 }
 
 export const getPapers = () => api<PaperSummary[]>('/syllabus/papers')

@@ -2,12 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { EmptyState } from '@/components/EmptyState'
+import { QuickLogSheet } from '@/components/log/QuickLogSheet'
+import { Timeline } from '@/components/log/Timeline'
 import { useNode, useUpdateNode } from '@/hooks/useSyllabus'
+import { daysUntil, formatDayIST } from '@/lib/date'
 
 export function NodeDetail() {
   const { nodeId } = useParams()
   const navigate = useNavigate()
   const node = useNode(nodeId)
+  const [logging, setLogging] = useState(false)
 
   if (node.isError) return <EmptyState>Could not load that topic.</EmptyState>
   if (!node.data) return <EmptyState>Loading…</EmptyState>
@@ -33,8 +37,19 @@ export function NodeDetail() {
       </div>
 
       <Section label="Revision">
-        <Row label="Confidence" value="not started" />
-        <Row label="Next due" value={node.data.next_due ?? '—'} />
+        <Row
+          label="Confidence"
+          value={node.data.confidence ? `${node.data.confidence} / 5` : 'not graded yet'}
+        />
+        <Row label="Next due" value={dueLabel(node.data.next_due)} />
+        <Row
+          label="Logged"
+          value={
+            node.data.read_count + node.data.revise_count === 0
+              ? 'nothing yet'
+              : `${node.data.read_count} read · ${node.data.revise_count} revised`
+          }
+        />
       </Section>
 
       <Section label="Your notes">
@@ -42,10 +57,41 @@ export function NodeDetail() {
       </Section>
 
       <Section label="Timeline">
-        <EmptyState>Not started. Log a reading to begin tracking it.</EmptyState>
+        <Timeline nodeId={node.data._id} />
       </Section>
+
+      <div className="p-4">
+        <button
+          type="button"
+          onClick={() => setLogging(true)}
+          className="h-tap w-full rounded border border-signal text-sm font-medium text-signal"
+        >
+          Log something
+        </button>
+      </div>
+
+      {logging && (
+        <QuickLogSheet
+          onClose={() => setLogging(false)}
+          initialNode={{
+            id: node.data._id,
+            title: node.data.title,
+            path: node.data.path,
+          }}
+        />
+      )}
     </>
   )
+}
+
+/** Overdue is worth saying out loud; a bare past date reads as fine. */
+function dueLabel(nextDue: string | null): string {
+  if (!nextDue) return '—'
+  const days = daysUntil(nextDue)
+  if (days === 0) return 'today'
+  if (days === 1) return 'tomorrow'
+  if (days < 0) return `${formatDayIST(nextDue)} · ${-days} days overdue`
+  return `${formatDayIST(nextDue)} · in ${days} days`
 }
 
 function Section({ label, children }: { label: string; children: React.ReactNode }) {

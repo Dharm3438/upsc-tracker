@@ -1,8 +1,8 @@
-"""Syllabus reads.
+"""The syllabus tree: reads, writes, and the rollups that colour the rows.
 
-Phase 1 ships the read side: the nested tree and the per-paper counts the
-paper chips need. Create/rename/move/archive and the log-derived rollups land
-with phases 1b and 2.
+The tree endpoint is the app's hot path — it is what the Syllabus tab loads
+every time — so it is served from a short-lived cache that every write here
+clears.
 """
 
 from bson import ObjectId
@@ -18,7 +18,8 @@ from app.models.syllabus import (
     SyllabusNodeUpdate,
     TreeNode,
 )
-from app.services import nodes as node_service
+from app.services import cache, nodes as node_service
+from app.services.rollups import node_stats, paper_stats
 from app.services.tree import build_tree
 
 router = APIRouter(prefix="/syllabus", tags=["syllabus"], dependencies=[Depends(require_api_key)])
@@ -55,14 +56,25 @@ async def tree(
     paper: Paper = Query(..., description="Paper to return the tree for"),
     include_archived: bool = False,
 ) -> list[TreeNode]:
-    """Full nested tree for one paper, built from a single flat query."""
+    """Full nested tree for one paper, with each row's activity rolled in.
+
+    Three queries regardless of how many nodes the paper has: the nodes, their
+    logs, their review states.
+    """
+    key = f"tree:{paper.value}:{include_archived}"
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+
     db = get_db()
     match: dict = {"paper": paper.value}
     if not include_archived:
         match["is_archived"] = False
 
     docs = await db.syllabus_nodes.find(match).sort("order", 1).to_list(length=None)
-    return build_tree(docs)
+    result = build_tree(docs, await paper_stats(db, paper.value))
+    cache.put(key, result)
+    return result
 
 
 @router.get("/search", response_model=list[TreeNode])
@@ -81,12 +93,14 @@ async def search(q: str = Query(min_length=2), limit: int = 25) -> list[TreeNode
 
 @router.get("/nodes/{node_id}", response_model=TreeNode)
 async def node_detail(node_id: str) -> TreeNode:
+    """One node with its own activity attached, for the detail screen."""
     if not ObjectId.is_valid(node_id):
         raise HTTPException(status_code=400, detail="Invalid node id.")
-    doc = await get_db().syllabus_nodes.find_one({"_id": ObjectId(node_id)})
+    db = get_db()
+    doc = await db.syllabus_nodes.find_one({"_id": ObjectId(node_id)})
     if doc is None:
         raise HTTPException(status_code=404, detail="Node not found.")
-    return TreeNode(**doc)
+    return TreeNode(**doc, **await node_stats(db, doc["_id"]))
 
 
 def _handle(error: node_service.NodeError) -> HTTPException:
@@ -108,6 +122,7 @@ async def create_node(payload: SyllabusNodeCreate) -> TreeNode:
         )
     except node_service.NodeError as error:
         raise _handle(error) from error
+    cache.invalidate()
     return TreeNode(**doc)
 
 
@@ -119,6 +134,7 @@ async def update_node(node_id: str, payload: SyllabusNodeUpdate) -> TreeNode:
         doc = await node_service.update_node(get_db(), node_id, patch)
     except node_service.NodeError as error:
         raise _handle(error) from error
+    cache.invalidate()
     return TreeNode(**doc)
 
 
@@ -130,6 +146,7 @@ async def move_node(node_id: str, payload: NodeMove) -> TreeNode:
         )
     except node_service.NodeError as error:
         raise _handle(error) from error
+    cache.invalidate()
     return TreeNode(**doc)
 
 
@@ -140,4 +157,5 @@ async def archive_node(node_id: str) -> TreeNode:
         doc = await node_service.archive_node(get_db(), node_id)
     except node_service.NodeError as error:
         raise _handle(error) from error
+    cache.invalidate()
     return TreeNode(**doc)
