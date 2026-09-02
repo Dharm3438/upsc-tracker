@@ -1,6 +1,17 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { getPapers, getTree, type Paper } from '@/api/syllabus'
+import {
+  archiveNode,
+  createNode,
+  getNode,
+  getPapers,
+  getTree,
+  moveNode,
+  updateNode,
+  type NodeCreate,
+  type NodePatch,
+  type Paper,
+} from '@/api/syllabus'
 
 export function usePapers() {
   return useQuery({ queryKey: ['papers'], queryFn: getPapers })
@@ -12,4 +23,49 @@ export function useTree(paper: Paper) {
     queryFn: () => getTree(paper),
     staleTime: 60_000,
   })
+}
+
+export function useNode(id: string | undefined) {
+  return useQuery({
+    queryKey: ['node', id],
+    queryFn: () => getNode(id!),
+    enabled: Boolean(id),
+  })
+}
+
+/** Any write reshapes the tree, so refetch it rather than patching by hand. */
+function useTreeInvalidation() {
+  const client = useQueryClient()
+  return () => {
+    void client.invalidateQueries({ queryKey: ['tree'] })
+    void client.invalidateQueries({ queryKey: ['papers'] })
+    void client.invalidateQueries({ queryKey: ['node'] })
+  }
+}
+
+export function useCreateNode() {
+  const invalidate = useTreeInvalidation()
+  return useMutation({ mutationFn: (body: NodeCreate) => createNode(body), onSuccess: invalidate })
+}
+
+export function useUpdateNode() {
+  const invalidate = useTreeInvalidation()
+  return useMutation({
+    mutationFn: ({ id, patch }: { id: string; patch: NodePatch }) => updateNode(id, patch),
+    onSuccess: invalidate,
+  })
+}
+
+export function useMoveNode() {
+  const invalidate = useTreeInvalidation()
+  return useMutation({
+    mutationFn: ({ id, parentId }: { id: string; parentId: string | null }) =>
+      moveNode(id, { parent_id: parentId }),
+    onSuccess: invalidate,
+  })
+}
+
+export function useArchiveNode() {
+  const invalidate = useTreeInvalidation()
+  return useMutation({ mutationFn: (id: string) => archiveNode(id), onSuccess: invalidate })
 }
