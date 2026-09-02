@@ -40,3 +40,13 @@ export function daysUntil(target: string, now: Date = new Date()): number {
   const to = Date.parse(`${target}T00:00:00+05:30`)
   return Math.round((to - from) / 86_400_000)
 }
+
+/** Day of the week for a YYYY-MM-DD study day, 0 = Sunday.
+ *
+ *  Built from the parts rather than from a parsed instant: `new Date(...)` on an
+ *  IST midnight lands the evening before in UTC, and `getUTCDay` would then name
+ *  the wrong day. A study day has no time in it, so neither should this. */
+export function weekdayIST(day: string): number {
+  const [year, month, date] = day.split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, date)).getUTCDay()
+}
