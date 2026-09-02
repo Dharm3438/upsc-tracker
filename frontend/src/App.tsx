@@ -6,6 +6,8 @@ import { Unlock } from '@/components/Unlock'
 import { LogButton } from '@/components/log/LogButton'
 import { TabBar } from '@/components/shell/TabBar'
 import { Toaster } from '@/components/shell/Toast'
+import { AnswerDetail } from '@/screens/AnswerDetail'
+import { AnswerTimer } from '@/screens/AnswerTimer'
 import { NodeDetail } from '@/screens/NodeDetail'
 import { Notes } from '@/screens/Notes'
 import { Placeholder } from '@/screens/Placeholder'
@@ -34,6 +36,8 @@ export function App() {
         <Route path="/syllabus/node/:nodeId" element={<NodeDetail />} />
         <Route path="/practice" element={<Practice />} />
         <Route path="/practice/tests/:testId" element={<TestDetail />} />
+        <Route path="/practice/answers/new" element={<AnswerTimer />} />
+        <Route path="/practice/answers/:answerId" element={<AnswerDetail />} />
         <Route path="/notes" element={<Notes />} />
         <Route path="/progress" element={<Placeholder title="Progress" phase="phase 7" />} />
         <Route path="*" element={<Placeholder title="Not found" phase="a later phase" />} />

@@ -3,16 +3,14 @@ import { Link } from 'react-router-dom'
 
 import type { Test } from '@/api/tests'
 import { EmptyState } from '@/components/EmptyState'
+import { AnswerList } from '@/components/answers/AnswerList'
 import { Sparkline, percent } from '@/components/charts/Sparkline'
 import { Header } from '@/components/shell/Header'
 import { TestSheet } from '@/components/tests/TestSheet'
 import { useTests } from '@/hooks/useTests'
 import { formatDayIST } from '@/lib/date'
 
-/**
- * Practice holds tests and answer writing as a segmented control. Answers land
- * in phase 5; the control is here now so the tab does not change shape later.
- */
+/** Practice holds tests and answer writing as a segmented control. */
 export function Practice() {
   const [section, setSection] = useState<'tests' | 'answers'>('tests')
 
@@ -32,11 +30,7 @@ export function Practice() {
         />
       </div>
 
-      {section === 'tests' ? (
-        <Tests />
-      ) : (
-        <EmptyState>Answer writing arrives in phase 5.</EmptyState>
-      )}
+      {section === 'tests' ? <Tests /> : <AnswerList />}
     </>
   )
 }
