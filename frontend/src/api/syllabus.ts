@@ -41,3 +41,34 @@ export const getTree = (paper: Paper) =>
 
 export const searchNodes = (q: string) =>
   api<TreeNode[]>(`/syllabus/search?q=${encodeURIComponent(q)}`)
+
+export type NodeCreate = {
+  paper: Paper
+  title: string
+  parent_id: string | null
+  pyq_weight?: PyqWeight
+  needs_diagram?: boolean
+}
+
+export type NodePatch = {
+  title?: string
+  pyq_weight?: PyqWeight
+  needs_diagram?: boolean
+  notes?: string
+  order?: number
+  is_archived?: boolean
+}
+
+export const getNode = (id: string) => api<TreeNode>(`/syllabus/nodes/${id}`)
+
+export const createNode = (body: NodeCreate) =>
+  api<TreeNode>('/syllabus/nodes', { method: 'POST', body })
+
+export const updateNode = (id: string, body: NodePatch) =>
+  api<TreeNode>(`/syllabus/nodes/${id}`, { method: 'PATCH', body })
+
+export const moveNode = (id: string, body: { parent_id: string | null; order?: number }) =>
+  api<TreeNode>(`/syllabus/nodes/${id}/move`, { method: 'POST', body })
+
+export const archiveNode = (id: string) =>
+  api<TreeNode>(`/syllabus/nodes/${id}`, { method: 'DELETE' })
