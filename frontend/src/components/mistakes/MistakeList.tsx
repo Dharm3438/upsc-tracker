@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { Check, ChevronDown } from 'lucide-react'
 
 import { TAGS, type Mistake, type MistakeTag } from '@/api/mistakes'
-import { EmptyState } from '@/components/EmptyState'
+import { Badge, Button, Chip, EmptyState, QueryBoundary, SkeletonRows } from '@/components/ui'
+import { cn } from '@/lib/cn'
 import { toast } from '@/components/shell/Toast'
 import { useDeleteMistake, useMistakes, useUpdateMistake } from '@/hooks/useMistakes'
 import { formatDayIST } from '@/lib/date'
@@ -28,34 +30,41 @@ export function MistakeList({
   const [open, setOpen] = useState<string | null>(null)
   const items = query.data?.pages.flatMap((page) => page.items) ?? []
 
-  if (query.isError) return <EmptyState>Could not load the notebook.</EmptyState>
-  if (!query.data) return <EmptyState>Loading…</EmptyState>
-  if (items.length === 0) return <EmptyState>{empty}</EmptyState>
-
   return (
     <>
-      <ul>
-        {items.map((mistake) => (
-          <li key={mistake._id} className="border-b border-line last:border-0">
-            <Row
-              mistake={mistake}
-              showTopic={showTopic}
-              open={open === mistake._id}
-              onToggle={() => setOpen(open === mistake._id ? null : mistake._id)}
-            />
-          </li>
-        ))}
-      </ul>
+      <QueryBoundary
+        query={query}
+        error="Could not load the notebook."
+        skeleton={<SkeletonRows rows={5} />}
+        isEmpty={() => items.length === 0}
+        empty={<EmptyState title="Nothing here yet." description={empty} />}
+      >
+        {() => (
+          <ul className="divide-y divide-hairline">
+            {items.map((mistake) => (
+              <li key={mistake._id}>
+                <Row
+                  mistake={mistake}
+                  showTopic={showTopic}
+                  open={open === mistake._id}
+                  onToggle={() => setOpen(open === mistake._id ? null : mistake._id)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </QueryBoundary>
 
       {query.hasNextPage && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          full
+          className="rounded-none border-t border-hairline"
+          loading={query.isFetchingNextPage}
           onClick={() => void query.fetchNextPage()}
-          disabled={query.isFetchingNextPage}
-          className="h-tap w-full text-sm text-signal"
         >
-          {query.isFetchingNextPage ? 'Loading…' : 'Show more'}
-        </button>
+          Show more
+        </Button>
       )}
     </>
   )
@@ -81,90 +90,89 @@ function Row({
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="flex w-full min-h-tap items-start gap-3 px-4 py-2.5 text-left"
+        className="flex w-full min-h-tap items-start gap-3 px-4 py-2.5 text-left transition-colors hover:bg-canvas sm:px-5"
       >
         <div className="min-w-0 flex-1">
           <p
             className={[
-              'truncate text-sm',
+              'truncate text-sm text-ink',
               // Nothing typed is normal on a fast entry run; the row still has
               // its topic and its tag, which is the part that matters.
-              mistake.question || mistake.note ? '' : 'text-slate',
+              mistake.question || mistake.note ? '' : 'text-muted',
               // A settled mistake stays in the list — the pattern it belongs to
               // is still real — but it stops competing for attention.
-              mistake.resolved ? 'text-slate line-through' : '',
+              mistake.resolved ? 'text-muted line-through' : '',
             ].join(' ')}
           >
             {mistake.question || mistake.note || 'No question recorded'}
           </p>
-          <p className="truncate text-xs text-slate">
+          <p className="truncate text-xs text-muted">
             {showTopic && mistake.node_title ? `${mistake.node_title} · ` : ''}
             {mistake.paper} · {formatDayIST(mistake.date)}
           </p>
         </div>
-        <span className="shrink-0 pt-0.5 text-xs text-slate">
-          {tagShort(mistake.tag)}
+        <span className="flex shrink-0 items-center gap-2 pt-0.5">
+          {mistake.resolved && (
+            <Check size={14} strokeWidth={2.2} className="text-success" aria-label="Settled" />
+          )}
+          <Badge tone={mistake.resolved ? 'success' : 'neutral'} size="sm">
+            {tagShort(mistake.tag)}
+          </Badge>
+          <ChevronDown
+            size={14}
+            strokeWidth={2}
+            aria-hidden
+            className={cn('text-faint transition-transform', open && 'rotate-180')}
+          />
         </span>
       </button>
 
       {open && (
-        <div className="space-y-3 bg-paper px-4 py-3">
-          {mistake.note && <p className="text-sm">{mistake.note}</p>}
+        <div className="space-y-3 bg-canvas px-4 py-3.5 sm:px-5">
+          {mistake.note && <p className="text-sm text-ink">{mistake.note}</p>}
           {mistake.source_title && (
-            <p className="text-xs text-slate">From {mistake.source_title}</p>
+            <p className="text-xs text-muted">From {mistake.source_title}</p>
           )}
 
           <div className="flex flex-wrap gap-2">
             {TAGS.map((option) => (
-              <button
+              <Chip
                 key={option.value}
-                type="button"
-                aria-pressed={mistake.tag === option.value}
-                onClick={() =>
-                  update.mutate({ id: mistake._id, tag: option.value })
-                }
-                className={[
-                  'h-9 rounded-full border px-3 text-xs',
-                  mistake.tag === option.value
-                    ? 'border-signal bg-signal text-surface'
-                    : 'border-line bg-surface text-slate',
-                ].join(' ')}
+                selected={mistake.tag === option.value}
+                onClick={() => update.mutate({ id: mistake._id, tag: option.value })}
               >
                 {option.short}
-              </button>
+              </Chip>
             ))}
           </div>
 
-          <div className="flex gap-2">
-            <button
-              type="button"
+          <div className="flex flex-wrap gap-2">
+            <Button
               onClick={() =>
                 update.mutate(
                   { id: mistake._id, resolved: !mistake.resolved },
                   {
                     onSuccess: () =>
                       toast(mistake.resolved ? 'Back on the list.' : 'Marked settled.'),
-                    onError: (caught) => toast(readable(caught)),
+                    onError: (caught) => toast(readable(caught), 'error'),
                   },
                 )
               }
-              className="h-tap flex-1 rounded border border-line bg-surface text-sm"
             >
               {mistake.resolved ? 'Reopen' : 'Mark settled'}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="danger"
               onClick={() => {
                 if (!window.confirm('Delete this mistake?')) return
                 remove.mutate(mistake._id, {
                   onSuccess: () => toast('Deleted.'),
-                  onError: (caught) => toast(readable(caught)),
+                  onError: (caught) => toast(readable(caught), 'error'),
                 })
               }}
-              className="h-tap w-24 rounded border border-line bg-surface text-sm text-slate"
             >
               Delete
-            </button>
+            </Button>
           </div>
         </div>
       )}

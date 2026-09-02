@@ -3,6 +3,15 @@ import { useState } from 'react'
 import type { LogPayload, LogType, ReviseMethod } from '@/api/logs'
 import { Sheet } from '@/components/shell/Sheet'
 import { toast } from '@/components/shell/Toast'
+import {
+  Button,
+  Callout,
+  ConfidenceScale,
+  Field,
+  Input,
+  NumberInput,
+  SegmentedControl,
+} from '@/components/ui'
 import { useCreateLog } from '@/hooks/useLogs'
 import { formatDayIST } from '@/lib/date'
 import { readable } from '@/lib/errors'
@@ -113,9 +122,24 @@ export function QuickLogSheet({
   }
 
   return (
-    <Sheet title="What did you do?" onClose={onClose}>
-      <div className="space-y-4 p-4">
-        <Segmented value={type} options={TYPES} onChange={setType} />
+    <Sheet
+      title="What did you do?"
+      description="Four taps on a normal day."
+      onClose={onClose}
+      footer={
+        <Button
+          variant="primary"
+          size="lg"
+          full
+          loading={create.isPending}
+          onClick={save}
+        >
+          {saveLabel(type)}
+        </Button>
+      }
+    >
+      <div className="space-y-4 p-4 sm:p-5">
+        <SegmentedControl full label="What kind of work" value={type} options={TYPES} onChange={setType} />
 
         <Field label="Topic">
           <NodePicker value={node} onChange={setNode} />
@@ -124,17 +148,16 @@ export function QuickLogSheet({
         {type === 'read' && (
           <>
             <Field label="Source">
-              <input
+              <Input
                 value={source}
                 onChange={(event) => setSource(event.target.value)}
                 placeholder="Laxmikanth"
-                className="h-tap w-full rounded border border-line px-3 text-sm focus:border-signal"
               />
             </Field>
             <Field label="Pages">
               <div className="flex items-center gap-2">
                 <NumberInput value={fromPage} onChange={setFromPage} placeholder="204" />
-                <span className="text-sm text-slate">to</span>
+                <span className="text-sm text-muted">to</span>
                 <NumberInput value={toPage} onChange={setToPage} placeholder="231" />
               </div>
             </Field>
@@ -143,7 +166,7 @@ export function QuickLogSheet({
 
         {type === 'revise' && (
           <Field label="Method">
-            <Segmented value={method} options={METHODS} onChange={setMethod} />
+            <SegmentedControl full label="Method" value={method} options={METHODS} onChange={setMethod} />
           </Field>
         )}
 
@@ -159,7 +182,7 @@ export function QuickLogSheet({
 
         {type !== 'mcq' && (
           <Field label="How well did that come back?">
-            <Confidence value={confidence} onChange={setConfidence} />
+            <ConfidenceScale value={confidence} onChange={setConfidence} legend />
           </Field>
         )}
 
@@ -167,16 +190,7 @@ export function QuickLogSheet({
           <NumberInput value={minutes} onChange={setMinutes} placeholder="45" />
         </Field>
 
-        {error && <p className="text-sm text-overdue">{error}</p>}
-
-        <button
-          type="button"
-          onClick={save}
-          disabled={create.isPending}
-          className="h-tap w-full rounded bg-signal text-sm font-medium text-surface disabled:opacity-60"
-        >
-          {create.isPending ? 'Saving…' : saveLabel(type)}
-        </button>
+        {error && <Callout tone="danger">{error}</Callout>}
       </div>
     </Sheet>
   )
@@ -192,105 +206,4 @@ function saveLabel(type: LogType): string {
 function number(value: string): number | null {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : null
-}
-
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="pb-1.5 text-xs text-slate">{label}</p>
-      {children}
-    </div>
-  )
-}
-
-function Segmented<T extends string>({
-  value,
-  options,
-  onChange,
-}: {
-  value: T
-  options: { value: T; label: string }[]
-  onChange: (value: T) => void
-}) {
-  return (
-    <div className="flex gap-2">
-      {options.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          aria-pressed={value === option.value}
-          onClick={() => onChange(option.value)}
-          className={[
-            'h-tap flex-1 rounded border text-sm',
-            value === option.value
-              ? 'border-signal bg-signal text-surface'
-              : 'border-line text-slate',
-          ].join(' ')}
-        >
-          {option.label}
-        </button>
-      ))}
-    </div>
-  )
-}
-
-function Confidence({
-  value,
-  onChange,
-}: {
-  value: number
-  onChange: (value: number) => void
-}) {
-  return (
-    <div className="flex gap-2" role="group" aria-label="Confidence, 1 to 5">
-      {[1, 2, 3, 4, 5].map((score) => (
-        <button
-          key={score}
-          type="button"
-          aria-pressed={value === score}
-          onClick={() => onChange(score)}
-          // Depth of fill, not traffic lights: the scale reads as it means.
-          className={[
-            'h-tap flex-1 rounded border text-sm',
-            value === score ? 'border-signal font-medium' : 'border-line',
-            value === score ? DEPTH[score] : 'text-slate',
-          ].join(' ')}
-        >
-          {score}
-        </button>
-      ))}
-    </div>
-  )
-}
-
-const DEPTH: Record<number, string> = {
-  1: 'bg-depth-1 text-ink',
-  2: 'bg-depth-2 text-ink',
-  3: 'bg-depth-3 text-ink',
-  4: 'bg-depth-4 text-surface',
-  5: 'bg-depth-5 text-surface',
-}
-
-function NumberInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string
-  onChange: (value: string) => void
-  placeholder: string
-}) {
-  return (
-    <input
-      // inputMode rather than type=number: no spinners, and the phone opens
-      // the numeric keypad, which is the only part that matters here.
-      inputMode="numeric"
-      pattern="[0-9]*"
-      value={value}
-      onChange={(event) => onChange(event.target.value.replace(/\D/g, ''))}
-      placeholder={placeholder}
-      className="h-tap w-full min-w-0 rounded border border-line px-3 text-sm focus:border-signal"
-    />
-  )
 }

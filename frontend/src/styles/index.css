@@ -1,6 +1,7 @@
 @import '@fontsource/ibm-plex-sans/400.css';
 @import '@fontsource/ibm-plex-sans/500.css';
 @import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource-variable/fraunces';
 
 @tailwind base;
 @tailwind components;
@@ -11,14 +12,44 @@
     /* This is a numbers app; columns must align. */
     font-variant-numeric: tabular-nums;
     -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-paper text-ink font-sans text-base antialiased;
+    @apply bg-canvas text-ink font-sans text-base antialiased;
+    /* A very faint tooth on the paper. Flat cream reads as an unstyled page;
+       this is enough texture to read as a surface and not enough to notice. */
+    background-image: radial-gradient(rgba(90, 70, 40, 0.045) 0.5px, transparent 0.5px);
+    background-size: 16px 16px;
+    background-attachment: fixed;
+  }
+
+  /* Fraunces ships an optical-size and a softness axis. Dial in one voice for
+     every display heading rather than setting it at each call site. */
+  .font-display {
+    font-variation-settings: 'SOFT' 0, 'WONK' 0, 'opsz' 32;
+    letter-spacing: -0.015em;
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-signal ring-offset-2 ring-offset-paper;
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-canvas;
+  }
+
+  /* The scrollbars inside cards and panes; the default grey ones fight the
+     warm ground. */
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.edge') transparent;
+  }
+  .scroll-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-edge;
+  }
+  .scroll-thin::-webkit-scrollbar-track {
+    background: transparent;
   }
 }
 
@@ -28,12 +59,35 @@
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
+/* The mobile bottom sheet. */
 @keyframes slide-up {
   from {
     transform: translateY(8%);
     opacity: 0;
+  }
+}
+
+/* The desktop dialog. */
+@keyframes fade-scale {
+  from {
+    transform: scale(0.98);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Skeletons. */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
   }
 }

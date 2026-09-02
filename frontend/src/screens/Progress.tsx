@@ -1,15 +1,24 @@
 import { useState } from 'react'
+import { CalendarDays, ClipboardList, Grid3x3, Layers, Timer, TrendingDown } from 'lucide-react'
 
 import { formatMinutes } from '@/api/progress'
 import type { Paper } from '@/api/syllabus'
-import { EmptyState } from '@/components/EmptyState'
 import { PaperChips } from '@/components/PaperChips'
 import { Burndown } from '@/components/progress/Burndown'
 import { Coverage } from '@/components/progress/Coverage'
 import { EffortChart } from '@/components/progress/EffortChart'
 import { Heatmap, HeatmapLegend } from '@/components/progress/Heatmap'
 import { WeeklyReviewCard } from '@/components/progress/WeeklyReviewCard'
-import { Header } from '@/components/shell/Header'
+import {
+  Card,
+  CardHeader,
+  EmptyState,
+  PageHeader,
+  QueryBoundary,
+  SkeletonChart,
+  SkeletonRows,
+  StatTile,
+} from '@/components/ui'
 import {
   useBurndown,
   useCountdown,
@@ -25,8 +34,8 @@ import { formatDayIST } from '@/lib/date'
  * much is left, how much is covered, how strong each topic is, and what the
  * month of effort actually looked like — and then asks three of its own.
  *
- * Nothing here is a streak and nothing is red. The honest figures are hard
- * enough without the interface having an opinion about them.
+ * Nothing here is a streak and nothing is red for its own sake. The honest
+ * figures are hard enough without the interface having an opinion about them.
  */
 export function Progress() {
   const countdown = useCountdown()
@@ -39,107 +48,156 @@ export function Progress() {
 
   return (
     <>
-      <Header title="Progress" />
+      <PageHeader
+        title="Progress"
+        subtitle="Where the pace actually is, once the off-days are taken out of it."
+      />
 
-      {countdown.data && (
-        <div className="px-4 pb-2">
-          <p className="text-xl">
-            {countdown.data.prelims.days} days to Prelims
-          </p>
-          <p className="text-sm text-slate">
-            {countdown.data.prelims.study_days} of them are study days ·{' '}
-            {formatDayIST(countdown.data.prelims.date)}
-          </p>
-        </div>
-      )}
-
-      <Section
-        label="Burn-down"
-        note="Topics left against the pace that clears them before Prelims."
-      >
-        {burndown.data ? (
-          <Burndown data={burndown.data} />
-        ) : (
-          <EmptyState>{burndown.isError ? 'Could not load the burn-down.' : 'Loading…'}</EmptyState>
-        )}
-      </Section>
-
-      <Section label="Coverage" note="Read once, revised twice, practised.">
-        {coverage.data && coverage.data.papers.length > 0 ? (
-          <Coverage data={coverage.data} />
-        ) : (
-          <EmptyState>
-            {coverage.isError
-              ? 'Could not load coverage.'
-              : coverage.data
-                ? 'Nothing logged yet. The bars fill as topics are read.'
-                : 'Loading…'}
-          </EmptyState>
-        )}
-      </Section>
-
-      <section className="mt-6">
-        <div className="flex items-baseline justify-between px-4 pb-2">
-          <h2 className="text-xs uppercase tracking-wide text-slate">Heatmap</h2>
-        </div>
-        {papers.data && (
-          <PaperChips papers={papers.data} selected={paper} onSelect={setPaper} />
-        )}
-        <HeatmapLegend />
-        <div className="border-y border-line bg-surface">
-          {heatmap.data ? (
-            heatmap.data.sections.length > 0 ? (
-              <Heatmap sections={heatmap.data.sections} />
-            ) : (
-              <EmptyState>Nothing in this paper yet.</EmptyState>
-            )
-          ) : (
-            <EmptyState>{heatmap.isError ? 'Could not load the heatmap.' : 'Loading…'}</EmptyState>
-          )}
-        </div>
-      </section>
-
-      <Section
-        label="Effort"
-        note={
-          effort.data
-            ? `${formatMinutes(effort.data.total_minutes)} over the last 30 days.`
-            : undefined
-        }
-      >
-        {effort.data ? (
-          <EffortChart data={effort.data} />
-        ) : (
-          <EmptyState>{effort.isError ? 'Could not load effort.' : 'Loading…'}</EmptyState>
-        )}
-      </Section>
-
-      <section className="mt-6 pb-8">
-        <div className="px-4 pb-2">
-          <h2 className="text-xs uppercase tracking-wide text-slate">Weekly review</h2>
-        </div>
-        <WeeklyReviewCard />
-      </section>
-    </>
-  )
-}
-
-function Section({
-  label,
-  note,
-  children,
-}: {
-  label: string
-  note?: string
-  children: React.ReactNode
-}) {
-  return (
-    <section className="mt-6">
-      <div className="px-4 pb-2">
-        <h2 className="text-xs uppercase tracking-wide text-slate">{label}</h2>
-        {note && <p className="pt-0.5 text-xs text-slate">{note}</p>}
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:mb-5 lg:grid-cols-4 lg:gap-5">
+        <StatTile
+          label="To Prelims"
+          icon={<CalendarDays size={16} strokeWidth={1.9} />}
+          loading={!countdown.data}
+          value={countdown.data?.prelims.days ?? 0}
+          unit="days"
+          sub={
+            countdown.data &&
+            `${countdown.data.prelims.study_days} study days · ${formatDayIST(
+              countdown.data.prelims.date,
+            )}`
+          }
+        />
+        <StatTile
+          label="Topics left"
+          icon={<TrendingDown size={16} strokeWidth={1.9} />}
+          loading={!burndown.data}
+          value={burndown.data?.remaining ?? 0}
+          sub={burndown.data && `of ${burndown.data.total_leaves} in the syllabus`}
+          progress={
+            burndown.data
+              ? { value: burndown.data.started_leaves, max: burndown.data.total_leaves }
+              : undefined
+          }
+        />
+        <StatTile
+          label="Needed a day"
+          icon={<Layers size={16} strokeWidth={1.9} />}
+          loading={!burndown.data}
+          value={burndown.data?.required_per_day.toFixed(1) ?? '—'}
+          sub={
+            burndown.data &&
+            `your pace: ${
+              burndown.data.actual_per_day === null
+                ? '—'
+                : burndown.data.actual_per_day.toFixed(1)
+            } over ${burndown.data.actual_window_days} days`
+          }
+          tone={
+            burndown.data &&
+            burndown.data.actual_per_day !== null &&
+            burndown.data.actual_per_day < burndown.data.required_per_day
+              ? 'danger'
+              : 'default'
+          }
+        />
+        <StatTile
+          label="Effort, 30 days"
+          icon={<Timer size={16} strokeWidth={1.9} />}
+          loading={!effort.data}
+          value={effort.data ? formatMinutes(effort.data.total_minutes) : '—'}
+          sub={effort.data && `${formatMinutes(effort.data.average_minutes)} a day`}
+        />
       </div>
-      <div className="border-y border-line bg-surface">{children}</div>
-    </section>
+
+      <div className="grid grid-cols-12 items-start gap-4 lg:gap-5">
+        <Card className="col-span-12">
+          <CardHeader
+            title="Burn-down"
+            subtitle="Topics left against the pace that clears them before Prelims."
+            icon={<TrendingDown size={17} strokeWidth={1.8} />}
+          />
+          <QueryBoundary
+            query={burndown}
+            error="Could not load the burn-down."
+            skeleton={<SkeletonChart className="h-56" />}
+          >
+            {(data) => <Burndown data={data} />}
+          </QueryBoundary>
+        </Card>
+
+        <Card className="col-span-12 self-start lg:col-span-6">
+          <CardHeader
+            title="Coverage"
+            subtitle="Read once, revised twice, practised."
+            icon={<Layers size={17} strokeWidth={1.8} />}
+          />
+          <QueryBoundary
+            query={coverage}
+            error="Could not load coverage."
+            skeleton={<SkeletonRows rows={4} />}
+            isEmpty={(data) => data.papers.length === 0}
+            empty={
+              <EmptyState
+                title="Nothing logged yet."
+                description="The bars fill as topics are read."
+              />
+            }
+          >
+            {(data) => <Coverage data={data} />}
+          </QueryBoundary>
+        </Card>
+
+        <Card className="col-span-12 self-start lg:col-span-6">
+          <CardHeader
+            title="Effort"
+            subtitle={
+              effort.data
+                ? `${formatMinutes(effort.data.total_minutes)} over the last 30 days.`
+                : 'The last 30 days.'
+            }
+            icon={<Timer size={17} strokeWidth={1.8} />}
+          />
+          <QueryBoundary
+            query={effort}
+            error="Could not load effort."
+            skeleton={<SkeletonChart className="h-24" />}
+          >
+            {(data) => <EffortChart data={data} />}
+          </QueryBoundary>
+        </Card>
+
+        <Card className="col-span-12">
+          <CardHeader
+            title="Heatmap"
+            subtitle="Every topic in the paper, coloured by how well it comes back."
+            icon={<Grid3x3 size={17} strokeWidth={1.8} />}
+            action={<HeatmapLegend />}
+          />
+          {papers.data && (
+            <div className="border-b border-hairline px-4 py-3 sm:px-5">
+              <PaperChips papers={papers.data} selected={paper} onSelect={setPaper} />
+            </div>
+          )}
+          <QueryBoundary
+            query={heatmap}
+            error="Could not load the heatmap."
+            skeleton={<SkeletonRows rows={4} />}
+            isEmpty={(data) => data.sections.length === 0}
+            empty={<EmptyState title="Nothing in this paper yet." />}
+          >
+            {(data) => <Heatmap sections={data.sections} />}
+          </QueryBoundary>
+        </Card>
+
+        <Card className="col-span-12">
+          <CardHeader
+            title="Weekly review"
+            subtitle="Three questions, written once a week, kept with the week's numbers."
+            icon={<ClipboardList size={17} strokeWidth={1.8} />}
+          />
+          <WeeklyReviewCard />
+        </Card>
+      </div>
+    </>
   )
 }

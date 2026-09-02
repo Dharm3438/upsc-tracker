@@ -1,10 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
+import { ChevronLeft, Pause, Play, Timer } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import type { NewAnswer } from '@/api/answers'
 import { NodePicker, type PickedNode } from '@/components/log/NodePicker'
 import { toast } from '@/components/shell/Toast'
+import {
+  Badge,
+  Button,
+  Callout,
+  Card,
+  CardBody,
+  CardHeader,
+  Chip,
+  Field,
+  NumberInput,
+  Textarea,
+} from '@/components/ui'
 import { useAnswer, useCreateAnswer, useUpdateAnswer } from '@/hooks/useAnswers'
+import { cn } from '@/lib/cn'
 import { todayIST } from '@/lib/date'
 import { readable } from '@/lib/errors'
 
@@ -158,94 +172,128 @@ export function AnswerTimer() {
 
   return (
     <>
-      <header className="flex min-h-tap items-center justify-between px-4">
-        <button type="button" onClick={discard} className="text-sm text-signal">
-          ‹ Practice
+      <header className="mx-auto mb-5 flex max-w-3xl items-center justify-between">
+        <button
+          type="button"
+          onClick={discard}
+          className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-accent"
+        >
+          <ChevronLeft size={15} strokeWidth={2} />
+          Practice
         </button>
         {draft.stage !== 'setup' && (
-          <span className="text-sm tabular-nums text-slate">{clock(elapsedMs)}</span>
+          <Badge tone="accent" icon={<Timer size={12} strokeWidth={2.2} />}>
+            {clock(elapsedMs)}
+          </Badge>
         )}
       </header>
 
       {draft.stage === 'setup' && (
-        <div className="space-y-4 p-4">
-          <Field label="Question">
-            <textarea
-              value={draft.question}
-              onChange={(event) => patch({ question: event.target.value })}
-              rows={4}
-              placeholder="Cooperative federalism is a means, not an end. Comment."
-              className="w-full rounded border border-line p-3 text-sm focus:border-signal"
-            />
-          </Field>
-
-          <Field label="Topic">
-            <NodePicker value={draft.node} onChange={(node) => patch({ node })} />
-          </Field>
-
-          <div className="flex gap-3">
-            <Field label="Marks" className="flex-1">
-              <div className="flex flex-wrap gap-2">
-                {MARKS.map((option) => (
-                  <Chip
-                    key={option}
-                    selected={draft.marks === option}
-                    onClick={() => patch({ marks: option })}
-                  >
-                    {option}
-                  </Chip>
-                ))}
-              </div>
+        <Card className="mx-auto max-w-3xl">
+          <CardHeader
+            title="Answer practice"
+            subtitle="Set it up, then the clock takes the screen."
+            icon={<Timer size={17} strokeWidth={1.8} />}
+          />
+          <CardBody className="space-y-4">
+            <Field label="Question">
+              <Textarea
+                value={draft.question}
+                onChange={(event) => patch({ question: event.target.value })}
+                rows={4}
+                placeholder="Cooperative federalism is a means, not an end. Comment."
+              />
             </Field>
-          </div>
 
-          <Field label="Word limit">
-            <div className="flex flex-wrap gap-2">
-              {WORD_LIMITS.map((option) => (
-                <Chip
-                  key={option}
-                  selected={draft.wordLimit === option}
-                  onClick={() => patch({ wordLimit: option })}
-                >
-                  {option}
-                </Chip>
-              ))}
+            <Field label="Topic">
+              <NodePicker value={draft.node} onChange={(node) => patch({ node })} />
+            </Field>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Marks">
+                <div className="flex flex-wrap gap-2">
+                  {MARKS.map((option) => (
+                    <Chip
+                      key={option}
+                      selected={draft.marks === option}
+                      onClick={() => patch({ marks: option })}
+                    >
+                      {option}
+                    </Chip>
+                  ))}
+                </div>
+              </Field>
+
+              <Field label="Word limit">
+                <div className="flex flex-wrap gap-2">
+                  {WORD_LIMITS.map((option) => (
+                    <Chip
+                      key={option}
+                      selected={draft.wordLimit === option}
+                      onClick={() => patch({ wordLimit: option })}
+                    >
+                      {option}
+                    </Chip>
+                  ))}
+                </div>
+              </Field>
             </div>
-          </Field>
 
-          {error && <p className="text-sm text-overdue">{error}</p>}
+            {error && <Callout tone="danger">{error}</Callout>}
 
-          <button
-            type="button"
-            onClick={start}
-            className="h-tap w-full rounded bg-signal text-sm font-medium text-surface"
-          >
-            Start writing
-          </button>
-        </div>
+            <Button variant="primary" size="lg" full onClick={start}>
+              Start writing
+            </Button>
+          </CardBody>
+        </Card>
       )}
 
       {draft.stage === 'writing' && (
-        <div className="p-4">
-          <p className="whitespace-pre-wrap text-sm">{draft.question}</p>
-          <p className="mt-1 text-xs text-slate">
+        // The clock is the screen. Nothing else on it competes for a glance.
+        <div className="mx-auto flex min-h-[68dvh] max-w-3xl flex-col items-center justify-center rounded-2xl bg-navy px-6 py-10 text-center text-white shadow-card sm:px-10">
+          <p className="max-w-prose whitespace-pre-wrap font-display text-lg leading-snug text-white/90 lg:text-2xl">
+            {draft.question}
+          </p>
+          <p className="mt-3 text-sm text-white/45">
             {draft.marks} marks · {draft.wordLimit} words · {draft.node?.title}
           </p>
 
-          <p className="py-10 text-center text-5xl font-light tabular-nums">
+          <p
+            className={cn(
+              'py-10 font-display text-6xl font-light tabular-nums lg:py-14 lg:text-[104px] lg:leading-none',
+              draft.startedAt === null && 'text-white/40',
+            )}
+          >
             {clock(elapsedMs)}
           </p>
 
-          <div className="space-y-3">
-            <button
-              type="button"
-              onClick={stop}
-              className="h-tap w-full rounded bg-signal text-sm font-medium text-surface"
-            >
+          {/* Pace against a rough minute-a-mark-and-a-bit. Over is not a
+              failure, but it is the thing worth knowing before the bell. */}
+          <div className="mb-8 h-1 w-full max-w-sm overflow-hidden rounded-full bg-white/15">
+            <div
+              className={cn(
+                'h-full rounded-full transition-[width] duration-1000',
+                elapsedMs > draft.marks * 72_000 ? 'bg-accent' : 'bg-white/60',
+              )}
+              style={{ width: `${Math.min(100, (elapsedMs / (draft.marks * 72_000)) * 100)}%` }}
+            />
+          </div>
+
+          <div className="grid w-full max-w-sm gap-3 sm:grid-cols-2">
+            <Button variant="primary" size="lg" full className="sm:order-2" onClick={stop}>
               Done writing
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="onDark"
+              size="lg"
+              full
+              icon={
+                draft.startedAt ? (
+                  <Pause size={16} strokeWidth={2} />
+                ) : (
+                  <Play size={16} strokeWidth={2} />
+                )
+              }
               onClick={() =>
                 draft.startedAt
                   ? patch({
@@ -254,62 +302,71 @@ export function AnswerTimer() {
                     })
                   : patch({ startedAt: Date.now() })
               }
-              className="h-tap w-full text-sm text-slate"
             >
               {draft.startedAt ? 'Pause' : 'Resume'}
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       {draft.stage === 'scoring' && (
-        <div className="space-y-4 p-4">
-          <p className="text-sm text-slate">
-            {minutes} min{minutes === 1 ? '' : 's'} on {draft.marks} marks.
-          </p>
+        <Card className="mx-auto max-w-3xl">
+          <CardHeader
+            title="How did that go?"
+            subtitle={`${minutes} min${minutes === 1 ? '' : 's'} on ${draft.marks} marks.`}
+          />
+          <CardBody className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Words written">
+                <NumberInput
+                  value={words}
+                  onChange={setWords}
+                  placeholder={String(draft.wordLimit)}
+                />
+              </Field>
+              <Field label="Self-score" hint={`out of ${draft.marks}`}>
+                <NumberInput value={score} onChange={setScore} placeholder="7.5" decimals />
+              </Field>
+            </div>
 
-          <div className="flex gap-3">
-            <Field label="Words written" className="flex-1">
-              <NumberInput value={words} onChange={setWords} placeholder={String(draft.wordLimit)} />
+            <p className="text-xs text-muted">
+              Under half comes back in 30 days. Leave it blank if you have not marked it yet —
+              you can score it from the answer later.
+            </p>
+
+            <Field label="What to fix next time">
+              <Textarea
+                value={improvements}
+                onChange={(event) => setImprovements(event.target.value)}
+                rows={3}
+                placeholder="Intro too long; no Article 246 anywhere; ran out of time on the way forward."
+              />
             </Field>
-            <Field label={`Self-score / ${draft.marks}`} className="flex-1">
-              <NumberInput value={score} onChange={setScore} placeholder="7.5" decimals />
-            </Field>
-          </div>
 
-          <p className="text-xs text-slate">
-            Under half comes back in 30 days. Leave it blank if you have not
-            marked it yet — you can score it from the answer later.
-          </p>
+            {error && <Callout tone="danger">{error}</Callout>}
 
-          <Field label="What to fix next time">
-            <textarea
-              value={improvements}
-              onChange={(event) => setImprovements(event.target.value)}
-              rows={3}
-              placeholder="Intro too long; no Article 246 anywhere; ran out of time on the way forward."
-              className="w-full rounded border border-line p-3 text-sm focus:border-signal"
-            />
-          </Field>
-
-          {error && <p className="text-sm text-overdue">{error}</p>}
-
-          <button
-            type="button"
-            onClick={save}
-            disabled={create.isPending}
-            className="h-tap w-full rounded bg-signal text-sm font-medium text-surface disabled:opacity-60"
-          >
-            {create.isPending ? 'Saving…' : 'Save answer'}
-          </button>
-          <button
-            type="button"
-            onClick={() => patch({ stage: 'writing', startedAt: Date.now() })}
-            className="h-tap w-full text-sm text-slate"
-          >
-            Back to the clock
-          </button>
-        </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button
+                variant="primary"
+                size="lg"
+                full
+                className="sm:order-2"
+                loading={create.isPending}
+                onClick={save}
+              >
+                Save answer
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                full
+                onClick={() => patch({ stage: 'writing', startedAt: Date.now() })}
+              >
+                Back to the clock
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
       )}
     </>
   )
@@ -347,69 +404,4 @@ function whole(value: string): number | null {
 function decimal(value: string): number | null {
   const parsed = Number.parseFloat(value)
   return Number.isFinite(parsed) ? parsed : null
-}
-
-function Field({
-  label,
-  className,
-  children,
-}: {
-  label: string
-  className?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className={className}>
-      <p className="pb-1.5 text-xs text-slate">{label}</p>
-      {children}
-    </div>
-  )
-}
-
-function Chip({
-  selected,
-  onClick,
-  children,
-}: {
-  selected: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={selected}
-      onClick={onClick}
-      className={[
-        'h-9 shrink-0 rounded-full border px-3 text-sm',
-        selected ? 'border-signal bg-signal text-surface' : 'border-line text-slate',
-      ].join(' ')}
-    >
-      {children}
-    </button>
-  )
-}
-
-function NumberInput({
-  value,
-  onChange,
-  placeholder,
-  decimals = false,
-}: {
-  value: string
-  onChange: (value: string) => void
-  placeholder: string
-  decimals?: boolean
-}) {
-  return (
-    <input
-      inputMode={decimals ? 'decimal' : 'numeric'}
-      value={value}
-      onChange={(event) =>
-        onChange(event.target.value.replace(decimals ? /[^\d.]/g : /\D/g, ''))
-      }
-      placeholder={placeholder}
-      className="h-tap w-full min-w-0 rounded border border-line px-3 text-sm tabular-nums focus:border-signal"
-    />
-  )
 }

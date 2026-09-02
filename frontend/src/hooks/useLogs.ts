@@ -33,6 +33,16 @@ export function useRecentNodes() {
   return useQuery({ queryKey: ['recent-nodes'], queryFn: getRecentNodes, staleTime: 30_000 })
 }
 
+/** The last few logs across every topic — the dashboard's activity feed. Its
+ *  own cache key, so it never collides with a node's paged timeline. */
+export function useRecentLogs(limit = 8) {
+  return useQuery({
+    queryKey: ['logs', 'recent', limit],
+    queryFn: () => getLogs({ limit }),
+    staleTime: 30_000,
+  })
+}
+
 /** A node's timeline, paged on the server's cursor. */
 export function useNodeLogs(nodeId: string | undefined) {
   return useInfiniteQuery({

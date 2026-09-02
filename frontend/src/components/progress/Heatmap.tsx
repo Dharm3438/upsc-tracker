@@ -1,12 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 
 import type { HeatmapCell, HeatmapSection } from '@/api/progress'
+import { cn } from '@/lib/cn'
+import { ATTENTION_DAYS, DEPTH_BG } from '@/lib/tokens'
 
-/** Past this a topic is not merely late, and it earns the one warm tone in the
- *  palette — the same threshold the due list uses. */
-const OVERDUE_ATTENTION_DAYS = 14
-
-const DEPTH = ['bg-depth-1', 'bg-depth-2', 'bg-depth-3', 'bg-depth-4', 'bg-depth-5']
+const DEPTH = [DEPTH_BG[1], DEPTH_BG[2], DEPTH_BG[3], DEPTH_BG[4], DEPTH_BG[5]]
 
 /**
  * The syllabus as a field of squares, grouped under its sections. Depth of fill
@@ -19,15 +17,19 @@ const DEPTH = ['bg-depth-1', 'bg-depth-2', 'bg-depth-3', 'bg-depth-4', 'bg-depth
  */
 export function Heatmap({ sections }: { sections: HeatmapSection[] }) {
   return (
-    <div className="bg-surface">
+    // Two columns of sections once there is width for them; a 200-topic paper
+    // in one column is a scroll nobody finishes.
+    <div className="grid gap-x-8 sm:grid-cols-2 xl:grid-cols-3">
       {sections.map((section) => (
         <div
           key={`${section.paper}/${section.section}`}
-          className="border-b border-line px-4 py-3 last:border-b-0"
+          className="border-b border-hairline px-4 py-3.5 sm:px-5"
         >
-          <div className="flex items-baseline justify-between pb-2">
-            <h3 className="text-sm font-medium">{section.section}</h3>
-            <span className="text-xs text-slate">{section.label}</span>
+          <div className="flex items-baseline justify-between gap-3 pb-2">
+            <h3 className="truncate text-sm font-medium text-ink">{section.section}</h3>
+            <span className="shrink-0 text-xs tabular-nums text-faint">
+              {section.cells.length}
+            </span>
           </div>
           <div className="flex flex-wrap gap-1">
             {section.cells.map((cell) => (
@@ -42,7 +44,7 @@ export function Heatmap({ sections }: { sections: HeatmapSection[] }) {
 
 function Square({ cell }: { cell: HeatmapCell }) {
   const navigate = useNavigate()
-  const overdue = cell.days_overdue > OVERDUE_ATTENTION_DAYS
+  const overdue = cell.days_overdue > ATTENTION_DAYS
 
   return (
     <button
@@ -50,13 +52,15 @@ function Square({ cell }: { cell: HeatmapCell }) {
       onClick={() => navigate(`/syllabus/node/${cell.node_id}`)}
       title={label(cell)}
       aria-label={label(cell)}
-      className={[
-        'h-5 w-5 rounded-[3px] border',
+      className={cn(
+        'h-4 w-4 rounded-[4px] border transition-transform hover:scale-125 sm:h-5 sm:w-5 lg:h-6 lg:w-6',
         cell.confidence
           ? `${DEPTH[cell.confidence - 1]} border-transparent`
-          : 'bg-paper border-line',
-        overdue ? 'border-overdue' : '',
-      ].join(' ')}
+          : 'border-hairline bg-canvas',
+        // A ring rather than a border swap: never-started cells already use
+        // their border, so recolouring it would say two things at once.
+        overdue && 'ring-1 ring-danger',
+      )}
     />
   )
 }
@@ -74,15 +78,15 @@ function label(cell: HeatmapCell): string {
  *  without tapping one. */
 export function HeatmapLegend() {
   return (
-    <div className="flex items-center gap-2 px-4 pb-2 text-xs text-slate">
-      <span>Not started</span>
-      <span className="h-3 w-3 rounded-[3px] border border-line bg-paper" />
+    <div className="flex items-center gap-1.5 text-xs text-faint">
+      <span className="hidden sm:inline">Not started</span>
+      <span className="h-3 w-3 rounded-[3px] border border-hairline bg-canvas" />
       {DEPTH.map((depth, index) => (
         <span key={depth} className={`h-3 w-3 rounded-[3px] ${depth}`} aria-hidden>
           <span className="sr-only">{index + 1}</span>
         </span>
       ))}
-      <span>Strong</span>
+      <span className="hidden sm:inline">Strong</span>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 import { searchNodes } from '@/api/syllabus'
+import { Chip, ChipRow, SearchInput } from '@/components/ui'
 import { useRecentNodes } from '@/hooks/useLogs'
 
 export type PickedNode = { id: string; title: string; path: string }
@@ -41,7 +42,7 @@ export function NodePicker({
   return (
     <div>
       {recent.data && recent.data.length > 0 && (
-        <div className="-mx-4 mb-3 flex gap-2 overflow-x-auto px-4 pb-1">
+        <ChipRow className="mb-2.5">
           {recent.data.map((node) => (
             <Chip
               key={node.node_id}
@@ -53,36 +54,34 @@ export function NodePicker({
               {node.title}
             </Chip>
           ))}
-        </div>
+        </ChipRow>
       )}
 
-      <input
-        type="search"
+      <SearchInput
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={setQuery}
         placeholder={recent.data?.length ? 'Or search for a topic…' : 'Search for a topic…'}
-        className="h-tap w-full rounded border border-line bg-surface px-3 text-sm focus:border-signal"
       />
 
       {debounced.length >= 2 && (
-        <ul className="mt-2 max-h-48 overflow-y-auto rounded border border-line">
+        <ul className="scroll-thin mt-2 max-h-52 overflow-y-auto rounded-md border border-hairline bg-surface">
           {matches.length === 0 && (
-            <li className="px-3 py-3 text-sm text-slate">
+            <li className="px-3 py-3 text-sm text-muted">
               {results.isFetching ? 'Searching…' : 'Nothing matches that.'}
             </li>
           )}
           {matches.map((node) => (
-            <li key={node._id} className="border-b border-line last:border-0">
+            <li key={node._id} className="border-b border-hairline last:border-0">
               <button
                 type="button"
                 onClick={() => {
                   onChange({ id: node._id, title: node.title, path: node.path })
                   setQuery('')
                 }}
-                className="w-full px-3 py-2 text-left"
+                className="w-full px-3 py-2 text-left transition-colors hover:bg-canvas"
               >
-                <span className="block truncate text-sm">{node.title}</span>
-                <span className="block truncate text-xs text-slate">
+                <span className="block truncate text-sm text-ink">{node.title}</span>
+                <span className="block truncate text-xs text-muted">
                   {node.path.split('/').slice(0, -1).join(' › ')}
                 </span>
               </button>
@@ -92,34 +91,10 @@ export function NodePicker({
       )}
 
       {value && (
-        <p className="mt-2 truncate text-xs text-slate">
-          Logging against <span className="text-ink">{value.title}</span>
+        <p className="mt-2 truncate text-xs text-muted">
+          Logging against <span className="font-medium text-ink">{value.title}</span>
         </p>
       )}
     </div>
-  )
-}
-
-function Chip({
-  selected,
-  onClick,
-  children,
-}: {
-  selected: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selected}
-      className={[
-        'h-9 shrink-0 whitespace-nowrap rounded-full border px-3 text-sm',
-        selected ? 'border-signal bg-signal text-surface' : 'border-line text-slate',
-      ].join(' ')}
-    >
-      {children}
-    </button>
   )
 }

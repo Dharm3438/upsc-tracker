@@ -1,12 +1,23 @@
 import { useState } from 'react'
+import { ClipboardList, NotebookPen, Pencil, Plus, Target, Trash2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { EmptyState } from '@/components/EmptyState'
 import { percent } from '@/components/charts/Sparkline'
 import { MistakeEntry } from '@/components/mistakes/MistakeEntry'
 import { MistakeList } from '@/components/mistakes/MistakeList'
 import { TestSheet } from '@/components/tests/TestSheet'
 import { toast } from '@/components/shell/Toast'
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  DataRow,
+  ErrorState,
+  PageHeader,
+  SkeletonText,
+} from '@/components/ui'
 import { useMistakes } from '@/hooks/useMistakes'
 import { useDeleteTest, useTest } from '@/hooks/useTests'
 import { formatDayIST } from '@/lib/date'
@@ -22,103 +33,141 @@ export function TestDetail() {
   const [editing, setEditing] = useState(false)
   const [adding, setAdding] = useState(false)
 
-  if (test.isError) return <EmptyState>Could not load that attempt.</EmptyState>
-  if (!test.data) return <EmptyState>Loading…</EmptyState>
+  if (test.isError) {
+    return (
+      <Card>
+        <ErrorState title="Could not load that attempt." onRetry={test.refetch} />
+      </Card>
+    )
+  }
+  if (!test.data) {
+    return (
+      <Card>
+        <CardBody>
+          <SkeletonText lines={4} />
+        </CardBody>
+      </Card>
+    )
+  }
 
   const attempt = test.data
   const unrecorded = attempt.wrong - attempt.mistakes_logged
+  const total = Math.max(1, attempt.total_questions)
 
   return (
     <>
-      <header className="flex min-h-tap items-center justify-between px-4">
-        <button type="button" onClick={() => navigate(-1)} className="text-sm text-signal">
-          ‹ Practice
-        </button>
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="text-sm text-slate"
-        >
-          Edit
-        </button>
-      </header>
+      <PageHeader
+        back={{ label: 'Practice', to: '/practice' }}
+        title={attempt.title}
+        meta={
+          <>
+            <Badge tone="outline">{formatDayIST(attempt.date)}</Badge>
+            {attempt.papers.map((paper) => (
+              <Badge key={paper}>{paper}</Badge>
+            ))}
+            {attempt.duration_minutes && <Badge>{attempt.duration_minutes} min</Badge>}
+          </>
+        }
+        actions={
+          <>
+            <Button icon={<Pencil size={15} strokeWidth={1.9} />} onClick={() => setEditing(true)}>
+              Edit
+            </Button>
+            <Button
+              variant="primary"
+              icon={<Plus size={15} strokeWidth={2.2} />}
+              onClick={() => setAdding(true)}
+            >
+              Add mistakes
+            </Button>
+          </>
+        }
+      />
 
-      <div className="px-4 pb-4">
-        <h1 className="text-lg font-medium">{attempt.title}</h1>
-        <p className="mt-1 text-sm text-slate">
-          {formatDayIST(attempt.date)}
-          {attempt.papers.length > 0 && ` · ${attempt.papers.join(', ')}`}
-          {attempt.duration_minutes ? ` · ${attempt.duration_minutes} min` : ''}
-        </p>
-      </div>
+      <div className="grid grid-cols-12 items-start gap-4 lg:gap-5">
+        <div className="col-span-12 space-y-4 lg:col-span-4 lg:space-y-5">
+          <Card>
+            <CardHeader title="Score" icon={<Target size={17} strokeWidth={1.8} />} />
+            <div>
+              <DataRow
+                label="Marks"
+                value={
+                  attempt.marks === null
+                    ? '—'
+                    : `${attempt.marks}${attempt.max_marks ? ` / ${attempt.max_marks}` : ''}`
+                }
+              />
+              <DataRow label="Accuracy" value={percent(attempt.accuracy)} />
+              <DataRow
+                label="Attempted"
+                value={`${attempt.attempted} of ${attempt.total_questions}`}
+              />
+            </div>
+            <CardBody>
+              {/* Right, wrong and left as one bar: three numbers in a row make
+                  you do the arithmetic, a bar does it for you. */}
+              <div className="flex h-2.5 overflow-hidden rounded-full bg-hairline">
+                <span
+                  className="bg-success"
+                  style={{ width: `${(attempt.correct / total) * 100}%` }}
+                />
+                <span
+                  className="bg-danger"
+                  style={{ width: `${(attempt.wrong / total) * 100}%` }}
+                />
+              </div>
+              <p className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-xs tabular-nums text-muted">
+                <span className="text-success">{attempt.correct} right</span>
+                <span className="text-danger">{attempt.wrong} wrong</span>
+                <span>{attempt.skipped} left</span>
+              </p>
+            </CardBody>
+          </Card>
 
-      <Section label="Score">
-        <Row
-          label="Marks"
-          value={
-            attempt.marks === null
-              ? '—'
-              : `${attempt.marks}${attempt.max_marks ? ` / ${attempt.max_marks}` : ''}`
-          }
-        />
-        <Row label="Accuracy" value={percent(attempt.accuracy)} />
-        <Row
-          label="Questions"
-          value={`${attempt.correct} right · ${attempt.wrong} wrong · ${attempt.skipped} left`}
-        />
-        <Row
-          label="Attempted"
-          value={`${attempt.attempted} of ${attempt.total_questions}`}
-        />
-      </Section>
+          {attempt.notes && (
+            <Card>
+              <CardHeader title="Notes" icon={<NotebookPen size={17} strokeWidth={1.8} />} />
+              <CardBody>
+                <p className="whitespace-pre-wrap text-sm text-ink">{attempt.notes}</p>
+              </CardBody>
+            </Card>
+          )}
 
-      <section className="mt-6">
-        <div className="flex items-baseline justify-between px-4 pb-2">
-          <h2 className="text-xs uppercase tracking-wide text-slate">Mistakes</h2>
-          <span className="text-sm tabular-nums text-slate">
-            {attempt.mistakes_logged}
-            {unrecorded > 0 && <span className="text-overdue"> · {unrecorded} to go</span>}
-          </span>
+          <Button
+            variant="danger"
+            full
+            icon={<Trash2 size={15} strokeWidth={1.9} />}
+            loading={remove.isPending}
+            onClick={() => {
+              if (!window.confirm('Delete this attempt and its mistakes?')) return
+              remove.mutate(attempt._id, {
+                onSuccess: () => {
+                  toast('Attempt deleted.')
+                  navigate('/practice')
+                },
+                onError: (caught) => toast(readable(caught), 'error'),
+              })
+            }}
+          >
+            Delete attempt
+          </Button>
         </div>
-        <div className="border-y border-line bg-surface">
+
+        <Card className="col-span-12 lg:col-span-8">
+          <CardHeader
+            title="Mistakes"
+            count={attempt.mistakes_logged}
+            icon={<ClipboardList size={17} strokeWidth={1.8} />}
+            action={
+              unrecorded > 0 && <Badge tone="danger">{unrecorded} still to record</Badge>
+            }
+          />
           <MistakeList
             query={mistakes}
             empty="Nothing recorded yet. The patterns are more useful than the score."
             showTopic
           />
-        </div>
-      </section>
-
-      {attempt.notes && (
-        <Section label="Notes">
-          <p className="px-4 py-3 text-sm">{attempt.notes}</p>
-        </Section>
-      )}
-
-      <div className="space-y-3 p-4">
-        <button
-          type="button"
-          onClick={() => setAdding(true)}
-          className="h-tap w-full rounded border border-signal text-sm font-medium text-signal"
-        >
-          Add mistakes
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            if (!window.confirm('Delete this attempt and its mistakes?')) return
-            remove.mutate(attempt._id, {
-              onSuccess: () => {
-                toast('Attempt deleted.')
-                navigate('/practice')
-              },
-              onError: (caught) => toast(readable(caught)),
-            })
-          }}
-          className="h-tap w-full text-sm text-slate"
-        >
-          Delete attempt
-        </button>
+        </Card>
       </div>
 
       {editing && <TestSheet existing={attempt} onClose={() => setEditing(false)} />}
@@ -131,23 +180,5 @@ export function TestDetail() {
         />
       )}
     </>
-  )
-}
-
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <section className="mt-6">
-      <h2 className="px-4 pb-2 text-xs uppercase tracking-wide text-slate">{label}</h2>
-      <div className="border-y border-line bg-surface">{children}</div>
-    </section>
-  )
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex min-h-tap items-center justify-between gap-3 border-b border-line px-4 py-2 last:border-0">
-      <span className="text-sm text-slate">{label}</span>
-      <span className="text-sm tabular-nums">{value}</span>
-    </div>
   )
 }

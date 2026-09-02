@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import type { DueNode } from '@/api/review'
 import { Sheet } from '@/components/shell/Sheet'
+import { ConfidenceScale } from '@/components/ui/ConfidenceScale'
+import { Callout } from '@/components/ui/Callout'
 import { toast } from '@/components/shell/Toast'
 import { useCreateLog } from '@/hooks/useLogs'
 import { formatDayIST } from '@/lib/date'
@@ -44,41 +46,30 @@ export function GradeSheet({ node, onClose }: { node: DueNode; onClose: () => vo
 
   return (
     <Sheet title={node.title} onClose={onClose}>
-      <div className="space-y-4 p-4">
+      <div className="space-y-4 p-4 sm:p-5">
         <div>
-          <p className="text-xs text-slate">{crumbs}</p>
-          <p className="mt-1 text-sm text-slate">{history(node)}</p>
+          <p className="text-xs text-muted">{crumbs}</p>
+          <p className="mt-1 text-sm text-muted">{history(node)}</p>
         </div>
 
         {node.notes && (
-          <p className="whitespace-pre-wrap border-l-2 border-line pl-3 text-sm">
+          <p className="whitespace-pre-wrap border-l-2 border-accent-ring pl-3 text-sm text-ink">
             {node.notes}
           </p>
         )}
 
         <div>
-          <p className="pb-1.5 text-xs text-slate">How well did that come back?</p>
-          <div className="flex gap-2" role="group" aria-label="Confidence, 1 to 5">
-            {[1, 2, 3, 4, 5].map((score) => (
-              <button
-                key={score}
-                type="button"
-                disabled={create.isPending}
-                onClick={() => grade(score)}
-                // Depth of fill, not traffic lights: pale is weak, deep is
-                // strong, and the scale reads as what it measures.
-                className={`h-14 flex-1 rounded border border-line text-sm disabled:opacity-60 ${DEPTH[score]}`}
-              >
-                {score}
-              </button>
-            ))}
-          </div>
-          <p className="pt-1.5 text-xs text-slate">
-            1 — gone · 3 — patchy · 5 — came straight back
-          </p>
+          <p className="pb-1.5 text-xs font-medium text-muted">How well did that come back?</p>
+          <ConfidenceScale
+            value={null}
+            size="lg"
+            legend
+            disabled={create.isPending}
+            onChange={grade}
+          />
         </div>
 
-        {error && <p className="text-sm text-overdue">{error}</p>}
+        {error && <Callout tone="danger">{error}</Callout>}
       </div>
     </Sheet>
   )
@@ -96,10 +87,3 @@ function history(node: DueNode): string {
   return parts.length ? parts.join(' · ') : 'Read once, never recalled.'
 }
 
-const DEPTH: Record<number, string> = {
-  1: 'bg-depth-1 text-ink',
-  2: 'bg-depth-2 text-ink',
-  3: 'bg-depth-3 text-ink',
-  4: 'bg-depth-4 text-surface',
-  5: 'bg-depth-5 text-surface',
-}

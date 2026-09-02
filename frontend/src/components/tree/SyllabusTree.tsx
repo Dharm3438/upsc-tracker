@@ -5,9 +5,11 @@ import { NodeRow } from './NodeRow'
 
 export function SyllabusTree({
   nodes,
+  selectedId,
   onLongPress,
 }: {
   nodes: TreeNode[]
+  selectedId?: string
   onLongPress: (node: TreeNode) => void
 }) {
   // Sections start open, topics closed: the whole paper on one screen would be
@@ -33,6 +35,7 @@ export function SyllabusTree({
           key={node._id}
           node={node}
           expanded={expanded}
+          selected={node._id === selectedId}
           onToggle={() => toggle(node._id)}
           onLongPress={() => onLongPress(node)}
         />,
@@ -41,5 +44,5 @@ export function SyllabusTree({
     })
   }
 
-  return <ul className="bg-surface">{render(nodes)}</ul>
+  return <ul>{render(nodes)}</ul>
 }

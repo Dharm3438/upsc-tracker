@@ -1,7 +1,8 @@
 import {
+  Area,
   CartesianGrid,
+  ComposedChart,
   Line,
-  LineChart,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -10,7 +11,20 @@ import {
 } from 'recharts'
 
 import type { Burndown as BurndownData } from '@/api/progress'
+import { Callout } from '@/components/ui'
 import { formatDayIST } from '@/lib/date'
+import { COLOR } from '@/lib/tokens'
+
+// SVG attributes cannot read Tailwind classes, so the chart palette is the one
+// place the tokens have to exist as literal strings. Mirrors tailwind.config.ts.
+const TOOLTIP = {
+  background: COLOR.surface,
+  border: `1px solid ${COLOR.hairline}`,
+  borderRadius: 10,
+  boxShadow: '0 8px 24px -8px rgba(60,45,25,0.2)',
+  fontSize: 12,
+  color: COLOR.ink,
+} as const
 
 /**
  * Two lines. The solid one is how many topics are actually left; the dashed one
@@ -24,34 +38,43 @@ import { formatDayIST } from '@/lib/date'
 export function Burndown({ data }: { data: BurndownData }) {
   const behind = data.actual_per_day !== null && data.actual_per_day < data.required_per_day
   const points = data.series.filter((point) => point.remaining !== null).length
+  // Two years of series wants month ticks; a short window wants days, or every
+  // tick reads "Sep".
+  const span = data.series.length
 
   return (
-    <div className="bg-surface pb-3 pt-4">
-      <div className="h-48 pr-4">
+    <div>
+      <div className="h-56 px-2 pt-4 sm:h-64 lg:h-72">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data.series} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-            <CartesianGrid stroke="#DFE3E8" vertical={false} />
+          <ComposedChart data={data.series} margin={{ top: 4, right: 12, bottom: 0, left: 0 }}>
+            <defs>
+              <linearGradient id="burndown-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={COLOR.accent} stopOpacity={0.18} />
+                <stop offset="100%" stopColor={COLOR.accent} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid stroke={COLOR.hairline} strokeDasharray="2 4" vertical={false} />
             <XAxis
               dataKey="date"
-              tickFormatter={month}
+              tickFormatter={(day: string) => tick(day, span)}
               minTickGap={36}
-              tick={{ fill: '#5B6470', fontSize: 12 }}
+              tickMargin={8}
+              tick={{ fill: COLOR.muted, fontSize: 12 }}
               tickLine={false}
-              axisLine={{ stroke: '#DFE3E8' }}
+              axisLine={{ stroke: COLOR.hairline }}
             />
             <YAxis
-              width={36}
-              tick={{ fill: '#5B6470', fontSize: 12 }}
+              width={40}
+              tick={{ fill: COLOR.muted, fontSize: 12 }}
               tickLine={false}
               axisLine={false}
               allowDecimals={false}
             />
             <Tooltip
-              contentStyle={{
-                border: '1px solid #DFE3E8',
-                borderRadius: 6,
-                fontSize: 12,
-              }}
+              contentStyle={TOOLTIP}
+              itemStyle={{ color: COLOR.ink }}
+              labelStyle={{ color: COLOR.muted, marginBottom: 2 }}
+              cursor={{ stroke: COLOR.edge, strokeDasharray: '3 3' }}
               labelFormatter={(value: string) => formatDayIST(value)}
               formatter={(value: number, name: string) => [
                 Math.round(value),
@@ -59,67 +82,46 @@ export function Burndown({ data }: { data: BurndownData }) {
               ]}
             />
             {/* Where the actual line stops and the plan takes over. */}
-            <ReferenceLine x={data.date} stroke="#DFE3E8" />
+            <ReferenceLine
+              x={data.date}
+              stroke={COLOR.edge}
+              label={{ value: 'today', position: 'top', fill: COLOR.faint, fontSize: 11 }}
+            />
             <Line
               type="monotone"
               dataKey="required"
-              stroke="#5B6470"
+              stroke={COLOR.faint}
               strokeWidth={1.5}
               strokeDasharray="4 4"
               dot={false}
               isAnimationActive={false}
             />
-            <Line
+            {/* A wash under the actual line. At this width a 2px stroke alone
+                disappears into the card. */}
+            <Area
               type="monotone"
               dataKey="remaining"
-              stroke="#2B44C7"
+              stroke={COLOR.accent}
               strokeWidth={2}
+              fill="url(#burndown-fill)"
               // A single point is a dot, not a line: on the first week of
               // logging there is one place the actual line can be, and it
               // should still be visible.
-              dot={points < 2 ? { r: 3, fill: '#2B44C7' } : false}
+              dot={points < 2 ? { r: 3.5, fill: COLOR.accent } : false}
               // The actual line is null past today rather than zero, and
               // joining across that gap would draw a finish she has not made.
               connectNulls={false}
               isAnimationActive={false}
             />
-          </LineChart>
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
 
-      <dl className="grid grid-cols-3 gap-2 border-t border-line px-4 pt-3">
-        <Figure label="Topics left" value={String(data.remaining)} />
-        <Figure
-          label="Needed a day"
-          value={data.required_per_day.toFixed(1)}
-          note={`over ${data.study_days_remaining} study days`}
-        />
-        <Figure
-          label="Your pace"
-          value={data.actual_per_day === null ? '—' : data.actual_per_day.toFixed(1)}
-          note={`last ${data.actual_window_days} days`}
-        />
-      </dl>
-
-      <p className="px-4 pt-3 text-xs text-slate">{verdict(data, behind)}</p>
-    </div>
-  )
-}
-
-function Figure({
-  label,
-  value,
-  note,
-}: {
-  label: string
-  value: string
-  note?: string
-}) {
-  return (
-    <div>
-      <dt className="text-xs text-slate">{label}</dt>
-      <dd className="text-lg tabular-nums">{value}</dd>
-      {note && <p className="text-xs text-slate">{note}</p>}
+      {/* The sentence is the point of the chart; a line above another line is
+          not self-evidently bad news at six in the morning. */}
+      <div className="border-t border-hairline p-4 sm:p-5">
+        <Callout tone={behind ? 'accent' : 'success'}>{verdict(data, behind)}</Callout>
+      </div>
     </div>
   )
 }
@@ -149,8 +151,10 @@ function verdict(data: BurndownData, behind: boolean): string {
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-/** Months, not dates: the axis spans two years and the shape is what matters. */
-function month(day: string): string {
-  const [, index] = day.split('-').map(Number)
-  return MONTHS[index - 1] ?? ''
+/** Months once the axis spans seasons — the shape is what matters there. Days
+ *  while it is still short, because twelve ticks all reading "Sep" say nothing. */
+function tick(day: string, span: number): string {
+  const [, index, date] = day.split('-').map(Number)
+  const month = MONTHS[index - 1] ?? ''
+  return span > 120 ? month : `${date} ${month}`
 }

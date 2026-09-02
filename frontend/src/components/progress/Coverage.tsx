@@ -11,7 +11,7 @@ import type { Coverage as CoverageData, PaperCoverage } from '@/api/progress'
  */
 export function Coverage({ data }: { data: CoverageData }) {
   return (
-    <div className="bg-surface">
+    <div>
       {data.papers.map((paper) => (
         <PaperRow key={paper.paper} row={paper} />
       ))}
@@ -24,10 +24,16 @@ export function Coverage({ data }: { data: CoverageData }) {
 
 function PaperRow({ row, muted = false }: { row: PaperCoverage; muted?: boolean }) {
   return (
-    <div className="border-b border-line px-4 py-3 last:border-b-0">
+    <div
+      className={`border-b border-hairline px-4 py-3.5 last:border-b-0 sm:px-5 ${
+        muted ? 'bg-canvas' : ''
+      }`}
+    >
       <div className="flex items-baseline justify-between pb-2">
-        <h3 className={`text-sm ${muted ? 'text-slate' : 'font-medium'}`}>{row.label}</h3>
-        <span className="text-xs tabular-nums text-slate">{row.leaves} topics</span>
+        <h3 className={`text-sm ${muted ? 'font-medium text-muted' : 'font-medium text-ink'}`}>
+          {row.label}
+        </h3>
+        <span className="text-xs tabular-nums text-faint">{row.leaves} topics</span>
       </div>
       <Bar label="Read" value={row.read} total={row.leaves} depth="bg-depth-2" />
       <Bar label="Revised twice" value={row.revised} total={row.leaves} depth="bg-depth-4" />
@@ -49,18 +55,21 @@ function Bar({
 }) {
   const share = total ? value / total : 0
   return (
-    <div className="flex items-center gap-3 py-0.5">
-      <span className="w-24 shrink-0 text-xs text-slate">{label}</span>
-      <div className="h-2 flex-1 overflow-hidden rounded-sm bg-depth-1">
+    <div className="flex items-center gap-3 py-1">
+      <span className="w-24 shrink-0 text-xs text-muted lg:w-28">{label}</span>
+      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-hairline">
         <div
-          className={`h-full ${depth}`}
+          className={`h-full rounded-full transition-[width] duration-700 ${depth}`}
           style={{ width: `${share * 100}%` }}
           role="img"
           aria-label={`${label}: ${value} of ${total}`}
         />
       </div>
-      <span className="w-16 shrink-0 text-right text-xs tabular-nums text-slate">
+      <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted">
         {value}/{total}
+      </span>
+      <span className="hidden w-10 shrink-0 text-right text-xs tabular-nums text-faint sm:block">
+        {Math.round(share * 100)}%
       </span>
     </div>
   )

@@ -1,7 +1,10 @@
 import { useState } from 'react'
 
 import type { PyqWeight, TreeNode } from '@/api/syllabus'
+import { ChevronRight } from 'lucide-react'
+
 import { Sheet } from '@/components/shell/Sheet'
+import { Button, Callout, Chip, Field, Input, Select } from '@/components/ui'
 import {
   useArchiveNode,
   useCreateNode,
@@ -48,11 +51,20 @@ export function NodeActions({
   }
 
   return (
-    <Sheet title={node.title} onClose={onClose}>
-      {error && <p className="px-4 pt-3 text-sm text-overdue">{error}</p>}
+    <Sheet
+      title={node.title}
+      description={mode === 'menu' ? node.path.split('/').slice(0, -1).join(' › ') : undefined}
+      size="sm"
+      onClose={onClose}
+    >
+      {error && (
+        <div className="p-4 pb-0 sm:p-5 sm:pb-0">
+          <Callout tone="danger">{error}</Callout>
+        </div>
+      )}
 
       {mode === 'menu' && (
-        <ul className="py-1">
+        <ul className="divide-y divide-hairline">
           <MenuItem label="Edit title, weight and diagram flag" onClick={() => setMode('rename')} />
           {node.level < 3 && <MenuItem label="Add a child topic" onClick={() => setMode('add')} />}
           <MenuItem label="Move" onClick={() => setMode('move')} />
@@ -103,19 +115,21 @@ export function NodeActions({
       )}
 
       {mode === 'archive' && (
-        <div className="p-4">
-          <p className="text-sm">
+        <div className="p-4 sm:p-5">
+          <p className="text-sm text-ink">
             Archive “{node.title}”? It disappears from the tree but nothing logged against
             it is deleted.
           </p>
-          <button
-            type="button"
-            disabled={archive.isPending}
+          <Button
+            variant="danger"
+            size="lg"
+            full
+            className="mt-4"
+            loading={archive.isPending}
             onClick={() => run(() => archive.mutateAsync(node._id))}
-            className="mt-4 h-tap w-full rounded bg-overdue text-base font-medium text-white disabled:opacity-40"
           >
             Archive it
-          </button>
+          </Button>
         </div>
       )}
     </Sheet>
@@ -128,9 +142,10 @@ function MenuItem({ label, onClick }: { label: string; onClick: () => void }) {
       <button
         type="button"
         onClick={onClick}
-        className="flex min-h-tap w-full items-center px-4 text-left text-sm"
+        className="flex min-h-tap w-full items-center justify-between gap-3 px-4 text-left text-sm text-ink transition-colors hover:bg-canvas sm:px-5"
       >
         {label}
+        <ChevronRight size={15} strokeWidth={2} className="shrink-0 text-faint" aria-hidden />
       </button>
     </li>
   )
@@ -153,57 +168,43 @@ function EditForm({
 
   return (
     <form
-      className="p-4"
+      className="space-y-4 p-4 sm:p-5"
       onSubmit={(event) => {
         event.preventDefault()
         if (title.trim()) onSubmit(title.trim(), weight, diagram)
       }}
     >
-      <label htmlFor="node-title" className="text-sm text-slate">
-        Title
-      </label>
-      <input
-        id="node-title"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        className="mt-1 h-tap w-full rounded border border-line px-3 text-base focus:border-signal"
-      />
+      <Field label="Title" htmlFor="node-title">
+        <Input
+          id="node-title"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+      </Field>
 
-      <p className="mt-4 text-sm text-slate">PYQ weight</p>
-      <div className="mt-1 flex gap-2">
-        {WEIGHTS.map((option) => (
-          <button
-            key={option}
-            type="button"
-            aria-pressed={weight === option}
-            onClick={() => setWeight(option)}
-            className={[
-              'h-tap flex-1 rounded border text-sm',
-              weight === option ? 'border-signal text-signal' : 'border-line text-slate',
-            ].join(' ')}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
+      <Field label="PYQ weight">
+        <div className="flex flex-wrap gap-2">
+          {WEIGHTS.map((option) => (
+            <Chip key={option} selected={weight === option} onClick={() => setWeight(option)}>
+              {option}
+            </Chip>
+          ))}
+        </div>
+      </Field>
 
-      <label className="mt-4 flex min-h-tap items-center gap-3 text-sm">
+      <label className="flex min-h-tap items-center gap-3 text-sm text-ink">
         <input
           type="checkbox"
           checked={diagram}
           onChange={(event) => setDiagram(event.target.checked)}
-          className="h-5 w-5 accent-signal"
+          className="h-4 w-4 accent-accent"
         />
         Diagram carries marks here
       </label>
 
-      <button
-        type="submit"
-        disabled={busy || !title.trim()}
-        className="mt-4 h-tap w-full rounded bg-signal text-base font-medium text-white disabled:opacity-40"
-      >
+      <Button type="submit" variant="primary" size="lg" full disabled={busy || !title.trim()}>
         {submitLabel}
-      </button>
+      </Button>
     </form>
   )
 }
@@ -223,36 +224,30 @@ function MoveForm({
 
   return (
     <form
-      className="p-4"
+      className="space-y-4 p-4 sm:p-5"
       onSubmit={(event) => {
         event.preventDefault()
         onSubmit(parentId || null)
       }}
     >
-      <label htmlFor="new-parent" className="text-sm text-slate">
-        Move under
-      </label>
-      <select
-        id="new-parent"
-        value={parentId}
-        onChange={(event) => setParentId(event.target.value)}
-        className="mt-1 h-tap w-full rounded border border-line bg-surface px-2 text-sm focus:border-signal"
-      >
-        <option value="">{node.paper} — top level</option>
-        {candidates.map((candidate) => (
-          <option key={candidate._id} value={candidate._id}>
-            {candidate.path.split('/').slice(1).join(' › ')}
-          </option>
-        ))}
-      </select>
+      <Field label="Move under" htmlFor="new-parent">
+        <Select
+          id="new-parent"
+          value={parentId}
+          onChange={(event) => setParentId(event.target.value)}
+        >
+          <option value="">{node.paper} — top level</option>
+          {candidates.map((candidate) => (
+            <option key={candidate._id} value={candidate._id}>
+              {candidate.path.split('/').slice(1).join(' › ')}
+            </option>
+          ))}
+        </Select>
+      </Field>
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="mt-4 h-tap w-full rounded bg-signal text-base font-medium text-white disabled:opacity-40"
-      >
+      <Button type="submit" variant="primary" size="lg" full loading={busy}>
         Move it
-      </button>
+      </Button>
     </form>
   )
 }

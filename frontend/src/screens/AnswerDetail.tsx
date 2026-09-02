@@ -1,10 +1,25 @@
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { CheckCheck, ExternalLink, Image, RotateCcw, Sparkles, Trash2 } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { scoreRatio, type Answer } from '@/api/answers'
-import { EmptyState } from '@/components/EmptyState'
+import { scoreRatio } from '@/api/answers'
 import { percent } from '@/components/charts/Sparkline'
 import { toast } from '@/components/shell/Toast'
+import {
+  Badge,
+  Button,
+  Callout,
+  Card,
+  CardBody,
+  CardHeader,
+  ErrorState,
+  Field,
+  LinkButton,
+  NumberInput,
+  PageHeader,
+  SkeletonText,
+  StatTile,
+} from '@/components/ui'
 import { useAnswer, useDeleteAnswer, useUpdateAnswer } from '@/hooks/useAnswers'
 import { formatDayIST } from '@/lib/date'
 import { readable } from '@/lib/errors'
@@ -21,212 +36,222 @@ export function AnswerDetail() {
   const update = useUpdateAnswer(answerId ?? '')
   const remove = useDeleteAnswer()
 
-  if (answer.isError) return <EmptyState>Could not load that answer.</EmptyState>
-  if (!answer.data) return <EmptyState>Loading…</EmptyState>
+  const [score, setScore] = useState('')
+  const [scoring, setScoring] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  if (answer.isError) {
+    return (
+      <Card>
+        <ErrorState title="Could not load that answer." onRetry={answer.refetch} />
+      </Card>
+    )
+  }
+  if (!answer.data) {
+    return (
+      <Card>
+        <CardBody>
+          <SkeletonText lines={5} />
+        </CardBody>
+      </Card>
+    )
+  }
 
   const item = answer.data
   const ratio = scoreRatio(item)
 
-  return (
-    <>
-      <header className="flex min-h-tap items-center justify-between px-4">
-        <button type="button" onClick={() => navigate(-1)} className="text-sm text-signal">
-          ‹ Practice
-        </button>
-        {item.review_due && !item.reviewed && (
-          <Link
-            to={`/practice/answers/new?redo=${item._id}`}
-            className="text-sm text-signal"
-          >
-            Rewrite
-          </Link>
-        )}
-      </header>
-
-      <div className="px-4 pb-4">
-        <p className="whitespace-pre-wrap text-sm">{item.question}</p>
-        <p className="mt-2 text-xs text-slate">
-          {formatDayIST(item.date)} · {item.paper}
-          {item.node_title ? ` · ${item.node_title}` : ''}
-        </p>
-      </div>
-
-      <Section label="How it went">
-        <Row
-          label="Self-score"
-          value={
-            item.self_score === null
-              ? 'Not marked yet'
-              : `${item.self_score} / ${item.marks_allotted}${
-                  ratio === null ? '' : ` · ${percent(ratio)}`
-                }`
-          }
-        />
-        <Row
-          label="Time"
-          value={item.minutes_taken === null ? '—' : `${item.minutes_taken} min`}
-        />
-        <Row
-          label="Words"
-          value={
-            item.words_written === null
-              ? '—'
-              : `${item.words_written}${item.word_limit ? ` of ${item.word_limit}` : ''}`
-          }
-        />
-      </Section>
-
-      {item.review_due && (
-        <p className="px-4 pt-3 text-sm text-slate">
-          {item.reviewed
-            ? 'Rewritten.'
-            : `Scored under half — back in the redo queue on ${formatDayIST(item.review_due)}.`}
-        </p>
-      )}
-
-      <ScoreCard answer={item} onSave={(body) => update.mutate(body)} saving={update.isPending} />
-
-      {item.improvements && (
-        <Section label="To fix next time">
-          <p className="whitespace-pre-wrap px-4 py-3 text-sm">{item.improvements}</p>
-        </Section>
-      )}
-
-      {item.text && (
-        <Section label="What she wrote">
-          <p className="whitespace-pre-wrap px-4 py-3 text-sm">{item.text}</p>
-        </Section>
-      )}
-
-      {item.image_urls.length > 0 && (
-        <Section label="The sheet">
-          {item.image_urls.map((url) => (
-            <a
-              key={url}
-              href={url}
-              target="_blank"
-              rel="noreferrer"
-              className="flex min-h-tap items-center border-b border-line px-4 text-sm text-signal last:border-0"
-            >
-              Open the photograph
-            </a>
-          ))}
-        </Section>
-      )}
-
-      <div className="space-y-3 p-4">
-        {item.review_due && !item.reviewed && (
-          <button
-            type="button"
-            onClick={() =>
-              update.mutate(
-                { reviewed: true },
-                { onSuccess: () => toast('Cleared from the redo queue.') },
-              )
-            }
-            className="h-tap w-full rounded border border-line bg-surface text-sm text-slate"
-          >
-            Clear from the redo queue
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={() => {
-            if (!window.confirm('Delete this answer?')) return
-            remove.mutate(item._id, {
-              onSuccess: () => {
-                toast('Answer deleted.')
-                navigate('/practice')
-              },
-              onError: (caught) => toast(readable(caught)),
-            })
-          }}
-          className="h-tap w-full text-sm text-slate"
-        >
-          Delete answer
-        </button>
-      </div>
-    </>
-  )
-}
-
-/** Scoring an answer marked later — the common case for anything written on
- *  paper and handed to a peer. */
-function ScoreCard({
-  answer,
-  onSave,
-  saving,
-}: {
-  answer: Answer
-  onSave: (body: { self_score: number; improvements?: string }) => void
-  saving: boolean
-}) {
-  const [open, setOpen] = useState(false)
-  const [score, setScore] = useState(
-    answer.self_score === null ? '' : String(answer.self_score),
-  )
-  const [error, setError] = useState<string | null>(null)
-
-  if (!open) {
-    return (
-      <div className="p-4">
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="h-tap w-full rounded border border-signal text-sm font-medium text-signal"
-        >
-          {answer.self_score === null ? 'Score it' : 'Change the score'}
-        </button>
-      </div>
+  function saveScore() {
+    const parsed = Number.parseFloat(score)
+    if (!Number.isFinite(parsed)) return setError('Give it a number.')
+    if (parsed > item.marks_allotted) return setError(`Out of ${item.marks_allotted}.`)
+    setError(null)
+    update.mutate(
+      { self_score: parsed },
+      {
+        onSuccess: () => {
+          toast('Score saved.')
+          setScoring(false)
+        },
+        onError: (caught) => setError(readable(caught)),
+      },
     )
   }
 
   return (
-    <div className="space-y-3 p-4">
-      <p className="text-xs text-slate">Out of {answer.marks_allotted}</p>
-      <input
-        inputMode="decimal"
-        value={score}
-        onChange={(event) => setScore(event.target.value.replace(/[^\d.]/g, ''))}
-        placeholder="7.5"
-        className="h-tap w-full rounded border border-line px-3 text-sm tabular-nums focus:border-signal"
+    <>
+      <PageHeader
+        back={{ label: 'Practice', to: '/practice' }}
+        eyebrow={`${formatDayIST(item.date)} · ${item.paper}`}
+        title={<span className="text-xl lg:text-2xl">{item.question}</span>}
+        meta={
+          <>
+            <Badge tone="outline">{item.marks_allotted} marks</Badge>
+            {item.word_limit && <Badge tone="outline">{item.word_limit} words</Badge>}
+            {item.node_title && <Badge>{item.node_title}</Badge>}
+          </>
+        }
+        actions={
+          item.review_due &&
+          !item.reviewed && (
+            <LinkButton
+              to={`/practice/answers/new?redo=${item._id}`}
+              variant="primary"
+              icon={<RotateCcw size={15} strokeWidth={2} />}
+            >
+              Rewrite it
+            </LinkButton>
+          )
+        }
       />
-      {error && <p className="text-sm text-overdue">{error}</p>}
-      <button
-        type="button"
-        disabled={saving}
-        onClick={() => {
-          const parsed = Number.parseFloat(score)
-          if (!Number.isFinite(parsed)) return setError('Give it a number.')
-          if (parsed > answer.marks_allotted) {
-            return setError(`Out of ${answer.marks_allotted}.`)
+
+      {item.review_due && (
+        <Callout
+          tone={item.reviewed ? 'success' : 'accent'}
+          icon={item.reviewed ? CheckCheck : RotateCcw}
+          className="mb-4 lg:mb-5"
+          action={
+            !item.reviewed && (
+              <Button
+                size="sm"
+                onClick={() =>
+                  update.mutate(
+                    { reviewed: true },
+                    { onSuccess: () => toast('Cleared from the redo queue.') },
+                  )
+                }
+              >
+                Clear it
+              </Button>
+            )
           }
-          setError(null)
-          onSave({ self_score: parsed })
-          setOpen(false)
-        }}
-        className="h-tap w-full rounded bg-signal text-sm font-medium text-surface disabled:opacity-60"
-      >
-        {saving ? 'Saving…' : 'Save the score'}
-      </button>
-    </div>
-  )
-}
+        >
+          {item.reviewed
+            ? 'Rewritten and cleared.'
+            : `Scored under half — back in the redo queue on ${formatDayIST(item.review_due)}.`}
+        </Callout>
+      )}
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <section className="mt-6">
-      <h2 className="px-4 pb-2 text-xs uppercase tracking-wide text-slate">{label}</h2>
-      <div className="border-y border-line bg-surface">{children}</div>
-    </section>
-  )
-}
+      <div className="mb-4 grid grid-cols-3 gap-3 lg:mb-5 lg:gap-5">
+        <StatTile
+          label="Self-score"
+          value={item.self_score === null ? '—' : item.self_score}
+          unit={item.self_score === null ? undefined : `/ ${item.marks_allotted}`}
+          sub={ratio === null ? 'Not marked yet' : percent(ratio)}
+          tone={ratio !== null && ratio < 0.5 ? 'danger' : 'default'}
+        />
+        <StatTile
+          label="Time"
+          value={item.minutes_taken ?? '—'}
+          unit={item.minutes_taken === null ? undefined : 'min'}
+        />
+        <StatTile
+          label="Words"
+          value={item.words_written ?? '—'}
+          sub={item.word_limit ? `limit ${item.word_limit}` : undefined}
+        />
+      </div>
 
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex min-h-tap items-center justify-between gap-3 border-b border-line px-4 py-2 last:border-0">
-      <span className="text-sm text-slate">{label}</span>
-      <span className="text-sm tabular-nums">{value}</span>
-    </div>
+      <div className="grid grid-cols-12 items-start gap-4 lg:gap-5">
+        <div className="col-span-12 space-y-4 lg:col-span-8 lg:space-y-5">
+          {item.text && (
+            <Card>
+              <CardHeader title="What she wrote" />
+              <CardBody>
+                <p className="max-w-prose whitespace-pre-wrap text-[15px] leading-7 text-ink">
+                  {item.text}
+                </p>
+              </CardBody>
+            </Card>
+          )}
+
+          {item.improvements && (
+            <Card>
+              <CardHeader
+                title="To fix next time"
+                icon={<Sparkles size={17} strokeWidth={1.8} />}
+              />
+              <CardBody>
+                <p className="max-w-prose whitespace-pre-wrap text-[15px] leading-7 text-ink">
+                  {item.improvements}
+                </p>
+              </CardBody>
+            </Card>
+          )}
+        </div>
+
+        <div className="col-span-12 space-y-4 lg:col-span-4 lg:space-y-5">
+          <Card>
+            <CardHeader title={item.self_score === null ? 'Score it' : 'Change the score'} />
+            <CardBody className="space-y-3">
+              {scoring ? (
+                <>
+                  <Field label="Self-score" hint={`out of ${item.marks_allotted}`} error={error}>
+                    <NumberInput decimals value={score} onChange={setScore} placeholder="7.5" />
+                  </Field>
+                  <div className="flex gap-2">
+                    <Button variant="primary" loading={update.isPending} onClick={saveScore}>
+                      Save the score
+                    </Button>
+                    <Button variant="ghost" onClick={() => setScoring(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <Button
+                  full
+                  onClick={() => {
+                    setScore(item.self_score === null ? '' : String(item.self_score))
+                    setScoring(true)
+                  }}
+                >
+                  {item.self_score === null ? 'Score it' : 'Change the score'}
+                </Button>
+              )}
+            </CardBody>
+          </Card>
+
+          {item.image_urls.length > 0 && (
+            <Card>
+              <CardHeader title="The sheet" icon={<Image size={17} strokeWidth={1.8} />} />
+              <ul className="divide-y divide-hairline">
+                {item.image_urls.map((url, index) => (
+                  <li key={url}>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex min-h-tap items-center justify-between gap-2 px-4 py-2.5 text-sm text-accent transition-colors hover:bg-canvas sm:px-5"
+                    >
+                      Photograph {index + 1}
+                      <ExternalLink size={14} strokeWidth={1.9} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+
+          <Button
+            variant="danger"
+            full
+            icon={<Trash2 size={15} strokeWidth={1.9} />}
+            loading={remove.isPending}
+            onClick={() => {
+              if (!window.confirm('Delete this answer?')) return
+              remove.mutate(item._id, {
+                onSuccess: () => {
+                  toast('Answer deleted.')
+                  navigate('/practice')
+                },
+                onError: (caught) => toast(readable(caught), 'error'),
+              })
+            }}
+          >
+            Delete answer
+          </Button>
+        </div>
+      </div>
+    </>
   )
 }
