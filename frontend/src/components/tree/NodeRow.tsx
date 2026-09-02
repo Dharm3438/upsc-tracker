@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import type { TreeNode } from '@/api/syllabus'
+import { daysUntil } from '@/lib/date'
 
 const LONG_PRESS_MS = 450
 
@@ -87,21 +88,49 @@ export function NodeRow({
   )
 }
 
-function Fill({ node }: { node: TreeNode }) {
-  // Until logging lands (phase 2) every node reads as not started, which is honest.
-  const touched = node.read_count > 0 || node.revise_count > 0
-  const depth = Math.min(5, node.revise_count + (node.read_count > 0 ? 1 : 0))
+/** Overdue past this many days earns the one warm tone in the palette. */
+const BADLY_OVERDUE_DAYS = 14
 
-  if (!touched) {
+function Fill({ node }: { node: TreeNode }) {
+  // A parent carries the share of its leaves that have been started; a leaf
+  // carries its own depth of fill. Same column, two honest readings of it.
+  if (node.children.length > 0) {
+    if (node.leaf_started === 0) {
+      return <span className="block text-right text-xs text-slate">—</span>
+    }
+    const percent = Math.round((node.leaf_started / node.leaf_count) * 100)
+    return <span className="block text-right text-xs text-slate">{percent}%</span>
+  }
+
+  if (node.read_count === 0 && node.revise_count === 0) {
     return <span className="block text-right text-xs text-slate">not started</span>
   }
 
+  // Confidence is the truest signal once it exists; before the first grading,
+  // having read it at all is worth one step of fill.
+  const depth = node.confidence ?? 1
+  const overdueBy = node.next_due ? -daysUntil(node.next_due) : 0
+  const overdue = overdueBy > BADLY_OVERDUE_DAYS
+
   return (
     <span className="flex items-center justify-end gap-2">
-      <span className="h-1.5 w-10 overflow-hidden rounded-full bg-depth-1">
-        <span className="block h-full bg-depth-4" style={{ width: `${(depth / 5) * 100}%` }} />
+      <span className="h-1.5 w-10 shrink-0 overflow-hidden rounded-full bg-paper">
+        <span
+          className={`block h-full ${overdue ? 'bg-overdue' : DEPTH[depth]}`}
+          style={{ width: `${(depth / 5) * 100}%` }}
+        />
       </span>
-      <span className="text-xs text-slate">{node.revise_count}×</span>
+      <span className={`text-xs ${overdue ? 'text-overdue' : 'text-slate'}`}>
+        {node.revise_count > 0 ? `${node.revise_count}×` : 'read'}
+      </span>
     </span>
   )
+}
+
+const DEPTH: Record<number, string> = {
+  1: 'bg-depth-1',
+  2: 'bg-depth-2',
+  3: 'bg-depth-3',
+  4: 'bg-depth-4',
+  5: 'bg-depth-5',
 }
