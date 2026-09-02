@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 
 import type { DueNode } from '@/api/review'
@@ -8,12 +9,14 @@ import { DueList } from '@/components/review/DueList'
 import { Forecast } from '@/components/review/Forecast'
 import { GradeSheet } from '@/components/review/GradeSheet'
 import { Header } from '@/components/shell/Header'
+import { useAnswersOn, useRedoQueue } from '@/hooks/useAnswers'
 import { useDue, useUpcoming } from '@/hooks/useReview'
+import { todayIST } from '@/lib/date'
 
 /**
- * The default landing screen. Phase 3 fills in the half that matters most —
- * what is due and grading it. The countdown, the reading shortcuts and the
- * answer and current-affairs rows arrive with the phases that own that data.
+ * The default landing screen. What is due and grading it is the half that
+ * matters most; answer writing sits under it. The countdown, the reading
+ * shortcuts and the current-affairs row arrive with the phases that own them.
  */
 export function Today() {
   const [grading, setGrading] = useState<DueNode | null>(null)
@@ -52,8 +55,38 @@ export function Today() {
         </Section>
       )}
 
+      <AnswerWriting />
+
       {grading && <GradeSheet node={grading} onClose={() => setGrading(null)} />}
     </>
+  )
+}
+
+/** Answer writing on Today: what she has written since midnight, what the redo
+ *  queue is asking for, and one tap to start. The daily target the plan sketches
+ *  needs settings, which land in phase 8. */
+function AnswerWriting() {
+  const today = useAnswersOn(todayIST())
+  const redo = useRedoQueue()
+  const written = today.data?.items.length ?? 0
+  const due = redo.data?.length ?? 0
+
+  return (
+    <Section label="Answer writing" count={today.data ? written : undefined}>
+      {due > 0 && (
+        <p className="border-b border-line px-4 py-2.5 text-sm">
+          {due} {due === 1 ? 'answer is' : 'answers are'} up for a rewrite.
+        </p>
+      )}
+      <div className="p-4">
+        <Link
+          to="/practice/answers/new"
+          className="flex h-tap w-full items-center justify-center rounded border border-signal text-sm font-medium text-signal"
+        >
+          Start an answer
+        </Link>
+      </div>
+    </Section>
   )
 }
 

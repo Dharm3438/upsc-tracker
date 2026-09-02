@@ -11,7 +11,14 @@ const CEILING = 0.9
 const WIDTH = 88
 const HEIGHT = 24
 
-export function Sparkline({ values }: { values: number[] }) {
+export function Sparkline({
+  values,
+  /** What the line is of. Answers reuse it for the self-score share. */
+  what = 'Accuracy',
+}: {
+  values: number[]
+  what?: string
+}) {
   // One point is a dot, not a trend; two is the minimum that says anything.
   if (values.length < 2) return null
 
@@ -30,7 +37,7 @@ export function Sparkline({ values }: { values: number[] }) {
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       className="overflow-visible"
       role="img"
-      aria-label={`Accuracy over the last ${values.length} attempts, now ${percent(
+      aria-label={`${what} over the last ${values.length} attempts, now ${percent(
         values[values.length - 1],
       )}`}
     >

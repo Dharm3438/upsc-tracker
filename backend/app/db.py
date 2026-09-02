@@ -58,6 +58,8 @@ INDEXES: dict[str, list[IndexModel]] = {
     "answers": [
         IndexModel([("date", DESCENDING)]),
         IndexModel([("review_due", ASCENDING), ("reviewed", ASCENDING)]),
+        IndexModel([("node_id", ASCENDING), ("date", DESCENDING)]),
+        IndexModel([("paper", ASCENDING), ("date", DESCENDING)]),
     ],
     "ca_items": [
         IndexModel([("month", ASCENDING), ("date", DESCENDING)]),
