@@ -8,14 +8,13 @@ import {
   Callout,
   ConfidenceScale,
   Field,
-  Input,
   NumberInput,
   SegmentedControl,
 } from '@/components/ui'
 import { useCreateLog } from '@/hooks/useLogs'
 import { formatDayIST } from '@/lib/date'
 import { readable } from '@/lib/errors'
-import { NodePicker, type PickedNode } from './NodePicker'
+import type { PickedNode } from './NodePicker'
 
 /** The three types she can enter by hand. Answers and current affairs are
  *  logged by their own screens, which own the document the log points at. */
@@ -32,26 +31,24 @@ const METHODS: { value: ReviseMethod; label: string }[] = [
   { value: 'mindmap', label: 'Mind map' },
 ]
 
-/** Remembering the last book means the source field is usually already right. */
-const LAST_SOURCE_KEY = 'upsc.lastSource'
-
-/** Pre-selected, so the common case is four taps: open, type, topic, save. */
+/** Pre-selected, so the common case is three taps: open, type, save. */
 const DEFAULT_CONFIDENCE = 3
 
+/**
+ * Logging is always started from a topic — the syllabus row you opened is the
+ * topic — so the sheet asks only what it cannot know: what kind of work, how
+ * well it came back, and how long it took.
+ */
 export function QuickLogSheet({
+  node,
   onClose,
-  initialNode = null,
 }: {
+  node: PickedNode
   onClose: () => void
-  initialNode?: PickedNode | null
 }) {
   const [type, setType] = useState<LogType>('read')
-  const [node, setNode] = useState<PickedNode | null>(initialNode)
   const [confidence, setConfidence] = useState(DEFAULT_CONFIDENCE)
   const [method, setMethod] = useState<ReviseMethod>('recall')
-  const [source, setSource] = useState(() => localStorage.getItem(LAST_SOURCE_KEY) ?? '')
-  const [fromPage, setFromPage] = useState('')
-  const [toPage, setToPage] = useState('')
   const [attempted, setAttempted] = useState('')
   const [correct, setCorrect] = useState('')
   const [skipped, setSkipped] = useState('')
@@ -61,14 +58,7 @@ export function QuickLogSheet({
   const create = useCreateLog()
 
   function payloadFor(): LogPayload {
-    if (type === 'read') {
-      return {
-        source: source.trim(),
-        from_page: number(fromPage),
-        to_page: number(toPage),
-        confidence,
-      }
-    }
+    if (type === 'read') return { confidence }
     if (type === 'revise') return { confidence, method }
     return {
       attempted: number(attempted) ?? 0,
@@ -78,10 +68,6 @@ export function QuickLogSheet({
   }
 
   function save() {
-    if (!node) {
-      setError('Pick a topic first.')
-      return
-    }
     if (type === 'mcq') {
       const a = number(attempted) ?? 0
       const c = number(correct) ?? 0
@@ -95,10 +81,6 @@ export function QuickLogSheet({
       }
     }
     setError(null)
-
-    if (type === 'read' && source.trim()) {
-      localStorage.setItem(LAST_SOURCE_KEY, source.trim())
-    }
 
     create.mutate(
       {
@@ -124,7 +106,7 @@ export function QuickLogSheet({
   return (
     <Sheet
       title="What did you do?"
-      description="Four taps on a normal day."
+      description={node.title}
       onClose={onClose}
       footer={
         <Button
@@ -140,29 +122,6 @@ export function QuickLogSheet({
     >
       <div className="space-y-4 p-4 sm:p-5">
         <SegmentedControl full label="What kind of work" value={type} options={TYPES} onChange={setType} />
-
-        <Field label="Topic">
-          <NodePicker value={node} onChange={setNode} />
-        </Field>
-
-        {type === 'read' && (
-          <>
-            <Field label="Source">
-              <Input
-                value={source}
-                onChange={(event) => setSource(event.target.value)}
-                placeholder="Laxmikanth"
-              />
-            </Field>
-            <Field label="Pages">
-              <div className="flex items-center gap-2">
-                <NumberInput value={fromPage} onChange={setFromPage} placeholder="204" />
-                <span className="text-sm text-muted">to</span>
-                <NumberInput value={toPage} onChange={setToPage} placeholder="231" />
-              </div>
-            </Field>
-          </>
-        )}
 
         {type === 'revise' && (
           <Field label="Method">

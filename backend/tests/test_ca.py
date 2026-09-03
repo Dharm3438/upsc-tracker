@@ -187,15 +187,15 @@ async def test_correcting_the_date_moves_the_month_and_the_log(db, node):
     assert log["date"] == "2026-08-29"
 
 
-async def test_a_whole_section_is_too_coarse_to_tag(db, section):
+async def test_a_top_level_topic_can_be_tagged(db, section):
+    # The seeded syllabus is flat, so a level-1 node is a real study unit.
     item = await ca_service.create_item(db, captured())
 
-    with pytest.raises(ca_service.CaError) as caught:
-        await ca_service.update_item(
-            db, str(item["_id"]), schema.CaUpdate(node_id=section)
-        )
+    tagged = await ca_service.update_item(
+        db, str(item["_id"]), schema.CaUpdate(node_id=section)
+    )
 
-    assert caught.value.status == 400
+    assert str(tagged["node_id"]) == section
 
 
 async def test_filters_narrow_by_month_node_and_subject(db, node):

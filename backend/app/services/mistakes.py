@@ -22,10 +22,6 @@ from app.models.mistakes import (
     MistakeUpdate,
 )
 
-#: A mistake attaches to a topic or a leaf, never to a whole section — the same
-#: rule logging uses, and for the same reason: "POLITY/Polity" is not a diagnosis.
-MIN_TAGGABLE_LEVEL = 2
-
 
 class MistakeError(Exception):
     """A rejected write, turned into a 4xx by the router."""
@@ -58,10 +54,6 @@ async def _resolve_nodes(
         node = by_id.get(node_id)
         if node is None:
             raise MistakeError("That topic no longer exists.", status=404)
-        if node["level"] < MIN_TAGGABLE_LEVEL:
-            raise MistakeError(
-                "Pick a topic inside this section, not the section itself."
-            )
     return by_id
 
 

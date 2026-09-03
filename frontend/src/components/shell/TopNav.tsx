@@ -13,7 +13,7 @@ import type { LucideIcon } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
 
 import { UNAUTHORIZED_EVENT, clearApiKey, getHealth } from '@/api/client'
-import { Button } from '@/components/ui/Button'
+import { LinkButton } from '@/components/ui/Button'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { cn } from '@/lib/cn'
 import { formatDayIST } from '@/lib/date'
@@ -28,7 +28,9 @@ export const NAV: { to: string; label: string; icon: LucideIcon; end?: boolean }
   { to: '/progress', label: 'Progress', icon: TrendingUp },
 ]
 
-export function TopNav({ onLog }: { onLog: () => void }) {
+/** Logging starts from a topic, so the nav's action opens the syllabus rather
+ *  than a sheet with nothing to attach itself to. */
+export function TopNav() {
   const due = useDue()
   const inbox = useCaInbox()
 
@@ -78,15 +80,15 @@ export function TopNav({ onLog }: { onLog: () => void }) {
             {formatDayIST(new Date())}
           </span>
           <HealthDot />
-          <Button
+          <LinkButton
+            to="/syllabus"
             variant="primary"
             size="sm"
             icon={<Plus size={15} strokeWidth={2.2} />}
-            onClick={onLog}
             className="hidden lg:inline-flex"
           >
             Log
-          </Button>
+          </LinkButton>
           <IconLink to="/settings" label="Settings" icon={Settings} />
           <IconButton
             label="Lock this device"

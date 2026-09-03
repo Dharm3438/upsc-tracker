@@ -205,9 +205,10 @@ async def test_delete_takes_the_log_and_the_mistakes_with_it(db, node):
     assert await db.mistakes.count_documents({}) == 0
 
 
-async def test_an_answer_cannot_hang_off_a_whole_section(db, section):
-    with pytest.raises(answer_service.AnswerError):
-        await answer_service.create_answer(db, written(section))
+async def test_an_answer_can_hang_off_a_top_level_topic(db, section):
+    # The seeded syllabus is flat, so a level-1 node is a real study unit.
+    doc = await answer_service.create_answer(db, written(section))
+    assert str(doc["node_id"]) == section
 
 
 async def test_trends_average_minutes_and_the_score_ratio(db, node):

@@ -21,10 +21,6 @@ from app.services import sm2
 
 log = logging.getLogger(__name__)
 
-#: Logs attach to topics and leaves. A whole section is too coarse to be a unit
-#: of study, and allowing it would make the rollups double-count.
-MIN_LOGGABLE_LEVEL = 2
-
 RECENT_NODE_LIMIT = 8
 
 #: How far back `recent_nodes` scans. A week of real logging is nowhere near
@@ -47,8 +43,6 @@ async def _load_node(db: AsyncIOMotorDatabase, node_id: str) -> dict[str, Any]:
         raise LogError("That topic no longer exists.", status=404)
     if node.get("is_archived"):
         raise LogError("That topic is archived.", status=409)
-    if node["level"] < MIN_LOGGABLE_LEVEL:
-        raise LogError("Pick a topic inside this section, not the section itself.")
     return node
 
 
