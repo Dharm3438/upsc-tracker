@@ -96,7 +96,7 @@ async def update_test(
 
     merged = {**current, **changes}
     if merged["attempted"] > merged["total_questions"]:
-        raise TestError("More attempted than the paper had.")
+        raise TestError("More attempted than the subject had.")
     if merged["correct"] > merged["attempted"]:
         raise TestError("More correct than attempted.")
 
@@ -125,7 +125,7 @@ async def delete_test(db: AsyncIOMotorDatabase, test_id: str) -> None:
     """Delete an attempt and the mistakes recorded against it.
 
     The mistakes go with it deliberately: a mistake's whole meaning is "this
-    came out of that paper", and orphans would silently distort the tag
+    came out of that subject", and orphans would silently distort the tag
     breakdown, which is the one number this app is supposed to get right.
     """
     oid = _oid(test_id)
@@ -139,7 +139,7 @@ async def list_tests(
     db: AsyncIOMotorDatabase,
     *,
     kind: str | None = None,
-    paper: str | None = None,
+    subject: str | None = None,
     limit: int = 30,
     cursor: str | None = None,
 ) -> tuple[list[dict[str, Any]], str | None]:
@@ -152,8 +152,8 @@ async def list_tests(
     query: dict[str, Any] = {}
     if kind:
         query["kind"] = kind
-    if paper:
-        query["papers"] = paper
+    if subject:
+        query["subjects"] = subject
     if cursor:
         query["_id"] = {"$lt": _oid(cursor, "cursor")}
 
@@ -188,7 +188,7 @@ async def accuracy_trend(
     db: AsyncIOMotorDatabase, length: int = TREND_LENGTH
 ) -> list[float]:
     """The last few accuracies, oldest first, so the sparkline reads left to
-    right the way time does. Unattempted papers are left out — a zero there is
+    right the way time does. Unattempted subjects are left out — a zero there is
     not a dip in accuracy, it is an absence of data."""
     docs = await (
         db.tests.find({"attempted": {"$gt": 0}}, {"accuracy": 1})

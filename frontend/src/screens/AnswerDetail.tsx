@@ -81,7 +81,7 @@ export function AnswerDetail() {
     <>
       <PageHeader
         back={{ label: 'Practice', to: '/practice' }}
-        eyebrow={`${formatDayIST(item.date)} · ${item.paper}`}
+        eyebrow={`${formatDayIST(item.date)} · ${item.subject}`}
         title={<span className="text-xl lg:text-2xl">{item.question}</span>}
         meta={
           <>

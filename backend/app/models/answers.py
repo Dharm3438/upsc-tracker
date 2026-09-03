@@ -16,7 +16,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.dates import shift_day, today_ist
-from app.models.common import Paper, PyObjectId
+from app.models.common import Subject, PyObjectId
 
 DAY_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
 
@@ -121,8 +121,8 @@ class Answer(BaseModel):
     date: str
     node_id: PyObjectId
     #: Denormalised from the node on write, exactly as a mistake's is: the list
-    #: filters by paper on every read and nodes never change paper.
-    paper: Paper
+    #: filters by subject on every read and nodes never change subject.
+    subject: Subject
     question: str
     marks_allotted: float
     word_limit: int | None = None

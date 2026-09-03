@@ -7,7 +7,7 @@ import {
   getEffort,
   getHeatmap,
 } from '@/api/progress'
-import type { Paper } from '@/api/syllabus'
+import type { Subject } from '@/api/syllabus'
 
 /**
  * Progress is a weekly screen, not a daily one, and every figure on it is an
@@ -34,10 +34,10 @@ export function useCoverage() {
   return useQuery({ queryKey: ['coverage'], queryFn: getCoverage, staleTime: STALE_MS })
 }
 
-export function useHeatmap(paper?: Paper) {
+export function useHeatmap(subject?: Subject) {
   return useQuery({
-    queryKey: ['heatmap', paper ?? null],
-    queryFn: () => getHeatmap(paper),
+    queryKey: ['heatmap', subject ?? null],
+    queryFn: () => getHeatmap(subject),
     staleTime: STALE_MS,
   })
 }

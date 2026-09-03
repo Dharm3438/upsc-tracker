@@ -1,6 +1,6 @@
 import { api } from './client'
 
-import type { Paper } from './syllabus'
+import type { Subject } from './syllabus'
 
 export type TestKind = 'sectional' | 'full_mock' | 'daily_quiz' | 'csat'
 
@@ -16,7 +16,7 @@ export type Test = {
   date: string
   title: string
   kind: TestKind
-  papers: Paper[]
+  subjects: Subject[]
   total_questions: number
   attempted: number
   correct: number
@@ -37,7 +37,7 @@ export type NewTest = {
   date?: string
   title: string
   kind: TestKind
-  papers: Paper[]
+  subjects: Subject[]
   total_questions: number
   attempted: number
   correct: number

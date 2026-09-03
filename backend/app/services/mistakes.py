@@ -3,8 +3,8 @@
 Two things make this collection worth having over just re-reading the tests
 list: the five-way tag, and that every mistake carries the syllabus node it came
 from. So each write resolves the node (rejecting a whole section, exactly as
-logging does) and denormalises its paper, which lets every read filter by tag
-and paper without touching `syllabus_nodes`.
+logging does) and denormalises its subject, which lets every read filter by tag
+and subject without touching `syllabus_nodes`.
 """
 
 from datetime import UTC, datetime
@@ -23,7 +23,7 @@ from app.models.mistakes import (
 )
 
 #: A mistake attaches to a topic or a leaf, never to a whole section — the same
-#: rule logging uses, and for the same reason: "GS2/Polity" is not a diagnosis.
+#: rule logging uses, and for the same reason: "POLITY/Polity" is not a diagnosis.
 MIN_TAGGABLE_LEVEL = 2
 
 
@@ -77,7 +77,7 @@ def _document(
         "source_type": source_type,
         "source_id": source_id,
         "node_id": node["_id"],
-        "paper": node["paper"],
+        "subject": node["subject"],
         "date": date,
         "question": item.question.strip(),
         "tag": item.tag.value,
@@ -160,7 +160,7 @@ async def update_mistake(
     if changes.get("node_id"):
         node = (await _resolve_nodes(db, [changes["node_id"]]))[changes["node_id"]]
         changes["node_id"] = node["_id"]
-        changes["paper"] = node["paper"]
+        changes["subject"] = node["subject"]
 
     if "resolved" in changes:
         changes["resolved_at"] = datetime.now(UTC) if changes["resolved"] else None
@@ -179,7 +179,7 @@ async def list_mistakes(
     db: AsyncIOMotorDatabase,
     *,
     tag: str | None = None,
-    paper: str | None = None,
+    subject: str | None = None,
     node_id: str | None = None,
     source_id: str | None = None,
     resolved: bool | None = None,
@@ -192,7 +192,7 @@ async def list_mistakes(
     """A page of mistakes, newest first, with the node and test joined on."""
     query = _filter(
         tag=tag,
-        paper=paper,
+        subject=subject,
         node_id=node_id,
         source_id=source_id,
         resolved=resolved,
@@ -215,7 +215,7 @@ async def list_mistakes(
 def _filter(
     *,
     tag: str | None = None,
-    paper: str | None = None,
+    subject: str | None = None,
     node_id: str | None = None,
     source_id: str | None = None,
     resolved: bool | None = None,
@@ -228,8 +228,8 @@ def _filter(
     query: dict[str, Any] = {}
     if tag:
         query["tag"] = MistakeTag(tag).value
-    if paper:
-        query["paper"] = paper
+    if subject:
+        query["subject"] = subject
     if node_id:
         query["node_id"] = _oid(node_id, "node")
     if source_id:
@@ -288,20 +288,20 @@ async def summary(
     *,
     date_from: str | None = None,
     date_to: str | None = None,
-    paper: str | None = None,
+    subject: str | None = None,
 ) -> dict[str, Any]:
-    """Counts per tag and per paper — the stacked bar and its legend.
+    """Counts per tag and per subject — the stacked bar and its legend.
 
     Every tag comes back, zeroes included: the bar keeps five segments in a
     fixed order, so a glance this week compares with the same glance last week.
     """
-    match = _filter(paper=paper, date_from=date_from, date_to=date_to)
+    match = _filter(subject=subject, date_from=date_from, date_to=date_to)
     pipeline: list[dict[str, Any]] = [
         {"$match": match},
         {
             "$facet": {
                 "tags": [{"$group": {"_id": "$tag", "n": {"$sum": 1}}}],
-                "papers": [{"$group": {"_id": "$paper", "n": {"$sum": 1}}}],
+                "subjects": [{"$group": {"_id": "$subject", "n": {"$sum": 1}}}],
                 "unresolved": [{"$match": {"resolved": False}}, {"$count": "n"}],
                 "total": [{"$count": "n"}],
             }
@@ -311,9 +311,9 @@ async def summary(
     facet = result[0] if result else {}
 
     tag_counts = {row["_id"]: row["n"] for row in facet.get("tags", [])}
-    papers = sorted(
-        ({"paper": row["_id"], "count": row["n"]} for row in facet.get("papers", [])),
-        key=lambda row: (-row["count"], row["paper"]),
+    subjects = sorted(
+        ({"subject": row["_id"], "count": row["n"]} for row in facet.get("subjects", [])),
+        key=lambda row: (-row["count"], row["subject"]),
     )
 
     return {
@@ -327,7 +327,7 @@ async def summary(
             }
             for tag in MistakeTag
         ],
-        "by_paper": papers,
+        "by_subject": subjects,
     }
 
 

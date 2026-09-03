@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ListTree, Search } from 'lucide-react'
+import { BookOpen, ListTree, Search, Video } from 'lucide-react'
 import { Link, Outlet, useMatch } from 'react-router-dom'
 
-import type { Paper, TreeNode } from '@/api/syllabus'
-import { PaperChips } from '@/components/PaperChips'
+import type { Subject, TreeNode } from '@/api/syllabus'
+import { SubjectChips } from '@/components/SubjectChips'
 import { NodeActions } from '@/components/tree/NodeActions'
 import { SyllabusTree } from '@/components/tree/SyllabusTree'
 import {
@@ -15,7 +15,7 @@ import {
   SkeletonRows,
   StatTile,
 } from '@/components/ui'
-import { usePapers, useNodeSearch, useTree } from '@/hooks/useSyllabus'
+import { useSubjects, useNodeSearch, useTree } from '@/hooks/useSyllabus'
 import { cn } from '@/lib/cn'
 
 const SEARCH_DEBOUNCE_MS = 250
@@ -23,17 +23,17 @@ const SEARCH_DEBOUNCE_MS = 250
 /**
  * Master and detail. From `lg` up the tree keeps its own scrolling rail on the
  * left and the topic opens beside it, so reading a topic never loses your place
- * in a 200-row paper. Below `lg` it is the push-navigation it has always been:
+ * in a 200-row subject. Below `lg` it is the push-navigation it has always been:
  * the tree, then the topic instead of it.
  */
 export function Syllabus() {
-  const [paper, setPaper] = useState<Paper>('GS1')
+  const [subject, setSubject] = useState<Subject>('ANCIENT_MEDIEVAL')
   const [acting, setActing] = useState<TreeNode | null>(null)
   const [search, setSearch] = useState('')
   const [debounced, setDebounced] = useState('')
 
-  const papers = usePapers()
-  const tree = useTree(paper)
+  const subjects = useSubjects()
+  const tree = useTree(subject)
   const results = useNodeSearch(debounced)
 
   // A child route's params are not visible to useParams here, so match the path.
@@ -57,7 +57,7 @@ export function Syllabus() {
       <div className={cn(openId && 'hidden lg:block')}>
         <PageHeader
           title="Syllabus"
-          subtitle="Every paper, three levels deep. The bar on each row is how well it has come back."
+          subtitle="Every subject, one topic a row. The bar on each row is how well it has come back."
         />
       </div>
 
@@ -73,10 +73,16 @@ export function Syllabus() {
             <SearchInput
               value={search}
               onChange={setSearch}
-              placeholder="Search every paper…"
+              placeholder="Search every subject…"
             />
-            {papers.data && (
-              <PaperChips papers={papers.data} selected={paper} onSelect={setPaper} showCounts />
+            {subjects.data && (
+              <SubjectChips
+                subjects={subjects.data}
+                selected={subject}
+                onSelect={setSubject}
+                showCounts
+                grouped
+              />
             )}
 
             <Card className="lg:max-h-[calc(100dvh-16rem)]">
@@ -127,7 +133,7 @@ export function Syllabus() {
                       <EmptyState
                         size="sm"
                         icon={ListTree}
-                        title="Nothing seeded for this paper."
+                        title="Nothing seeded for this subject."
                         description="Run the seed script to populate it."
                       />
                     }
@@ -144,7 +150,7 @@ export function Syllabus() {
 
         {/* The detail pane. On a phone this is the whole screen. */}
         <div className={cn('col-span-12 min-w-0 lg:col-span-7 xl:col-span-8', !openId && 'hidden lg:block')}>
-          {openId ? <Outlet /> : <PaperOverview paper={paper} />}
+          {openId ? <Outlet /> : <SubjectOverview subject={subject} />}
         </div>
       </div>
 
@@ -156,23 +162,26 @@ export function Syllabus() {
 }
 
 /** What the right pane says before a topic is picked. A blank half-screen reads
- *  as a bug; the paper's shape is at least worth knowing. */
-function PaperOverview({ paper }: { paper: Paper }) {
-  const papers = usePapers()
-  const summary = papers.data?.find((item) => item.paper === paper)
+ *  as a bug; what the subject is made of is at least worth knowing. */
+function SubjectOverview({ subject }: { subject: Subject }) {
+  const subjects = useSubjects()
+  const summary = subjects.data?.find((item) => item.subject === subject)
+  const book = summary?.source_kind === 'book'
 
   return (
     <Card className="min-h-[280px] justify-center">
       <EmptyState
-        icon={ListTree}
+        icon={book ? BookOpen : Video}
         title={summary ? summary.label : 'Pick a topic'}
         description="Choose a topic on the left to see its history, its notes and what it is due for."
       />
       {summary && (
-        <div className="grid grid-cols-3 gap-3 px-4 pb-6 sm:px-6">
-          <StatTile label="Sections" value={summary.sections} />
-          <StatTile label="Topics" value={summary.topics} />
-          <StatTile label="Leaves" value={summary.leaves} />
+        <div className="grid grid-cols-2 gap-3 px-4 pb-6 sm:px-6">
+          <StatTile label={book ? 'Chapters' : 'Lectures'} value={summary.topics} />
+          <StatTile
+            label={book ? 'Book' : 'Followed as'}
+            value={book ? summary.source_name : 'Lecture series'}
+          />
         </div>
       )}
     </Card>

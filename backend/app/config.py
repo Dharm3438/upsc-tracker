@@ -1,13 +1,19 @@
 """Application settings, read from environment / .env."""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+#: Anchored to the package rather than the process's working directory, so the
+#: app finds its settings whether it is started from `backend/` or from the
+#: repo root with `uvicorn --app-dir backend`.
+ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=ENV_FILE, env_file_encoding="utf-8", extra="ignore"
     )
 
     mongodb_uri: str = ""

@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { formatMinutes } from '@/api/progress'
-import type { PaperCoverage } from '@/api/progress'
+import type { SubjectCoverage } from '@/api/progress'
 import { Forecast } from '@/components/review/Forecast'
 import { QuickLogSheet } from '@/components/log/QuickLogSheet'
 import { CountdownHero } from '@/components/today/CountdownHero'
@@ -112,21 +112,21 @@ function KpiRow() {
     .reduce((total, day) => total + day.minutes, 0)
   const todayMinutes = days.find((day) => day.date === todayIST())?.minutes ?? 0
 
-  // `totals` is null when only one paper has been seeded, so sum the papers
+  // `totals` is null when only one subject has been seeded, so sum the subjects
   // rather than showing a dash for a perfectly answerable question.
-  const totals: PaperCoverage | null =
+  const totals: SubjectCoverage | null =
     coverage.data?.totals ??
     (coverage.data
-      ? coverage.data.papers.reduce<PaperCoverage | null>(
-          (sum, paper) =>
+      ? coverage.data.subjects.reduce<SubjectCoverage | null>(
+          (sum, subject) =>
             sum === null
-              ? { ...paper, label: 'All papers' }
+              ? { ...subject, label: 'All subjects' }
               : {
                   ...sum,
-                  leaves: sum.leaves + paper.leaves,
-                  read: sum.read + paper.read,
-                  revised: sum.revised + paper.revised,
-                  tested: sum.tested + paper.tested,
+                  leaves: sum.leaves + subject.leaves,
+                  read: sum.read + subject.read,
+                  revised: sum.revised + subject.revised,
+                  tested: sum.tested + subject.tested,
                 },
           null,
         )

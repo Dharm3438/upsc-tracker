@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { CalendarDays, ClipboardList, Grid3x3, Layers, Timer, TrendingDown } from 'lucide-react'
 
 import { formatMinutes } from '@/api/progress'
-import type { Paper } from '@/api/syllabus'
-import { PaperChips } from '@/components/PaperChips'
+import type { Subject } from '@/api/syllabus'
+import { SubjectChips } from '@/components/SubjectChips'
 import { Burndown } from '@/components/progress/Burndown'
 import { Coverage } from '@/components/progress/Coverage'
 import { EffortChart } from '@/components/progress/EffortChart'
@@ -26,7 +26,7 @@ import {
   useEffort,
   useHeatmap,
 } from '@/hooks/useProgress'
-import { usePapers } from '@/hooks/useSyllabus'
+import { useSubjects } from '@/hooks/useSyllabus'
 import { formatDayIST } from '@/lib/date'
 
 /**
@@ -42,9 +42,9 @@ export function Progress() {
   const burndown = useBurndown()
   const coverage = useCoverage()
   const effort = useEffort(30)
-  const papers = usePapers()
-  const [paper, setPaper] = useState<Paper>('GS1')
-  const heatmap = useHeatmap(paper)
+  const subjects = useSubjects()
+  const [subject, setSubject] = useState<Subject>('GEOGRAPHY')
+  const heatmap = useHeatmap(subject)
 
   return (
     <>
@@ -135,7 +135,7 @@ export function Progress() {
             query={coverage}
             error="Could not load coverage."
             skeleton={<SkeletonRows rows={4} />}
-            isEmpty={(data) => data.papers.length === 0}
+            isEmpty={(data) => data.subjects.length === 0}
             empty={
               <EmptyState
                 title="Nothing logged yet."
@@ -169,13 +169,13 @@ export function Progress() {
         <Card className="col-span-12">
           <CardHeader
             title="Heatmap"
-            subtitle="Every topic in the paper, coloured by how well it comes back."
+            subtitle="Every topic in the subject, coloured by how well it comes back."
             icon={<Grid3x3 size={17} strokeWidth={1.8} />}
             action={<HeatmapLegend />}
           />
-          {papers.data && (
+          {subjects.data && (
             <div className="border-b border-hairline px-4 py-3 sm:px-5">
-              <PaperChips papers={papers.data} selected={paper} onSelect={setPaper} />
+              <SubjectChips subjects={subjects.data} selected={subject} onSelect={setSubject} />
             </div>
           )}
           <QueryBoundary
@@ -183,7 +183,7 @@ export function Progress() {
             error="Could not load the heatmap."
             skeleton={<SkeletonRows rows={4} />}
             isEmpty={(data) => data.sections.length === 0}
-            empty={<EmptyState title="Nothing in this paper yet." />}
+            empty={<EmptyState title="Nothing in this subject yet." />}
           >
             {(data) => <Heatmap sections={data.sections} />}
           </QueryBoundary>

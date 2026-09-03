@@ -1,6 +1,6 @@
 import { api } from './client'
 
-import type { Paper } from './syllabus'
+import type { Subject } from './syllabus'
 
 /** Days to an exam, and how many of them are actually study days. */
 export type ExamCountdown = {
@@ -35,8 +35,8 @@ export type Burndown = {
   series: BurndownPoint[]
 }
 
-export type PaperCoverage = {
-  paper: Paper
+export type SubjectCoverage = {
+  subject: Subject
   label: string
   leaves: number
   read: number
@@ -46,14 +46,14 @@ export type PaperCoverage = {
 
 export type Coverage = {
   date: string
-  papers: PaperCoverage[]
-  totals: PaperCoverage | null
+  subjects: SubjectCoverage[]
+  totals: SubjectCoverage | null
 }
 
 export type HeatmapCell = {
   node_id: string
   title: string
-  paper: Paper
+  subject: Subject
   section: string
   /** 1–5, or null for a topic never graded — an empty square, not a weak one. */
   confidence: number | null
@@ -63,7 +63,7 @@ export type HeatmapCell = {
 }
 
 export type HeatmapSection = {
-  paper: Paper
+  subject: Subject
   label: string
   section: string
   cells: HeatmapCell[]
@@ -93,8 +93,8 @@ export const getBurndown = () => api<Burndown>('/progress/burndown')
 
 export const getCoverage = () => api<Coverage>('/progress/coverage')
 
-export const getHeatmap = (paper?: Paper) =>
-  api<Heatmap>(`/progress/heatmap${paper ? `?paper=${paper}` : ''}`)
+export const getHeatmap = (subject?: Subject) =>
+  api<Heatmap>(`/progress/heatmap${subject ? `?subject=${subject}` : ''}`)
 
 export const getEffort = (days = 30) =>
   api<Effort>(`/progress/streakless-summary?days=${days}`)

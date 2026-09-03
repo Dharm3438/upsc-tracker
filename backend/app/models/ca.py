@@ -16,7 +16,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.dates import today_ist
-from app.models.common import Paper, PyObjectId
+from app.models.common import Subject, PyObjectId
 
 DAY_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
 MONTH_PATTERN = r"^\d{4}-\d{2}$"
@@ -78,9 +78,9 @@ class CaItem(BaseModel):
     source: str = ""
     note: str = ""
     node_id: PyObjectId | None = None
-    #: Denormalised from the node, as a mistake's is, so the paper filter never
+    #: Denormalised from the node, as a mistake's is, so the subject filter never
     #: joins the syllabus. Null while the item is untagged.
-    paper: Paper | None = None
+    subject: Subject | None = None
     tagged: bool = False
     starred: bool = False
     created_at: datetime | None = None

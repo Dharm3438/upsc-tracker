@@ -3,7 +3,7 @@
 The acceptance criterion for the phase is two-sided — an item captured with a
 headline and a note alone, and tagged to a node later from the inbox — so both
 halves are covered here, along with the derived fields (`month`, `tagged`,
-`paper`) that no client is allowed to set.
+`subject`) that no client is allowed to set.
 """
 
 import pytest
@@ -44,10 +44,10 @@ async def db(client):
 @pytest_asyncio.fixture
 async def node(db) -> str:
     section = await node_service.create_node(
-        db, paper="GS2", title="Polity", parent_id=None, pyq_weight="high"
+        db, subject="POLITY", title="Polity", parent_id=None, pyq_weight="high"
     )
     topic = await node_service.create_node(
-        db, paper="GS2", title="Federalism", parent_id=str(section["_id"])
+        db, subject="POLITY", title="Federalism", parent_id=str(section["_id"])
     )
     return str(topic["_id"])
 
@@ -55,7 +55,7 @@ async def node(db) -> str:
 @pytest_asyncio.fixture
 async def section(db) -> str:
     node = await node_service.create_node(
-        db, paper="GS3", title="Economy", parent_id=None
+        db, subject="ECONOMICS", title="Economy", parent_id=None
     )
     return str(node["_id"])
 
@@ -77,7 +77,7 @@ async def test_capture_needs_only_a_headline(db):
 
     assert doc["tagged"] is False
     assert doc["node_id"] is None
-    assert doc["paper"] is None
+    assert doc["subject"] is None
     assert doc["note"] == ""
 
 
@@ -109,7 +109,7 @@ async def test_tagging_from_the_inbox_clears_it_and_logs_the_node(db, node):
     )
 
     assert tagged["tagged"] is True
-    assert tagged["paper"] == "GS2"
+    assert tagged["subject"] == "POLITY"
     assert tagged["node_title"] == "Federalism"
     assert await ca_service.untagged_count(db) == 0
 
@@ -130,10 +130,10 @@ async def test_tagging_at_capture_time_also_logs(db, node):
 
 async def test_retagging_moves_the_log_rather_than_duplicating_it(db, node):
     other = await node_service.create_node(
-        db, paper="GS2", title="Governance", parent_id=None
+        db, subject="POLITY", title="Governance", parent_id=None
     )
     child = await node_service.create_node(
-        db, paper="GS2", title="Transparency", parent_id=str(other["_id"])
+        db, subject="POLITY", title="Transparency", parent_id=str(other["_id"])
     )
     item = await ca_service.create_item(db, captured(node_id=node))
 
@@ -154,7 +154,7 @@ async def test_untagging_returns_it_to_the_inbox_and_drops_the_log(db, node):
     )
 
     assert back["tagged"] is False
-    assert back["paper"] is None
+    assert back["subject"] is None
     assert await db.logs.count_documents({"type": "ca"}) == 0
 
 
@@ -198,17 +198,17 @@ async def test_a_whole_section_is_too_coarse_to_tag(db, section):
     assert caught.value.status == 400
 
 
-async def test_filters_narrow_by_month_node_and_paper(db, node):
+async def test_filters_narrow_by_month_node_and_subject(db, node):
     await ca_service.create_item(db, captured(date="2026-08-15"))
     await ca_service.create_item(db, captured(node_id=node))
 
     by_month, _ = await ca_service.list_items(db, month="2026-08")
     by_node, _ = await ca_service.list_items(db, node_id=node)
-    by_paper, _ = await ca_service.list_items(db, paper="GS2")
+    by_subject, _ = await ca_service.list_items(db, subject="POLITY")
 
     assert len(by_month) == 1
     assert len(by_node) == 1
-    assert len(by_paper) == 1
+    assert len(by_subject) == 1
 
 
 async def test_months_are_built_from_the_data(db, node):

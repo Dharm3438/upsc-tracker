@@ -9,7 +9,7 @@ normal morning.
 
 from pydantic import BaseModel, Field
 
-from app.models.common import Paper, PyObjectId, PyqWeight
+from app.models.common import Subject, PyObjectId, PyqWeight
 
 
 class DueNode(BaseModel):
@@ -18,7 +18,7 @@ class DueNode(BaseModel):
     node_id: PyObjectId
     title: str
     path: str
-    paper: Paper
+    subject: Subject
     level: int
     pyq_weight: PyqWeight = PyqWeight.MEDIUM
     needs_diagram: bool = False

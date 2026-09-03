@@ -142,7 +142,7 @@ function Tests() {
         <div className="hidden grid-cols-[1fr_120px_110px_90px_80px] gap-4 border-b border-hairline px-5 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-faint md:grid">
           <span>Test</span>
           <span>Date</span>
-          <span>Papers</span>
+          <span>Subjects</span>
           <span className="text-right">Score</span>
           <span className="text-right">Accuracy</span>
         </div>
@@ -156,7 +156,7 @@ function Tests() {
             <EmptyState
               icon={ListChecks}
               title="No tests yet."
-              description="Add one after your next paper — the tag breakdown needs somewhere to start."
+              description="Add one after your next subject — the tag breakdown needs somewhere to start."
             />
           }
         >
@@ -209,13 +209,13 @@ function TestRow({ test }: { test: Test }) {
           </span>
           <span className="block truncate text-xs text-muted md:hidden">
             {formatDayIST(test.date)}
-            {test.papers.length > 0 && ` · ${test.papers.join(', ')}`}
+            {test.subjects.length > 0 && ` · ${test.subjects.join(', ')}`}
           </span>
         </span>
 
         <span className="hidden text-sm text-muted md:block">{formatDayIST(test.date)}</span>
         <span className="hidden truncate text-sm text-muted md:block">
-          {test.papers.join(', ') || '—'}
+          {test.subjects.join(', ') || '—'}
         </span>
 
         <span className="shrink-0 text-right">

@@ -1,6 +1,6 @@
 import { api } from './client'
 
-import type { Paper } from './syllabus'
+import type { Subject } from './syllabus'
 
 export type LogType = 'read' | 'revise' | 'mcq' | 'answer' | 'ca'
 export type ReviseMethod = 'notes' | 'book' | 'recall' | 'mindmap'
@@ -61,7 +61,7 @@ export type RecentNode = {
   node_id: string
   title: string
   path: string
-  paper: Paper
+  subject: Subject
   last_logged: string
 }
 

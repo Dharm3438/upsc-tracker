@@ -15,7 +15,7 @@ from app.models.answers import (
     AnswerTrends,
     AnswerUpdate,
 )
-from app.models.common import Paper
+from app.models.common import Subject
 from app.services import answers as answer_service
 
 router = APIRouter(
@@ -41,7 +41,7 @@ async def create_answer(payload: AnswerCreate) -> Answer:
 
 @router.get("", response_model=AnswerPage)
 async def list_answers(
-    paper: Paper | None = None,
+    subject: Subject | None = None,
     node_id: str | None = None,
     date_from: str | None = Query(default=None, pattern=DAY_PATTERN),
     date_to: str | None = Query(default=None, pattern=DAY_PATTERN),
@@ -53,7 +53,7 @@ async def list_answers(
     try:
         docs, next_cursor = await answer_service.list_answers(
             db,
-            paper=paper.value if paper else None,
+            subject=subject.value if subject else None,
             node_id=node_id,
             date_from=date_from,
             date_to=date_to,

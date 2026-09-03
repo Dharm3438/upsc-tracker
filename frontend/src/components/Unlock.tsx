@@ -52,7 +52,7 @@ export function Unlock({ onUnlocked }: { onUnlocked: () => void }) {
             off-days out of the arithmetic rather than calling them a broken streak.
           </p>
         </div>
-        <p className="relative text-sm text-white/35">GS 1–4 · CSAT · Essay · Anthropology</p>
+        <p className="relative text-sm text-white/35">Prelims · Mains · Anthropology</p>
       </aside>
 
       <main className="flex min-h-dvh flex-col justify-center px-6 py-12 lg:min-h-0 lg:px-16">

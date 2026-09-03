@@ -45,10 +45,10 @@ async def db(client):
 async def node(db) -> str:
     """A loggable topic, one level below a section."""
     section = await node_service.create_node(
-        db, paper="GS2", title="Polity", parent_id=None, pyq_weight="high"
+        db, subject="POLITY", title="Polity", parent_id=None, pyq_weight="high"
     )
     topic = await node_service.create_node(
-        db, paper="GS2", title="Federalism", parent_id=str(section["_id"])
+        db, subject="POLITY", title="Federalism", parent_id=str(section["_id"])
     )
     return str(topic["_id"])
 
@@ -56,7 +56,7 @@ async def node(db) -> str:
 @pytest_asyncio.fixture
 async def section(db) -> str:
     node = await node_service.create_node(
-        db, paper="GS3", title="Economy", parent_id=None
+        db, subject="ECONOMICS", title="Economy", parent_id=None
     )
     return str(node["_id"])
 
@@ -74,10 +74,10 @@ def written(node_id: str, **overrides) -> schema.AnswerCreate:
     return schema.AnswerCreate(**{**fields, **overrides})
 
 
-async def test_create_denormalises_the_paper_and_joins_the_title(db, node):
+async def test_create_denormalises_the_subject_and_joins_the_title(db, node):
     doc = await answer_service.create_answer(db, written(node))
 
-    assert doc["paper"] == "GS2"
+    assert doc["subject"] == "POLITY"
     assert doc["node_title"] == "Federalism"
     assert doc["reviewed"] is False
 

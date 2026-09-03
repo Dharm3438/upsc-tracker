@@ -17,7 +17,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.dates import days_between, parse_day, shift_day, today_ist
-from app.models.common import PAPER_LABELS, Paper
+from app.models.common import SUBJECT_LABELS, Subject
 from app.models.settings import AppSettings
 
 #: How far back the "actual pace" average looks. Short enough to reflect the
@@ -117,7 +117,7 @@ async def countdown(
 
 
 async def _live_nodes(
-    db: AsyncIOMotorDatabase, paper: str | None = None
+    db: AsyncIOMotorDatabase, subject: str | None = None
 ) -> list[dict[str, Any]]:
     """Every unarchived node, with just the fields the aggregations need.
 
@@ -126,18 +126,20 @@ async def _live_nodes(
     section is this under" ordinary Python instead of two more pipelines.
     """
     query: dict[str, Any] = {"is_archived": False}
-    if paper:
-        query["paper"] = paper
-    projection = {"paper": 1, "parent_id": 1, "title": 1, "level": 1, "order": 1}
+    if subject:
+        query["subject"] = subject
+    projection = {"subject": 1, "parent_id": 1, "title": 1, "level": 1, "order": 1}
     return await db.syllabus_nodes.find(query, projection).to_list(length=None)
 
 
 def _leaves(nodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Nodes with nothing under them.
 
-    A leaf is the unit of progress: a level-2 topic with no children counts as
-    one, exactly as the tree's coverage does, so the two screens never disagree
-    about how much syllabus there is.
+    A leaf is the unit of progress. The seeded syllabus is one flat level, so
+    normally every node is a leaf; a node only stops counting as one when the
+    user has hung custom children off it, and then those children count instead.
+    That is the same rule the tree's coverage uses, so the two screens never
+    disagree about how much syllabus there is.
     """
     parents = {node["parent_id"] for node in nodes if node.get("parent_id")}
     return [node for node in nodes if node["_id"] not in parents]
@@ -300,11 +302,11 @@ def _series(
 async def coverage(
     db: AsyncIOMotorDatabase, *, date: str | None = None
 ) -> dict[str, Any]:
-    """Per paper: how many leaves have been read, revised twice, and tested.
+    """Per subject: how many leaves have been read, revised twice, and tested.
 
     "Tested" is wider than MCQs on purpose. A mains-heavy syllabus is examined
     by writing about it, so an answer written on a topic counts, as does a
-    mistake recorded against it from a test — otherwise GS4 and the optional
+    mistake recorded against it from a test — otherwise ETHICS and the optional
     would read as permanently untested.
     """
     day = date or today_ist()
@@ -327,7 +329,7 @@ async def coverage(
     tally: dict[str, dict[str, int]] = {}
     for node_id, leaf in leaves.items():
         row = tally.setdefault(
-            leaf["paper"], {"leaves": 0, "read": 0, "revised": 0, "tested": 0}
+            leaf["subject"], {"leaves": 0, "read": 0, "revised": 0, "tested": 0}
         )
         row["leaves"] += 1
         seen = counts.get(node_id, {})
@@ -338,17 +340,17 @@ async def coverage(
         if seen.get("mcq", 0) or seen.get("answer", 0) or node_id in with_mistakes:
             row["tested"] += 1
 
-    papers = [
-        {"paper": paper.value, "label": PAPER_LABELS[paper], **tally[paper.value]}
-        for paper in Paper
-        if paper.value in tally
+    subjects = [
+        {"subject": subject.value, "label": SUBJECT_LABELS[subject], **tally[subject.value]}
+        for subject in Subject
+        if subject.value in tally
     ]
     return {
         "date": day,
-        "papers": papers,
+        "subjects": subjects,
         "totals": {
-            "paper": Paper.GS1.value,
-            "label": "All papers",
+            "subject": Subject.GEOGRAPHY.value,
+            "label": "All subjects",
             "leaves": sum(row["leaves"] for row in tally.values()),
             "read": sum(row["read"] for row in tally.values()),
             "revised": sum(row["revised"] for row in tally.values()),
@@ -358,24 +360,28 @@ async def coverage(
 
 
 async def heatmap(
-    db: AsyncIOMotorDatabase, *, paper: str | None = None, date: str | None = None
+    db: AsyncIOMotorDatabase, *, subject: str | None = None, date: str | None = None
 ) -> dict[str, Any]:
-    """Every leaf as a square, grouped under its section.
+    """Every leaf as a square, grouped under its subject.
+
+    A leaf that is its own root — which is every seeded topic — groups under the
+    subject itself. Only custom nesting produces a heading below that.
 
     Coloured by confidence, which is depth of fill rather than a traffic light:
     a syllabus that is mostly pale is one that is mostly unrevised, which is
     what a first year looks like and not a failure.
     """
     day = date or today_ist()
-    nodes = await _live_nodes(db, paper)
+    nodes = await _live_nodes(db, subject)
     by_id = {node["_id"]: node for node in nodes}
     leaves = _leaves(nodes)
 
     def section_of(node: dict[str, Any]) -> str:
+        """The node's root ancestor, or "" when the node is already a root."""
         current = node
         while current.get("parent_id") and current["parent_id"] in by_id:
             current = by_id[current["parent_id"]]
-        return current["title"]
+        return "" if current["_id"] == node["_id"] else current["title"]
 
     states: dict[ObjectId, dict[str, Any]] = {}
     cursor = db.review_state.find(
@@ -387,17 +393,17 @@ async def heatmap(
 
     grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
     rank: dict[tuple[str, str], tuple[int, int]] = {}
-    ordered = sorted(leaves, key=lambda n: (n["paper"], n.get("order", 0), n["title"]))
+    ordered = sorted(leaves, key=lambda n: (n["subject"], n.get("order", 0), n["title"]))
     for leaf in ordered:
-        key = (leaf["paper"], section_of(leaf))
-        rank.setdefault(key, (list(Paper).index(Paper(leaf["paper"])), len(rank)))
+        key = (leaf["subject"], section_of(leaf))
+        rank.setdefault(key, (list(Subject).index(Subject(leaf["subject"])), len(rank)))
         state = states.get(leaf["_id"])
         due = state.get("next_due") if state else None
         grouped.setdefault(key, []).append(
             {
                 "node_id": leaf["_id"],
                 "title": leaf["title"],
-                "paper": leaf["paper"],
+                "subject": leaf["subject"],
                 "section": key[1],
                 "confidence": state.get("last_confidence") if state else None,
                 "started": state is not None,
@@ -408,9 +414,11 @@ async def heatmap(
 
     sections = [
         {
-            "paper": key[0],
-            "label": PAPER_LABELS[Paper(key[0])],
-            "section": key[1],
+            "subject": key[0],
+            "label": SUBJECT_LABELS[Subject(key[0])],
+            # A flat subject has no section of its own to name, so the heading
+            # falls back to the subject — never an empty title over the squares.
+            "section": key[1] or SUBJECT_LABELS[Subject(key[0])],
             "cells": cells,
         }
         for key, cells in sorted(grouped.items(), key=lambda item: rank[item[0]])

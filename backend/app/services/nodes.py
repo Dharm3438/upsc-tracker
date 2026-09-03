@@ -50,11 +50,11 @@ async def _descendants(db: AsyncIOMotorDatabase, doc: dict[str, Any]) -> list[di
     """Everything under a node, found by path prefix.
 
     A prefix query beats walking parent_id level by level, and the trailing
-    slash stops "GS2/Polity" from matching "GS2/Polity and governance".
+    slash stops "POLITY/Polity" from matching "POLITY/Polity and governance".
     """
     prefix = f"{doc['path']}/"
     return await db.syllabus_nodes.find(
-        {"paper": doc["paper"], "path": {"$regex": f"^{_escape(prefix)}"}}
+        {"subject": doc["subject"], "path": {"$regex": f"^{_escape(prefix)}"}}
     ).to_list(length=None)
 
 
@@ -65,7 +65,7 @@ def _escape(value: str) -> str:
 async def create_node(
     db: AsyncIOMotorDatabase,
     *,
-    paper: str,
+    subject: str,
     title: str,
     parent_id: str | None,
     pyq_weight: str = "medium",
@@ -77,27 +77,27 @@ async def create_node(
     title = clean_title(title)
 
     if parent_id is None:
-        level, parent_oid, path = 1, None, f"{paper}/{title}"
+        level, parent_oid, path = 1, None, f"{subject}/{title}"
     else:
         parent = await _get(db, parent_id)
-        if parent["paper"] != paper:
-            raise NodeError("Parent belongs to a different paper.")
+        if parent["subject"] != subject:
+            raise NodeError("Parent belongs to a different subject.")
         if parent["level"] >= MAX_LEVEL:
             raise NodeError(f"The tree is only {MAX_LEVEL} levels deep.")
         level = parent["level"] + 1
         parent_oid = parent["_id"]
         path = f"{parent['path']}/{title}"
 
-    if await db.syllabus_nodes.find_one({"paper": paper, "path": path}):
+    if await db.syllabus_nodes.find_one({"subject": subject, "path": path}):
         raise NodeError("A node with that title already exists here.", status=409)
 
     last = await db.syllabus_nodes.find_one(
-        {"paper": paper, "parent_id": parent_oid}, sort=[("order", -1)]
+        {"subject": subject, "parent_id": parent_oid}, sort=[("order", -1)]
     )
     now = datetime.now(UTC)
 
     doc = {
-        "paper": paper,
+        "subject": subject,
         "parent_id": parent_oid,
         "title": title,
         "level": level,
@@ -138,7 +138,7 @@ async def update_node(
             parent_path = old_path.rsplit("/", 1)[0]
             new_path = f"{parent_path}/{new_title}"
             if await db.syllabus_nodes.find_one(
-                {"paper": doc["paper"], "path": new_path, "_id": {"$ne": doc["_id"]}}
+                {"subject": doc["subject"], "path": new_path, "_id": {"$ne": doc["_id"]}}
             ):
                 raise NodeError("A sibling already has that title.", status=409)
             changes["path"] = new_path
@@ -176,15 +176,15 @@ async def move_node(
     descendants = await _descendants(db, doc)
 
     if new_parent_id is None:
-        new_level, parent_oid, new_path = 1, None, f"{doc['paper']}/{doc['title']}"
+        new_level, parent_oid, new_path = 1, None, f"{doc['subject']}/{doc['title']}"
     else:
         parent = await _get(db, new_parent_id)
         if parent["_id"] == doc["_id"]:
             raise NodeError("A node cannot be its own parent.")
         if any(child["_id"] == parent["_id"] for child in descendants):
             raise NodeError("A node cannot move inside its own subtree.")
-        if parent["paper"] != doc["paper"]:
-            raise NodeError("Nodes cannot move between papers.")
+        if parent["subject"] != doc["subject"]:
+            raise NodeError("Nodes cannot move between subjects.")
         new_level = parent["level"] + 1
         parent_oid = parent["_id"]
         new_path = f"{parent['path']}/{doc['title']}"
@@ -196,7 +196,7 @@ async def move_node(
         raise NodeError(f"That move would push the tree past {MAX_LEVEL} levels.")
 
     if new_path != doc["path"] and await db.syllabus_nodes.find_one(
-        {"paper": doc["paper"], "path": new_path}
+        {"subject": doc["subject"], "path": new_path}
     ):
         raise NodeError("The new parent already has a child with that title.", status=409)
 

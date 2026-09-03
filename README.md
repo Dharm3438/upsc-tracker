@@ -1,8 +1,9 @@
 # UPSC Prep Tracker
 
-A single-user study tracker for a UPSC Civil Services aspirant covering GS 1–4, CSAT,
-Essay and Anthropology optional. A responsive web dashboard that works as well on a
-phone as it does at 1440px, built to be opened a few times a day for two years.
+A single-user study tracker for a UPSC Civil Services aspirant, organised by subject
+across Prelims and Mains including the Anthropology optional. A responsive web
+dashboard that works as well on a phone as it does at 1440px, built to be opened a
+few times a day for two years.
 
 ## Status
 
@@ -22,7 +23,7 @@ phone as it does at 1440px, built to be opened a few times a day for two years.
 ## Layout
 
 ```
-backend/     FastAPI + Motor. Syllabus seed lives in data/syllabus/<paper>.json
+backend/     FastAPI + Motor. Syllabus seed lives in data/syllabus/<subject>.json
 frontend/    Vite + React + TypeScript + Tailwind, TanStack Query, React Router
              src/components/ui/  the design-system primitives every screen composes
 ```
@@ -110,11 +111,41 @@ instance also sleeps after 15 minutes idle and takes roughly a minute to wake.
 
 ## The syllabus seed
 
-Authored from the official UPSC CSE notification syllabus, one file per paper under
-`backend/data/syllabus/`. Three levels: section → topic → leaf. Logs will attach to
-levels 2 and 3.
+The syllabus is a flat list of subjects, each holding one level of topics — a lecture
+or a book chapter. One file per subject under `backend/data/syllabus/`, 437 topics in
+all. Subjects are labelled Prelims or Mains, which only groups the chips in the rail.
+
+| Subject | Topics | Followed as |
+| --- | --- | --- |
+| Ancient & Medieval History | 42 | lectures |
+| Modern History | 49 | Spectrum |
+| Geography | 48 | lectures |
+| Economics | 30 | Nitin Singhania |
+| Polity & Governance | 65 | lectures |
+| Science | 31 | lectures |
+| CSAT | 10 | Arihant (placeholders) |
+| Disaster Management | 4 | lectures |
+| International Relations | 22 | lectures |
+| Security | 10 | lectures |
+| World History | 12 | lectures |
+| Ethics | 24 | lectures |
+| Anthropology | 90 | lectures |
+
+Lecture topics seed as `Lecture 1 … Lecture N` and chapters as `Chapter N — Title`;
+they are meant to be renamed in the app as the real titles become known. Only the
+Spectrum chapters carry a real `pyq_weight`, taken from the priority bands in its
+contents; everything else seeds at the neutral `medium`.
+
+`scripts/build_syllabus_seed.py` regenerates the JSON from the lecture counts and the
+contents files under `backend/data/sources/`. Run it only when the syllabus itself
+changes — it overwrites every seed file.
 
 Every node carries a `seed_key` — the slug chain of its titles *in the seed file*. The
-seeder upserts on `(paper, seed_key)`, so renaming a node in the app never causes a
+seeder upserts on `(subject, seed_key)`, so renaming a node in the app never causes a
 re-run to insert a duplicate. `scripts/seed_db.py` only ever inserts nodes it has not
 seen; it never updates or deletes, and never touches custom nodes.
+
+Because it never deletes, it cannot clear a syllabus seeded under a different subject
+list. When the subjects themselves change, start over with
+`python scripts/seed_db.py --reset` — which drops the syllabus and everything logged
+against it, after asking.

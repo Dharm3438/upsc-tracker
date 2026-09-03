@@ -1,20 +1,41 @@
 import { api } from './client'
 
-export type Paper = 'GS1' | 'GS2' | 'GS3' | 'GS4' | 'CSAT' | 'ESSAY' | 'ANTHRO1' | 'ANTHRO2'
+export type Subject =
+  | 'ANCIENT_MEDIEVAL'
+  | 'MODERN_HISTORY'
+  | 'GEOGRAPHY'
+  | 'ECONOMICS'
+  | 'POLITY'
+  | 'SCIENCE'
+  | 'CSAT'
+  | 'DISASTER_MGMT'
+  | 'IR'
+  | 'SECURITY'
+  | 'WORLD_HISTORY'
+  | 'ETHICS'
+  | 'ANTHROPOLOGY'
+
+/** Prelims or Mains. Groups the chip rail and nothing else. */
+export type Stage = 'PRELIMS' | 'MAINS'
+
+/** Whether a subject is worked through as a lecture series or as a book. */
+export type SourceKind = 'lectures' | 'book'
 
 export type PyqWeight = 'high' | 'medium' | 'low' | 'none'
 
-export type PaperSummary = {
-  paper: Paper
+export type SubjectSummary = {
+  subject: Subject
   label: string
-  sections: number
+  stage: Stage
+  source_kind: SourceKind
+  /** The book a `book` subject follows; empty for a lecture series. */
+  source_name: string
   topics: number
-  leaves: number
 }
 
 export type TreeNode = {
   _id: string
-  paper: Paper
+  subject: Subject
   parent_id: string | null
   title: string
   level: number
@@ -39,16 +60,16 @@ export type TreeNode = {
   leaf_revised: number
 }
 
-export const getPapers = () => api<PaperSummary[]>('/syllabus/papers')
+export const getSubjects = () => api<SubjectSummary[]>('/syllabus/subjects')
 
-export const getTree = (paper: Paper) =>
-  api<TreeNode[]>(`/syllabus/tree?paper=${paper}`)
+export const getTree = (subject: Subject) =>
+  api<TreeNode[]>(`/syllabus/tree?subject=${subject}`)
 
 export const searchNodes = (q: string) =>
   api<TreeNode[]>(`/syllabus/search?q=${encodeURIComponent(q)}`)
 
 export type NodeCreate = {
-  paper: Paper
+  subject: Subject
   title: string
   parent_id: string | null
   pyq_weight?: PyqWeight

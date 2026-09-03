@@ -17,12 +17,12 @@ const DEPTH = [DEPTH_BG[1], DEPTH_BG[2], DEPTH_BG[3], DEPTH_BG[4], DEPTH_BG[5]]
  */
 export function Heatmap({ sections }: { sections: HeatmapSection[] }) {
   return (
-    // Two columns of sections once there is width for them; a 200-topic paper
+    // Two columns of sections once there is width for them; a 200-topic subject
     // in one column is a scroll nobody finishes.
     <div className="grid gap-x-8 sm:grid-cols-2 xl:grid-cols-3">
       {sections.map((section) => (
         <div
-          key={`${section.paper}/${section.section}`}
+          key={`${section.subject}/${section.section}`}
           className="border-b border-hairline px-4 py-3.5 sm:px-5"
         >
           <div className="flex items-baseline justify-between gap-3 pb-2">

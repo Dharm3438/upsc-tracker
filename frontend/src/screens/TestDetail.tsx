@@ -62,8 +62,8 @@ export function TestDetail() {
         meta={
           <>
             <Badge tone="outline">{formatDayIST(attempt.date)}</Badge>
-            {attempt.papers.map((paper) => (
-              <Badge key={paper}>{paper}</Badge>
+            {attempt.subjects.map((subject) => (
+              <Badge key={subject}>{subject}</Badge>
             ))}
             {attempt.duration_minutes && <Badge>{attempt.duration_minutes} min</Badge>}
           </>

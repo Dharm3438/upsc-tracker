@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import { formatMonth, type CaItem } from '@/api/ca'
 import { tagLabel, type MistakeTag } from '@/api/mistakes'
-import type { Paper } from '@/api/syllabus'
+import type { Subject } from '@/api/syllabus'
 import { CaList, CaRows } from '@/components/ca/CaList'
 import { CaSheet } from '@/components/ca/CaSheet'
 import { MistakeList } from '@/components/mistakes/MistakeList'
@@ -22,12 +22,11 @@ import {
 } from '@/components/ui'
 import { useCaInbox, useCaItems, useCaMonths } from '@/hooks/useCa'
 import { useMistakes, useMistakeSummary } from '@/hooks/useMistakes'
+import { useSubjects } from '@/hooks/useSyllabus'
 
 const SEARCH_DEBOUNCE_MS = 250
 
 type Section = 'mistakes' | 'ca'
-
-const PAPERS: Paper[] = ['GS1', 'GS2', 'GS3', 'GS4', 'CSAT', 'ANTHRO1', 'ANTHRO2']
 
 /**
  * Notes holds current affairs and the mistake notebook. Which half opens is in
@@ -97,7 +96,8 @@ function Rail({ children }: { children: React.ReactNode }) {
 
 function Notebook() {
   const [tag, setTag] = useState<MistakeTag | undefined>()
-  const [paper, setPaper] = useState<Paper | undefined>()
+  const [subject, setSubject] = useState<Subject | undefined>()
+  const allSubjects = useSubjects()
   const [search, setSearch] = useState('')
   const [debounced, setDebounced] = useState('')
 
@@ -106,10 +106,10 @@ function Notebook() {
     return () => window.clearTimeout(timer)
   }, [search])
 
-  // The breakdown follows the paper filter but not the tag filter: filtering to
+  // The breakdown follows the subject filter but not the tag filter: filtering to
   // one tag and then reading a bar made only of that tag would say nothing.
-  const summary = useMistakeSummary({ paper })
-  const mistakes = useMistakes({ tag, paper, q: debounced || undefined })
+  const summary = useMistakeSummary({ subject })
+  const mistakes = useMistakes({ tag, subject, q: debounced || undefined })
 
   return (
     <>
@@ -155,16 +155,18 @@ function Notebook() {
             placeholder="Search questions and notes…"
           />
           <ChipRow className="lg:flex-wrap">
-            <Chip selected={paper === undefined} onClick={() => setPaper(undefined)}>
-              All papers
+            <Chip selected={subject === undefined} onClick={() => setSubject(undefined)}>
+              All subjects
             </Chip>
-            {PAPERS.map((option) => (
+            {(allSubjects.data ?? []).map((option) => (
               <Chip
-                key={option}
-                selected={paper === option}
-                onClick={() => setPaper(paper === option ? undefined : option)}
+                key={option.subject}
+                selected={subject === option.subject}
+                onClick={() =>
+                  setSubject(subject === option.subject ? undefined : option.subject)
+                }
               >
-                {option}
+                {option.label}
               </Chip>
             ))}
           </ChipRow>
@@ -204,18 +206,19 @@ function Notebook() {
 }
 
 /**
- * Two filters: by month for magazine revision, and by paper to pull everything
- * current before revising that paper. Untagged items sit above both in their own
+ * Two filters: by month for magazine revision, and by subject to pull everything
+ * current before revising that subject. Untagged items sit above both in their own
  * card — they are not part of any month's revision until they are placed.
  */
 function CurrentAffairs({ adding, onAdded }: { adding: boolean; onAdded: () => void }) {
   const [month, setMonth] = useState<string | undefined>()
-  const [paper, setPaper] = useState<Paper | undefined>()
+  const [subject, setSubject] = useState<Subject | undefined>()
+  const allSubjects = useSubjects()
   const [editing, setEditing] = useState<CaItem | null>(null)
 
   const inbox = useCaInbox()
   const months = useCaMonths()
-  const items = useCaItems({ month, paper })
+  const items = useCaItems({ month, subject })
 
   const waiting = inbox.data?.total ?? 0
 
@@ -240,16 +243,18 @@ function CurrentAffairs({ adding, onAdded }: { adding: boolean; onAdded: () => v
           </ChipRow>
 
           <ChipRow className="lg:flex-wrap">
-            <Chip selected={paper === undefined} onClick={() => setPaper(undefined)}>
-              All papers
+            <Chip selected={subject === undefined} onClick={() => setSubject(undefined)}>
+              All subjects
             </Chip>
-            {PAPERS.map((option) => (
+            {(allSubjects.data ?? []).map((option) => (
               <Chip
-                key={option}
-                selected={paper === option}
-                onClick={() => setPaper(paper === option ? undefined : option)}
+                key={option.subject}
+                selected={subject === option.subject}
+                onClick={() =>
+                  setSubject(subject === option.subject ? undefined : option.subject)
+                }
               >
-                {option}
+                {option.label}
               </Chip>
             ))}
           </ChipRow>
@@ -272,7 +277,7 @@ function CurrentAffairs({ adding, onAdded }: { adding: boolean; onAdded: () => v
           <Card>
             <CardHeader
               title={month ? formatMonth(month) : 'Everything current'}
-              subtitle={paper ? `Filtered to ${paper}` : 'Newest first, grouped by the day.'}
+              subtitle={subject ? `Filtered to ${subject}` : 'Newest first, grouped by the day.'}
               icon={<Newspaper size={17} strokeWidth={1.8} />}
             />
             <CaList

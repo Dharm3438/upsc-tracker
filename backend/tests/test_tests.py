@@ -46,10 +46,10 @@ async def db(client):
 async def node(db) -> str:
     """A loggable topic, one level below a section."""
     section = await node_service.create_node(
-        db, paper="GS2", title="Polity", parent_id=None, pyq_weight="high"
+        db, subject="POLITY", title="Polity", parent_id=None, pyq_weight="high"
     )
     topic = await node_service.create_node(
-        db, paper="GS2", title="Federalism", parent_id=str(section["_id"])
+        db, subject="POLITY", title="Federalism", parent_id=str(section["_id"])
     )
     return str(topic["_id"])
 
@@ -60,7 +60,7 @@ def prelims(**overrides) -> schema.TestCreate:
         "date": TODAY,
         "title": "Vision IAS PT Test 6",
         "kind": "sectional",
-        "papers": ["GS1"],
+        "subjects": ["GEOGRAPHY"],
         "total_questions": 100,
         "attempted": 84,
         "correct": 57,
@@ -74,13 +74,13 @@ class TestDerivedNumbers:
     async def test_wrong_and_skipped_come_from_the_three_counts(self, db):
         doc = await test_service.create_test(db, prelims())
         assert doc["wrong"] == 27  # 84 attempted - 57 correct
-        assert doc["skipped"] == 16  # 100 in the paper - 84 attempted
+        assert doc["skipped"] == 16  # 100 in the subject - 84 attempted
 
-    async def test_accuracy_is_over_attempted_not_over_the_paper(self, db):
+    async def test_accuracy_is_over_attempted_not_over_the_subject(self, db):
         doc = await test_service.create_test(db, prelims())
         assert doc["accuracy"] == pytest.approx(57 / 84, abs=1e-4)
 
-    async def test_an_unattempted_paper_scores_zero_rather_than_dividing_by_zero(
+    async def test_an_unattempted_subject_scores_zero_rather_than_dividing_by_zero(
         self, db
     ):
         doc = await test_service.create_test(db, prelims(attempted=0, correct=0))
@@ -111,7 +111,7 @@ class TestValidation:
         with pytest.raises(ValueError):
             prelims(attempted=10, correct=11)
 
-    async def test_more_attempted_than_the_paper_had_is_rejected(self):
+    async def test_more_attempted_than_the_subject_had_is_rejected(self):
         with pytest.raises(ValueError):
             prelims(total_questions=100, attempted=101, correct=1)
 
@@ -154,7 +154,7 @@ class TestListing:
         await test_service.create_test(db, prelims(attempted=10, correct=9))
         assert await test_service.accuracy_trend(db) == [0.5, 0.9]
 
-    async def test_an_unattempted_paper_is_left_out_of_the_trend(self, db):
+    async def test_an_unattempted_subject_is_left_out_of_the_trend(self, db):
         """A zero there is an absence of data, not a collapse in accuracy."""
         await test_service.create_test(db, prelims(attempted=10, correct=5))
         await test_service.create_test(db, prelims(attempted=0, correct=0))

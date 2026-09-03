@@ -1,6 +1,6 @@
 import { api } from './client'
 
-import type { Paper } from './syllabus'
+import type { Subject } from './syllabus'
 
 export type CaItem = {
   _id: string
@@ -11,7 +11,7 @@ export type CaItem = {
   source: string
   note: string
   node_id: string | null
-  paper: Paper | null
+  subject: Subject | null
   tagged: boolean
   starred: boolean
   created_at: string | null
@@ -38,7 +38,7 @@ export type CaMonth = { month: string; count: number; untagged: number }
 export type CaFilters = {
   month?: string
   nodeId?: string
-  paper?: Paper
+  subject?: Subject
   starred?: boolean
 }
 
@@ -61,7 +61,7 @@ export function getCaItems(
   const query = new URLSearchParams()
   if (filters.month) query.set('month', filters.month)
   if (filters.nodeId) query.set('node_id', filters.nodeId)
-  if (filters.paper) query.set('paper', filters.paper)
+  if (filters.subject) query.set('subject', filters.subject)
   if (filters.starred) query.set('starred', 'true')
   // The tagged items are the list; the untagged ones have the inbox above it,
   // and showing them in both places would read as duplication.

@@ -4,24 +4,24 @@ import {
   archiveNode,
   createNode,
   getNode,
-  getPapers,
+  getSubjects,
   getTree,
   moveNode,
   searchNodes,
   updateNode,
   type NodeCreate,
   type NodePatch,
-  type Paper,
+  type Subject,
 } from '@/api/syllabus'
 
-export function usePapers() {
-  return useQuery({ queryKey: ['papers'], queryFn: getPapers })
+export function useSubjects() {
+  return useQuery({ queryKey: ['subjects'], queryFn: getSubjects })
 }
 
-export function useTree(paper: Paper) {
+export function useTree(subject: Subject) {
   return useQuery({
-    queryKey: ['tree', paper],
-    queryFn: () => getTree(paper),
+    queryKey: ['tree', subject],
+    queryFn: () => getTree(subject),
     staleTime: 60_000,
   })
 }
@@ -50,7 +50,7 @@ function useTreeInvalidation() {
   const client = useQueryClient()
   return () => {
     void client.invalidateQueries({ queryKey: ['tree'] })
-    void client.invalidateQueries({ queryKey: ['papers'] })
+    void client.invalidateQueries({ queryKey: ['subjects'] })
     void client.invalidateQueries({ queryKey: ['node'] })
   }
 }

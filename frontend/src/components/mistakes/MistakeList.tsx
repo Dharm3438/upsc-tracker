@@ -108,7 +108,7 @@ function Row({
           </p>
           <p className="truncate text-xs text-muted">
             {showTopic && mistake.node_title ? `${mistake.node_title} · ` : ''}
-            {mistake.paper} · {formatDayIST(mistake.date)}
+            {mistake.subject} · {formatDayIST(mistake.date)}
           </p>
         </div>
         <span className="flex shrink-0 items-center gap-2 pt-0.5">

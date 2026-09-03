@@ -29,7 +29,7 @@ export function useMistakes(filters: MistakeFilters) {
   })
 }
 
-export function useMistakeSummary(filters: Pick<MistakeFilters, 'paper'> = {}) {
+export function useMistakeSummary(filters: Pick<MistakeFilters, 'subject'> = {}) {
   return useQuery({
     queryKey: ['mistake-summary', filters],
     queryFn: () => getMistakeSummary(filters),

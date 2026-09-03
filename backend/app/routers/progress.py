@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.auth import require_api_key
 from app.db import get_db
-from app.models.common import Paper
+from app.models.common import Subject
 from app.models.progress import Burndown, Countdown, Coverage, Effort, Heatmap
 from app.services import progress as progress_service
 from app.services import settings as settings_service
@@ -45,18 +45,18 @@ async def burndown(
 async def coverage(
     date: str | None = Query(default=None, pattern=DAY_PATTERN),
 ) -> Coverage:
-    """Per paper: leaves read, revised twice, and tested."""
+    """Per subject: leaves read, revised twice, and tested."""
     return Coverage(**await progress_service.coverage(get_db(), date=date))
 
 
 @router.get("/heatmap", response_model=Heatmap)
 async def heatmap(
-    paper: Paper | None = None,
+    subject: Subject | None = None,
     date: str | None = Query(default=None, pattern=DAY_PATTERN),
 ) -> Heatmap:
     """Every leaf as a square, grouped by section, coloured by confidence."""
     result = await progress_service.heatmap(
-        get_db(), paper=paper.value if paper else None, date=date
+        get_db(), subject=subject.value if subject else None, date=date
     )
     return Heatmap(**result)
 

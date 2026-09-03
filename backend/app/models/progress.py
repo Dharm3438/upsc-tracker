@@ -8,7 +8,7 @@ what the last month of effort actually looked like — computed by
 
 from pydantic import BaseModel, Field
 
-from app.models.common import Paper, PyObjectId
+from app.models.common import Subject, PyObjectId
 
 
 class ExamCountdown(BaseModel):
@@ -56,11 +56,11 @@ class Burndown(BaseModel):
     series: list[BurndownPoint] = Field(default_factory=list)
 
 
-class PaperCoverage(BaseModel):
-    """One paper's three bars, as counts rather than percentages — the screen
+class SubjectCoverage(BaseModel):
+    """One subject's three bars, as counts rather than percentages — the screen
     needs the denominator to say "41 of 96"."""
 
-    paper: Paper
+    subject: Subject
     label: str
     leaves: int
     read: int
@@ -70,8 +70,8 @@ class PaperCoverage(BaseModel):
 
 class Coverage(BaseModel):
     date: str
-    papers: list[PaperCoverage] = Field(default_factory=list)
-    totals: PaperCoverage | None = None
+    subjects: list[SubjectCoverage] = Field(default_factory=list)
+    totals: SubjectCoverage | None = None
 
 
 class HeatmapCell(BaseModel):
@@ -79,7 +79,7 @@ class HeatmapCell(BaseModel):
 
     node_id: PyObjectId
     title: str
-    paper: Paper
+    subject: Subject
     #: The level-1 ancestor, so the grid can be grouped under section headings.
     section: str
     #: 1-5, or null for a topic never graded. Null draws as an empty square,
@@ -91,7 +91,7 @@ class HeatmapCell(BaseModel):
 
 
 class HeatmapSection(BaseModel):
-    paper: Paper
+    subject: Subject
     label: str
     section: str
     cells: list[HeatmapCell] = Field(default_factory=list)

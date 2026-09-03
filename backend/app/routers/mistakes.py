@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from app.auth import require_api_key
 from app.db import get_db
-from app.models.common import Paper
+from app.models.common import Subject
 from app.models.mistakes import (
     Mistake,
     MistakeCreate,
@@ -44,9 +44,9 @@ async def create_mistake(payload: MistakeCreate) -> Mistake:
 async def summary(
     date_from: str | None = Query(default=None, alias="from", pattern=DAY_PATTERN),
     date_to: str | None = Query(default=None, alias="to", pattern=DAY_PATTERN),
-    paper: Paper | None = None,
+    subject: Subject | None = None,
 ) -> MistakeSummary:
-    """Counts per tag and per paper over a window.
+    """Counts per tag and per subject over a window.
 
     The five tags always come back, zeroes included, so the stacked bar keeps
     its shape between visits.
@@ -55,7 +55,7 @@ async def summary(
         get_db(),
         date_from=date_from,
         date_to=date_to,
-        paper=paper.value if paper else None,
+        subject=subject.value if subject else None,
     )
     return MistakeSummary(**result)
 
@@ -63,7 +63,7 @@ async def summary(
 @router.get("", response_model=MistakePage)
 async def list_mistakes(
     tag: MistakeTag | None = None,
-    paper: Paper | None = None,
+    subject: Subject | None = None,
     node_id: str | None = None,
     source_id: str | None = None,
     resolved: bool | None = None,
@@ -77,7 +77,7 @@ async def list_mistakes(
         docs, next_cursor = await mistake_service.list_mistakes(
             get_db(),
             tag=tag.value if tag else None,
-            paper=paper.value if paper else None,
+            subject=subject.value if subject else None,
             node_id=node_id,
             source_id=source_id,
             resolved=resolved,
