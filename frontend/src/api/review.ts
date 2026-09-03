@@ -1,6 +1,6 @@
 import { api } from './client'
 
-import type { Paper, PyqWeight } from './syllabus'
+import type { Subject, PyqWeight } from './syllabus'
 
 /** A row of the due list. Carries the node's notes so the grading sheet can
  *  open without a second request. */
@@ -8,7 +8,7 @@ export type DueNode = {
   node_id: string
   title: string
   path: string
-  paper: Paper
+  subject: Subject
   level: number
   pyq_weight: PyqWeight
   needs_diagram: boolean

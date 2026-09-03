@@ -157,7 +157,7 @@ class RecentNode(BaseModel):
     node_id: PyObjectId
     title: str
     path: str
-    paper: str
+    subject: str
     last_logged: str
 
     SHORTCUT_LIMIT: ClassVar[int] = 8

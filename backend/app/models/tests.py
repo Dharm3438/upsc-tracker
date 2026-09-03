@@ -13,7 +13,7 @@ from enum import StrEnum
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.dates import today_ist
-from app.models.common import Paper, PyObjectId
+from app.models.common import Subject, PyObjectId
 
 DAY_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
 
@@ -32,16 +32,16 @@ class TestKind(StrEnum):
 class TestBase(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     kind: TestKind = TestKind.SECTIONAL
-    papers: list[Paper] = Field(default_factory=list)
+    subjects: list[Subject] = Field(default_factory=list)
     total_questions: int = Field(ge=1, le=1000)
     attempted: int = Field(ge=0, le=1000)
     correct: int = Field(ge=0, le=1000)
     max_marks: float | None = Field(default=None, ge=0)
     #: Marks lost per wrong answer. Left out, it is a third of a question's
-    #: marks — 0.66 on the usual 100-question, 200-mark Prelims paper.
+    #: marks — 0.66 on the usual 100-question, 200-mark Prelims subject.
     negative_per_wrong: float | None = Field(default=None, ge=0)
     #: Stated only when the score sheet disagrees with the arithmetic, e.g. a
-    #: paper with bonus marks for a dropped question.
+    #: subject with bonus marks for a dropped question.
     marks: float | None = None
     duration_minutes: int | None = Field(default=None, ge=0, le=600)
     notes: str = Field(default="", max_length=2000)
@@ -49,7 +49,7 @@ class TestBase(BaseModel):
     @model_validator(mode="after")
     def check_counts(self) -> "TestBase":
         if self.attempted > self.total_questions:
-            raise ValueError("More attempted than the paper had.")
+            raise ValueError("More attempted than the subject had.")
         if self.correct > self.attempted:
             raise ValueError("More correct than attempted.")
         return self
@@ -70,7 +70,7 @@ class TestUpdate(BaseModel):
     date: str | None = Field(default=None, pattern=DAY_PATTERN)
     title: str | None = Field(default=None, min_length=1, max_length=200)
     kind: TestKind | None = None
-    papers: list[Paper] | None = None
+    subjects: list[Subject] | None = None
     total_questions: int | None = Field(default=None, ge=1, le=1000)
     attempted: int | None = Field(default=None, ge=0, le=1000)
     correct: int | None = Field(default=None, ge=0, le=1000)
@@ -88,7 +88,7 @@ class Test(BaseModel):
     date: str
     title: str
     kind: TestKind
-    papers: list[Paper] = Field(default_factory=list)
+    subjects: list[Subject] = Field(default_factory=list)
     total_questions: int
     attempted: int
     correct: int
@@ -98,7 +98,7 @@ class Test(BaseModel):
     max_marks: float | None = None
     negative_per_wrong: float | None = None
     duration_minutes: int | None = None
-    #: correct / attempted, 0.0 on a paper she did not attempt at all.
+    #: correct / attempted, 0.0 on a subject she did not attempt at all.
     accuracy: float = 0.0
     notes: str = ""
     created_at: datetime | None = None

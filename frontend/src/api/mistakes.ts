@@ -1,6 +1,6 @@
 import { api } from './client'
 
-import type { Paper } from './syllabus'
+import type { Subject } from './syllabus'
 
 export type MistakeTag = 'unknown' | 'silly' | 'elimination' | 'misread' | 'guess'
 
@@ -21,7 +21,7 @@ export type Mistake = {
   source_type: 'mcq' | 'answer'
   source_id: string | null
   node_id: string
-  paper: Paper
+  subject: Subject
   date: string
   question: string
   tag: MistakeTag
@@ -47,12 +47,12 @@ export type MistakeSummary = {
   total: number
   unresolved: number
   by_tag: { tag: MistakeTag; label: string; count: number }[]
-  by_paper: { paper: Paper; count: number }[]
+  by_subject: { subject: Subject; count: number }[]
 }
 
 export type MistakeFilters = {
   tag?: MistakeTag
-  paper?: Paper
+  subject?: Subject
   nodeId?: string
   sourceId?: string
   resolved?: boolean
@@ -62,7 +62,7 @@ export type MistakeFilters = {
 function toQuery(filters: MistakeFilters): URLSearchParams {
   const query = new URLSearchParams()
   if (filters.tag) query.set('tag', filters.tag)
-  if (filters.paper) query.set('paper', filters.paper)
+  if (filters.subject) query.set('subject', filters.subject)
   if (filters.nodeId) query.set('node_id', filters.nodeId)
   if (filters.sourceId) query.set('source_id', filters.sourceId)
   if (filters.resolved !== undefined) query.set('resolved', String(filters.resolved))
@@ -76,7 +76,7 @@ export function getMistakes(filters: MistakeFilters & { cursor?: string } = {}) 
   return api<MistakePage>(`/mistakes?${query.toString()}`)
 }
 
-export function getMistakeSummary(filters: Pick<MistakeFilters, 'paper'> = {}) {
+export function getMistakeSummary(filters: Pick<MistakeFilters, 'subject'> = {}) {
   return api<MistakeSummary>(`/mistakes/summary?${toQuery(filters).toString()}`)
 }
 

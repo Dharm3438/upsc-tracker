@@ -1,0 +1,201 @@
+{
+  "subject": "MODERN_HISTORY",
+  "topics": [
+    {
+      "title": "Chapter 1 — Sources for the History of Modern India",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 2 — Major Approaches to the History of Modern India",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 3 — Advent of the Europeans in India",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 4 — India on the Eve of British Conquest",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 5 — Expansion and Consolidation of British Power in India",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 6 — People's Resistance against British before 1857",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 7 — The Revolt of 1857",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 8 — Socio-Religious Reform Movements: General Features",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 9 — A General Survey of Socio-Cultural Reform Movements",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 10 — Beginning of Modern Nationalism in India",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 11 — Indian National Congress: Foundation and the Moderate Phase",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 12 — Era of Militant Nationalism (1905-1909)",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 13 — First Phase of Revolutionary Activities (1907-1917)",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 14 — First World War and Nationalist Response",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 15 — Emergence of Gandhi",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 16 — Non-Cooperation Movement and Khilafat Movements",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 17 — Emergence of Swarajists, Socialist Ideas, Revolutionary Activities and Other New Forces",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 18 — Simon Commission and the Nehru Report",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 19 — Civil Disobedience Movement and Round Table Conferences",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 20 — Debates on Future Strategy after Civil Disobedience Movement",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 21 — Congress Rule in Provinces",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 22 — Nationalist Response in the Wake of World War II",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 23 — Quit India Movement, Demand for Pakistan, and the INA",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 24 — Post-War National Scenario",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 25 — Independence with Partition",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 26 — Constitutional, Administrative and Judicial Developments",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 27 — Survey of British Policies in India",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 28 — Economic Impact of British Rule",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 29 — Development of Indian Press",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 30 — Development of Education",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 31 — Peasant Movements 1857-1947",
+      "pyq_weight": "high"
+    },
+    {
+      "title": "Chapter 32 — The Movement of the Working Class",
+      "pyq_weight": "medium"
+    },
+    {
+      "title": "Chapter 33 — Challenges before the New-Born Nation",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 34 — The Indian State",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 35 — Making of the Constitution for India",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 36 — The Evolution of Nationalist Foreign Policy",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 37 — First General Elections",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 38 — Developments under Nehru's Leadership (1947-64)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 39 — The Lal Bahadur Shastri Years (June 1964- January 1966)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 40 — Indira Gandhi: The First Phase (Jan 1966 - Mar 1977)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 41 — The Janata Party Years (March 1977-January 19801",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 42 — Indira Gandhi: The Second Phase (January 1980 to October 1984)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 43 — The Rajiv Years (October 1984 to December 1989)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 44 — V.P. Singh and Chandrashekhar Governments (1989-1991)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 45 — The Narasimha Rao Years (1991 to 1996",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 46 — Three Prime Ministers in Three Years (1996 - 1999)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 47 — The NDA Years (1988 - 1999)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 48 — The UPA Years (2004 - 2014)",
+      "pyq_weight": "low"
+    },
+    {
+      "title": "Chapter 49 — The NDA Government (2014 Onwards)",
+      "pyq_weight": "low"
+    }
+  ]
+}

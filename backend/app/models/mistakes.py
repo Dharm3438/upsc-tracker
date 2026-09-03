@@ -11,7 +11,7 @@ from enum import StrEnum
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.dates import today_ist
-from app.models.common import Paper, PyObjectId
+from app.models.common import Subject, PyObjectId
 
 DAY_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
 
@@ -79,10 +79,10 @@ class Mistake(BaseModel):
     source_type: MistakeSourceType
     source_id: PyObjectId | None = None
     node_id: PyObjectId
-    #: Denormalised from the node on write. Nodes cannot move between papers,
-    #: so this cannot go stale, and it keeps the paper filter and the summary
+    #: Denormalised from the node on write. Nodes cannot move between subjects,
+    #: so this cannot go stale, and it keeps the subject filter and the summary
     #: off a lookup on every read.
-    paper: Paper
+    subject: Subject
     date: str
     question: str = ""
     tag: MistakeTag
@@ -107,8 +107,8 @@ class TagCount(BaseModel):
     count: int
 
 
-class PaperCount(BaseModel):
-    paper: Paper
+class SubjectCount(BaseModel):
+    subject: Subject
     count: int
 
 
@@ -122,4 +122,4 @@ class MistakeSummary(BaseModel):
     total: int
     unresolved: int
     by_tag: list[TagCount]
-    by_paper: list[PaperCount]
+    by_subject: list[SubjectCount]

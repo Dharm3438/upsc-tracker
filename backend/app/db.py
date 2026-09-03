@@ -26,9 +26,9 @@ class DatabaseNotConfigured(RuntimeError):
 
 INDEXES: dict[str, list[IndexModel]] = {
     "syllabus_nodes": [
-        IndexModel([("paper", ASCENDING), ("order", ASCENDING)]),
+        IndexModel([("subject", ASCENDING), ("order", ASCENDING)]),
         IndexModel([("parent_id", ASCENDING)]),
-        IndexModel([("paper", ASCENDING), ("seed_key", ASCENDING)], unique=True,
+        IndexModel([("subject", ASCENDING), ("seed_key", ASCENDING)], unique=True,
                    partialFilterExpression={"seed_key": {"$type": "string"}}),
         IndexModel([("is_archived", ASCENDING)]),
         IndexModel([("path", TEXT)]),
@@ -49,7 +49,7 @@ INDEXES: dict[str, list[IndexModel]] = {
     "mistakes": [
         IndexModel([("node_id", ASCENDING), ("date", DESCENDING)]),
         IndexModel([("tag", ASCENDING)]),
-        IndexModel([("paper", ASCENDING), ("date", DESCENDING)]),
+        IndexModel([("subject", ASCENDING), ("date", DESCENDING)]),
         # Counting a test's mistakes for its row, and cascading them on delete.
         IndexModel([("source_id", ASCENDING)]),
         IndexModel([("resolved", ASCENDING)]),
@@ -59,7 +59,7 @@ INDEXES: dict[str, list[IndexModel]] = {
         IndexModel([("date", DESCENDING)]),
         IndexModel([("review_due", ASCENDING), ("reviewed", ASCENDING)]),
         IndexModel([("node_id", ASCENDING), ("date", DESCENDING)]),
-        IndexModel([("paper", ASCENDING), ("date", DESCENDING)]),
+        IndexModel([("subject", ASCENDING), ("date", DESCENDING)]),
     ],
     "ca_items": [
         IndexModel([("month", ASCENDING), ("date", DESCENDING)]),
@@ -68,7 +68,7 @@ INDEXES: dict[str, list[IndexModel]] = {
     ],
     "pyqs": [
         IndexModel([("node_ids", ASCENDING)]),
-        IndexModel([("year", DESCENDING), ("paper", ASCENDING)]),
+        IndexModel([("year", DESCENDING), ("subject", ASCENDING)]),
     ],
     "sources": [IndexModel([("status", ASCENDING)])],
     "weekly_reviews": [IndexModel([("week_start", DESCENDING)], unique=True)],

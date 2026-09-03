@@ -62,14 +62,14 @@ def settings() -> AppSettings:
 async def leaves(db) -> list[str]:
     """One section with four level-2 topics: four leaves, no deeper nesting."""
     section = await node_service.create_node(
-        db, paper="GS2", title="Polity", parent_id=None, pyq_weight="high"
+        db, subject="POLITY", title="Polity", parent_id=None, pyq_weight="high"
     )
     titles = ["Federalism", "Emergency", "Judiciary", "Panchayats"]
     return [
         str(
             (
                 await node_service.create_node(
-                    db, paper="GS2", title=title, parent_id=str(section["_id"])
+                    db, subject="POLITY", title=title, parent_id=str(section["_id"])
                 )
             )["_id"]
         )
@@ -156,7 +156,7 @@ async def test_coverage_counts_read_revised_twice_and_tested(db, leaves, setting
     await log(db, leaves[2], "mcq", "2026-08-28", attempted=10, correct=6, skipped=0)
 
     result = await progress_service.coverage(db, date=TODAY)
-    gs2 = next(row for row in result["papers"] if row["paper"] == "GS2")
+    gs2 = next(row for row in result["subjects"] if row["subject"] == "POLITY")
 
     assert gs2["leaves"] == 4
     assert gs2["read"] == 2
@@ -171,7 +171,7 @@ async def test_heatmap_carries_confidence_and_leaves_untouched_squares_empty(
     await log(db, leaves[0], "read", "2026-08-20", source="Book", confidence=3)
     await log(db, leaves[0], "revise", "2026-08-25", confidence=5, method="recall")
 
-    result = await progress_service.heatmap(db, paper="GS2", date=TODAY)
+    result = await progress_service.heatmap(db, subject="POLITY", date=TODAY)
     cells = {cell["title"]: cell for cell in result["sections"][0]["cells"]}
 
     assert result["sections"][0]["section"] == "Polity"

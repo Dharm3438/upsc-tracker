@@ -28,7 +28,7 @@ export function NodeActions({
   onClose,
 }: {
   node: TreeNode
-  /** Nodes in this paper that could take `node` as a child. */
+  /** Nodes in this subject that could take `node` as a child. */
   candidates: TreeNode[]
   onClose: () => void
 }) {
@@ -94,7 +94,7 @@ export function NodeActions({
           onSubmit={(title, weight, diagram) =>
             run(() =>
               create.mutateAsync({
-                paper: node.paper,
+                subject: node.subject,
                 parent_id: node._id,
                 title,
                 pyq_weight: weight,
@@ -236,7 +236,7 @@ function MoveForm({
           value={parentId}
           onChange={(event) => setParentId(event.target.value)}
         >
-          <option value="">{node.paper} — top level</option>
+          <option value="">{node.subject} — top level</option>
           {candidates.map((candidate) => (
             <option key={candidate._id} value={candidate._id}>
               {candidate.path.split('/').slice(1).join(' › ')}

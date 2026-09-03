@@ -1,13 +1,18 @@
 """Syllabus seeding.
 
-The seed lives in `data/syllabus/<paper>.json`, one file per paper, so a diff
+The seed lives in `data/syllabus/<subject>.json`, one file per subject, so a diff
 stays reviewable. Each file is:
 
-    {"paper": "GS2", "sections": [{"title": ..., "children": [...]}, ...]}
+    {"subject": "POLITY", "topics": [{"title": ..., "pyq_weight": ...}, ...]}
+
+The seed is one flat level of topics per subject — a lecture, or a chapter of
+the book the subject follows. A topic may still carry `children` and the loader
+nests them up to three deep, but nothing shipped uses that; it is there so a
+hand-written addition is not blocked by the loader.
 
 Every node gets a `seed_key`: the slugified chain of its *seed* titles, e.g.
-`indian-constitution/federalism/centre-state-legislative-relations`. The seeder
-upserts on `(paper, seed_key)`, which is what makes it safe to re-run after the
+`chapter-7-the-revolt-of-1857`. The seeder
+upserts on `(subject, seed_key)`, which is what makes it safe to re-run after the
 user has renamed nodes in the app — the key is derived from the file, never
 from the (possibly edited) stored title.
 
@@ -24,7 +29,7 @@ from pathlib import Path
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from app.models.common import Paper
+from app.models.common import Subject
 
 SEED_DIR = Path(__file__).resolve().parents[2] / "data" / "syllabus"
 
@@ -38,7 +43,7 @@ def slugify(title: str) -> str:
 
 @dataclass
 class FlatNode:
-    paper: str
+    subject: str
     title: str
     level: int
     order: int
@@ -53,15 +58,15 @@ class FlatNode:
 class SeedReport:
     inserted: int = 0
     skipped: int = 0
-    per_paper: dict[str, int] = field(default_factory=dict)
+    per_subject: dict[str, int] = field(default_factory=dict)
 
     def __str__(self) -> str:
-        lines = [f"{p}: {n} nodes" for p, n in sorted(self.per_paper.items())]
+        lines = [f"{p}: {n} nodes" for p, n in sorted(self.per_subject.items())]
         return "\n".join([*lines, f"inserted {self.inserted}, already present {self.skipped}"])
 
 
 def _flatten(
-    paper: str,
+    subject: str,
     nodes: list[dict],
     level: int,
     parent_key: str | None,
@@ -71,10 +76,10 @@ def _flatten(
     for order, raw in enumerate(nodes):
         title = raw["title"].strip()
         key = f"{parent_key}/{slugify(title)}" if parent_key else slugify(title)
-        path = f"{parent_path}/{title}" if parent_path else f"{paper}/{title}"
+        path = f"{parent_path}/{title}" if parent_path else f"{subject}/{title}"
         out.append(
             FlatNode(
-                paper=paper,
+                subject=subject,
                 title=title,
                 level=level,
                 order=order,
@@ -88,28 +93,28 @@ def _flatten(
         children = raw.get("children") or []
         if children:
             if level == 3:
-                raise ValueError(f"{paper}: '{title}' nests deeper than 3 levels")
-            _flatten(paper, children, level + 1, key, path, out)
+                raise ValueError(f"{subject}: '{title}' nests deeper than 3 levels")
+            _flatten(subject, children, level + 1, key, path, out)
 
 
 def load_seed(seed_dir: Path = SEED_DIR) -> list[FlatNode]:
-    """Read every paper file and flatten it. Raises on malformed content."""
+    """Read every subject file and flatten it. Raises on malformed content."""
     flat: list[FlatNode] = []
     files = sorted(seed_dir.glob("*.json"))
     if not files:
         raise FileNotFoundError(f"no syllabus seed files in {seed_dir}")
     for file in files:
         doc = json.loads(file.read_text(encoding="utf-8"))
-        paper = doc["paper"]
-        if paper not in Paper.__members__:
-            raise ValueError(f"{file.name}: unknown paper {paper!r}")
-        _flatten(paper, doc["sections"], 1, None, "", flat)
+        subject = doc["subject"]
+        if subject not in Subject.__members__:
+            raise ValueError(f"{file.name}: unknown subject {subject!r}")
+        _flatten(subject, doc["topics"], 1, None, "", flat)
 
     seen: set[tuple[str, str]] = set()
     for node in flat:
-        ident = (node.paper, node.seed_key)
+        ident = (node.subject, node.seed_key)
         if ident in seen:
-            raise ValueError(f"duplicate seed_key {node.seed_key!r} in {node.paper}")
+            raise ValueError(f"duplicate seed_key {node.seed_key!r} in {node.subject}")
         seen.add(ident)
     return flat
 
@@ -122,9 +127,9 @@ async def seed_syllabus(
     report = SeedReport()
 
     existing = {
-        (doc["paper"], doc["seed_key"]): doc["_id"]
+        (doc["subject"], doc["seed_key"]): doc["_id"]
         async for doc in db.syllabus_nodes.find(
-            {"seed_key": {"$ne": None}}, {"paper": 1, "seed_key": 1}
+            {"seed_key": {"$ne": None}}, {"subject": 1, "seed_key": 1}
         )
     }
 
@@ -133,15 +138,15 @@ async def seed_syllabus(
 
     # Ordered by level, so a parent always has an _id before its children.
     for node in sorted(flat, key=lambda n: n.level):
-        ident = (node.paper, node.seed_key)
-        report.per_paper[node.paper] = report.per_paper.get(node.paper, 0) + 1
+        ident = (node.subject, node.seed_key)
+        report.per_subject[node.subject] = report.per_subject.get(node.subject, 0) + 1
         if ident in ids:
             report.skipped += 1
             continue
-        parent_id = ids.get((node.paper, node.parent_key)) if node.parent_key else None
+        parent_id = ids.get((node.subject, node.parent_key)) if node.parent_key else None
         result = await db.syllabus_nodes.insert_one(
             {
-                "paper": node.paper,
+                "subject": node.subject,
                 "parent_id": parent_id,
                 "title": node.title,
                 "level": node.level,

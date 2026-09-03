@@ -21,7 +21,7 @@ from app.dates import today_ist
 from app.models.ca import CaCreate, CaUpdate, month_of
 
 #: An item attaches to a topic or a leaf, never to a whole section — the rule
-#: logs, mistakes and answers all use. "GS2/Polity" is not a revision unit.
+#: logs, mistakes and answers all use. "POLITY/Polity" is not a revision unit.
 MIN_TAGGABLE_LEVEL = 2
 
 
@@ -58,7 +58,7 @@ async def create_item(db: AsyncIOMotorDatabase, payload: CaCreate) -> dict[str, 
 
     doc["month"] = month_of(doc["date"])
     doc["node_id"] = node["_id"] if node else None
-    doc["paper"] = node["paper"] if node else None
+    doc["subject"] = node["subject"] if node else None
     doc["tagged"] = node is not None
     doc["created_at"] = datetime.now(UTC)
 
@@ -84,7 +84,7 @@ async def update_item(
     """Apply a partial update.
 
     Tagging from the inbox is this endpoint, so it carries the derived fields:
-    `tagged` and `paper` follow the node, `month` follows the date, and the log
+    `tagged` and `subject` follow the node, `month` follows the date, and the log
     is rewritten to match. None of the three is ever taken from the client.
     """
     oid = _oid(item_id)
@@ -104,11 +104,11 @@ async def update_item(
     # client did not mention the node" because exclude_unset kept it.
     if "node_id" in changes:
         if changes["node_id"] is None:
-            changes.update({"node_id": None, "paper": None, "tagged": False})
+            changes.update({"node_id": None, "subject": None, "tagged": False})
         else:
             node = await _load_node(db, changes["node_id"])
             changes.update(
-                {"node_id": node["_id"], "paper": node["paper"], "tagged": True}
+                {"node_id": node["_id"], "subject": node["subject"], "tagged": True}
             )
 
     await db.ca_items.update_one({"_id": oid}, {"$set": changes})
@@ -169,7 +169,7 @@ async def list_items(
     *,
     month: str | None = None,
     node_id: str | None = None,
-    paper: str | None = None,
+    subject: str | None = None,
     tagged: bool | None = None,
     starred: bool | None = None,
     limit: int = 30,
@@ -186,8 +186,8 @@ async def list_items(
         query["month"] = month
     if node_id:
         query["node_id"] = _oid(node_id, "node")
-    if paper:
-        query["paper"] = paper
+    if subject:
+        query["subject"] = subject
     if tagged is not None:
         query["tagged"] = tagged
     if starred is not None:

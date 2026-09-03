@@ -1,7 +1,7 @@
 """Per-node statistics for the syllabus tree.
 
 The tree row shows what has happened to a topic without the UI asking per node
-— that would be several hundred requests for GS1 alone. So the whole paper's
+— that would be several hundred requests for GEOGRAPHY alone. So the whole subject's
 statistics come back in two aggregations: one over `logs`, one over
 `review_state`.
 """
@@ -18,7 +18,7 @@ def _sum_when(log_type: str, field: str | None = None) -> dict[str, Any]:
     return {"$sum": {"$cond": [{"$eq": ["$type", log_type]}, value, 0]}}
 
 
-#: Shared by the per-paper and per-node rollups so the two can never drift.
+#: Shared by the per-subject and per-node rollups so the two can never drift.
 _GROUP_STAGE: dict[str, Any] = {
     "$group": {
         "_id": "$node_id",
@@ -42,10 +42,10 @@ def _from_log_row(row: dict[str, Any]) -> dict[str, Any]:
 
 
 async def node_stats(db: AsyncIOMotorDatabase, node_id: ObjectId) -> dict[str, Any]:
-    """The same statistics as `paper_stats`, for a single node.
+    """The same statistics as `subject_stats`, for a single node.
 
     Used by the node detail screen, which needs the counts and the next-due
-    date but has no reason to load the rest of its paper.
+    date but has no reason to load the rest of its subject.
     """
     stats: dict[str, Any] = {}
     async for row in db.logs.aggregate([{"$match": {"node_id": node_id}}, _GROUP_STAGE]):
@@ -58,15 +58,15 @@ async def node_stats(db: AsyncIOMotorDatabase, node_id: ObjectId) -> dict[str, A
     return stats
 
 
-async def paper_stats(
-    db: AsyncIOMotorDatabase, paper: str
+async def subject_stats(
+    db: AsyncIOMotorDatabase, subject: str
 ) -> dict[str, dict[str, Any]]:
-    """Own statistics per node for one paper, keyed by node id as a string.
+    """Own statistics per node for one subject, keyed by node id as a string.
 
     "Own" meaning logs attached to that exact node. Rolling those up the tree is
     the tree builder's job, since only it knows the shape.
     """
-    node_ids = await db.syllabus_nodes.distinct("_id", {"paper": paper})
+    node_ids = await db.syllabus_nodes.distinct("_id", {"subject": subject})
     if not node_ids:
         return {}
 

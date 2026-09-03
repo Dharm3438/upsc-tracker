@@ -53,7 +53,7 @@ _DUE_PROJECTION: dict[str, Any] = {
     "node_id": 1,
     "title": "$node.title",
     "path": "$node.path",
-    "paper": "$node.paper",
+    "subject": "$node.subject",
     "level": "$node.level",
     "pyq_weight": "$node.pyq_weight",
     "needs_diagram": {"$ifNull": ["$node.needs_diagram", False]},

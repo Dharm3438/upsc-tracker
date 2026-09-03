@@ -10,9 +10,11 @@ import { ATTENTION_DAYS, DEPTH_BG } from '@/lib/tokens'
 
 const LONG_PRESS_MS = 450
 
+// Only "high" earns a badge. Medium is the seed's default for every lecture and
+// every chapter without a priority band, so badging it would mark most of the
+// syllabus and single out nothing. The exact weight is still on the topic page.
 const WEIGHT: Partial<Record<PyqWeight, { label: string; tone: 'accent' | 'neutral' }>> = {
   high: { label: 'High PYQ', tone: 'accent' },
-  medium: { label: 'Medium', tone: 'neutral' },
 }
 
 /**

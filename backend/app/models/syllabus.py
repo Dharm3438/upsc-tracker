@@ -10,11 +10,11 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.common import Paper, PyObjectId, PyqWeight
+from app.models.common import PyObjectId, PyqWeight, SourceKind, Stage, Subject
 
 
 class SyllabusNodeBase(BaseModel):
-    paper: Paper
+    subject: Subject
     title: str = Field(min_length=1, max_length=300)
     level: int = Field(ge=1, le=3)
     order: int = 0
@@ -26,7 +26,7 @@ class SyllabusNodeBase(BaseModel):
 class SyllabusNodeCreate(BaseModel):
     """Level and order are derived from the parent, so they are not accepted."""
 
-    paper: Paper
+    subject: Subject
     title: str = Field(min_length=1, max_length=300)
     parent_id: PyObjectId | None = None
     pyq_weight: PyqWeight = PyqWeight.MEDIUM
@@ -86,9 +86,19 @@ class TreeNode(SyllabusNode):
 TreeNode.model_rebuild()
 
 
-class PaperSummary(BaseModel):
-    paper: Paper
+class SubjectSummary(BaseModel):
+    """A chip in the syllabus rail.
+
+    `stage` only groups the chips into Prelims and Mains; it carries no
+    behaviour. `source_kind` and `source_name` are what let the UI say whether a
+    subject is a lecture series or a book without a second copy of that table.
+    """
+
+    subject: Subject
     label: str
-    sections: int
+    stage: Stage
+    source_kind: SourceKind
+    source_name: str
+    #: Live, unarchived topics. Custom additions count, so it can drift from the
+    #: seed's own figure — which is the point of showing it.
     topics: int
-    leaves: int

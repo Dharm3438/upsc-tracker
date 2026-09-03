@@ -1,7 +1,7 @@
-import type { Coverage as CoverageData, PaperCoverage } from '@/api/progress'
+import type { Coverage as CoverageData, SubjectCoverage } from '@/api/progress'
 
 /**
- * Three bars per paper: read once, revised twice, practised. They are nested
+ * Three bars per subject: read once, revised twice, practised. They are nested
  * rather than stacked — every topic revised has been read, and every topic
  * practised has usually been read too — so the bars sit one under another at
  * the same width and the shortfall between them is the thing to see.
@@ -12,17 +12,17 @@ import type { Coverage as CoverageData, PaperCoverage } from '@/api/progress'
 export function Coverage({ data }: { data: CoverageData }) {
   return (
     <div>
-      {data.papers.map((paper) => (
-        <PaperRow key={paper.paper} row={paper} />
+      {data.subjects.map((subject) => (
+        <SubjectRow key={subject.subject} row={subject} />
       ))}
-      {data.totals && data.papers.length > 1 && (
-        <PaperRow row={data.totals} muted />
+      {data.totals && data.subjects.length > 1 && (
+        <SubjectRow row={data.totals} muted />
       )}
     </div>
   )
 }
 
-function PaperRow({ row, muted = false }: { row: PaperCoverage; muted?: boolean }) {
+function SubjectRow({ row, muted = false }: { row: SubjectCoverage; muted?: boolean }) {
   return (
     <div
       className={`border-b border-hairline px-4 py-3.5 last:border-b-0 sm:px-5 ${

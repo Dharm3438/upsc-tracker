@@ -10,69 +10,72 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.auth import require_api_key
 from app.db import get_db
-from app.models.common import PAPER_LABELS, Paper
+from app.models.common import SUBJECT_META, Subject
 from app.models.syllabus import (
     NodeMove,
-    PaperSummary,
+    SubjectSummary,
     SyllabusNodeCreate,
     SyllabusNodeUpdate,
     TreeNode,
 )
 from app.services import cache, nodes as node_service
-from app.services.rollups import node_stats, paper_stats
+from app.services.rollups import node_stats, subject_stats
 from app.services.tree import build_tree
 
 router = APIRouter(prefix="/syllabus", tags=["syllabus"], dependencies=[Depends(require_api_key)])
 
 
-@router.get("/papers", response_model=list[PaperSummary])
-async def list_papers() -> list[PaperSummary]:
-    """Counts per paper, for the chip row and to prove the seed landed."""
+@router.get("/subjects", response_model=list[SubjectSummary])
+async def list_subjects() -> list[SubjectSummary]:
+    """Every subject with its live topic count, for the chip rail.
+
+    Subjects with nothing seeded are still returned, at zero: a missing chip
+    reads as a broken app, whereas a zero reads as a seed that has not been run.
+    """
     db = get_db()
     cursor = db.syllabus_nodes.aggregate(
         [
             {"$match": {"is_archived": False}},
-            {"$group": {"_id": {"paper": "$paper", "level": "$level"}, "n": {"$sum": 1}}},
+            {"$group": {"_id": "$subject", "n": {"$sum": 1}}},
         ]
     )
-    counts: dict[str, dict[int, int]] = {}
-    async for row in cursor:
-        counts.setdefault(row["_id"]["paper"], {})[row["_id"]["level"]] = row["n"]
+    counts = {row["_id"]: row["n"] async for row in cursor}
 
     return [
-        PaperSummary(
-            paper=paper,
-            label=PAPER_LABELS[paper],
-            sections=counts.get(paper.value, {}).get(1, 0),
-            topics=counts.get(paper.value, {}).get(2, 0),
-            leaves=counts.get(paper.value, {}).get(3, 0),
+        SubjectSummary(
+            subject=subject,
+            label=meta.label,
+            stage=meta.stage,
+            source_kind=meta.source_kind,
+            source_name=meta.source_name,
+            topics=counts.get(subject.value, 0),
         )
-        for paper in Paper
+        for subject, meta in SUBJECT_META.items()
     ]
 
 
 @router.get("/tree", response_model=list[TreeNode])
 async def tree(
-    paper: Paper = Query(..., description="Paper to return the tree for"),
+    subject: Subject = Query(..., description="Subject to return the tree for"),
     include_archived: bool = False,
 ) -> list[TreeNode]:
-    """Full nested tree for one paper, with each row's activity rolled in.
+    """Full nested tree for one subject, with each row's activity rolled in.
 
-    Three queries regardless of how many nodes the paper has: the nodes, their
+    Three queries regardless of how many nodes the subject has: the nodes, their
     logs, their review states.
     """
-    key = f"tree:{paper.value}:{include_archived}"
+    key = f"tree:{subject.value}:{include_archived}"
     cached = cache.get(key)
     if cached is not None:
         return cached
 
     db = get_db()
-    match: dict = {"paper": paper.value}
+    match: dict = {"subject": subject.value}
     if not include_archived:
         match["is_archived"] = False
 
     docs = await db.syllabus_nodes.find(match).sort("order", 1).to_list(length=None)
-    result = build_tree(docs, await paper_stats(db, paper.value))
+    result = build_tree(docs, await subject_stats(db, subject.value))
     cache.put(key, result)
     return result
 
@@ -113,7 +116,7 @@ async def create_node(payload: SyllabusNodeCreate) -> TreeNode:
     try:
         doc = await node_service.create_node(
             get_db(),
-            paper=payload.paper.value,
+            subject=payload.subject.value,
             title=payload.title,
             parent_id=payload.parent_id,
             pyq_weight=payload.pyq_weight.value,

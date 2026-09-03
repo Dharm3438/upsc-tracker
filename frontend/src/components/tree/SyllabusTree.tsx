@@ -12,7 +12,7 @@ export function SyllabusTree({
   selectedId?: string
   onLongPress: (node: TreeNode) => void
 }) {
-  // Sections start open, topics closed: the whole paper on one screen would be
+  // Sections start open, topics closed: the whole subject on one screen would be
   // a wall, and a fully collapsed tree hides that anything exists.
   const [collapsed, setCollapsed] = useState<Set<string>>(
     () => new Set(nodes.flatMap((n) => n.children.map((c) => c._id))),

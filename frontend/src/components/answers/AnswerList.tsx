@@ -105,7 +105,7 @@ export function AnswerList() {
                       <Badge tone="accent" size="sm">
                         {percent(scoreRatio(answer))}
                       </Badge>
-                      {answer.node_title ?? answer.paper} · {formatDayIST(answer.date)}
+                      {answer.node_title ?? answer.subject} · {formatDayIST(answer.date)}
                     </p>
                   </Link>
                 </li>
@@ -176,7 +176,7 @@ function AnswerRow({ answer }: { answer: Answer }) {
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm text-ink">{answer.question}</span>
           <span className="block truncate text-xs text-muted">
-            {formatDayIST(answer.date)} · {answer.paper} · {answer.marks_allotted} marks
+            {formatDayIST(answer.date)} · {answer.subject} · {answer.marks_allotted} marks
             {answer.minutes_taken !== null && ` · ${answer.minutes_taken} min`}
           </span>
         </span>

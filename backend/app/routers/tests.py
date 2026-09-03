@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from app.auth import require_api_key
 from app.db import get_db
-from app.models.common import Paper
+from app.models.common import Subject
 from app.models.mistakes import Mistake, MistakeBulk
 from app.models.tests import Test, TestCreate, TestKind, TestPage, TestUpdate
 from app.services import mistakes as mistake_service
@@ -34,7 +34,7 @@ async def create_test(payload: TestCreate) -> Test:
 @router.get("", response_model=TestPage)
 async def list_tests(
     kind: TestKind | None = None,
-    paper: Paper | None = None,
+    subject: Subject | None = None,
     limit: int = Query(default=30, ge=1, le=100),
     cursor: str | None = None,
 ) -> TestPage:
@@ -44,7 +44,7 @@ async def list_tests(
         docs, next_cursor = await test_service.list_tests(
             db,
             kind=kind.value if kind else None,
-            paper=paper.value if paper else None,
+            subject=subject.value if subject else None,
             limit=limit,
             cursor=cursor,
         )
@@ -93,7 +93,7 @@ async def delete_test(test_id: str) -> Response:
     status_code=status.HTTP_201_CREATED,
 )
 async def add_mistakes(test_id: str, payload: MistakeBulk) -> list[Mistake]:
-    """The whole wrong-answer list from one paper, in one request."""
+    """The whole wrong-answer list from one subject, in one request."""
     try:
         docs = await mistake_service.add_test_mistakes(get_db(), test_id, payload)
     except mistake_service.MistakeError as error:

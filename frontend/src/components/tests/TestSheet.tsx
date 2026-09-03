@@ -1,15 +1,14 @@
 import { useState } from 'react'
 
-import type { Paper } from '@/api/syllabus'
+import type { Subject } from '@/api/syllabus'
 import { TEST_KINDS, type NewTest, type Test, type TestKind } from '@/api/tests'
 import { Sheet } from '@/components/shell/Sheet'
 import { toast } from '@/components/shell/Toast'
 import { Button, Callout, Chip, Field, Input, NumberInput, Textarea } from '@/components/ui'
+import { useSubjects } from '@/hooks/useSyllabus'
 import { useCreateTest, useUpdateTest } from '@/hooks/useTests'
 import { todayIST } from '@/lib/date'
 import { readable } from '@/lib/errors'
-
-const PAPERS: Paper[] = ['GS1', 'GS2', 'GS3', 'GS4', 'CSAT']
 
 /** She has a score sheet in front of her: three numbers, then done. Marks,
  *  duration and notes are optional and sit below the fold of attention. */
@@ -25,7 +24,10 @@ export function TestSheet({
   const [title, setTitle] = useState(existing?.title ?? '')
   const [date, setDate] = useState(existing?.date ?? todayIST())
   const [kind, setKind] = useState<TestKind>(existing?.kind ?? 'sectional')
-  const [papers, setPapers] = useState<Paper[]>(existing?.papers ?? [])
+  const [subjects, setSubjects] = useState<Subject[]>(existing?.subjects ?? [])
+  // The rail is the same list the syllabus uses, so a new subject never has to
+  // be added here as well.
+  const allSubjects = useSubjects()
   const [total, setTotal] = useState(String(existing?.total_questions ?? 100))
   const [attempted, setAttempted] = useState(
     existing ? String(existing.attempted) : '',
@@ -50,10 +52,10 @@ export function TestSheet({
       attempted: number(attempted) ?? 0,
       correct: number(correct) ?? 0,
     }
-    if (!title.trim()) return setError('Give the paper a name you will recognise.')
+    if (!title.trim()) return setError('Give the subject a name you will recognise.')
     if (counts.total_questions < 1) return setError('How many questions were in it?')
     if (counts.attempted > counts.total_questions) {
-      return setError('More attempted than the paper had.')
+      return setError('More attempted than the subject had.')
     }
     if (counts.correct > counts.attempted) {
       return setError('More correct than attempted.')
@@ -64,7 +66,7 @@ export function TestSheet({
       title: title.trim(),
       date,
       kind,
-      papers,
+      subjects,
       ...counts,
       max_marks: number(maxMarks),
       duration_minutes: number(minutes),
@@ -94,7 +96,7 @@ export function TestSheet({
       }
     >
       <div className="space-y-4 p-4 sm:p-5">
-        <Field label="Paper">
+        <Field label="Subject">
           <Input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
@@ -118,19 +120,19 @@ export function TestSheet({
 
         <Field label="Covering">
           <div className="flex flex-wrap gap-2">
-            {PAPERS.map((option) => (
+            {(allSubjects.data ?? []).map((option) => (
               <Chip
-                key={option}
-                selected={papers.includes(option)}
+                key={option.subject}
+                selected={subjects.includes(option.subject)}
                 onClick={() =>
-                  setPapers((current) =>
-                    current.includes(option)
-                      ? current.filter((paper) => paper !== option)
-                      : [...current, option],
+                  setSubjects((current) =>
+                    current.includes(option.subject)
+                      ? current.filter((subject) => subject !== option.subject)
+                      : [...current, option.subject],
                   )
                 }
               >
-                {option}
+                {option.label}
               </Chip>
             ))}
           </div>
@@ -138,7 +140,7 @@ export function TestSheet({
 
         <Field
           label="Questions"
-          hint="in the paper · attempted · correct"
+          hint="in the subject · attempted · correct"
         >
           <div className="grid grid-cols-3 gap-2">
             <NumberInput value={total} onChange={setTotal} placeholder="100" />

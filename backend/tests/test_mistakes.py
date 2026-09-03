@@ -50,18 +50,18 @@ async def db(client):
 
 @pytest_asyncio.fixture
 async def nodes(db) -> dict[str, str]:
-    """One GS2 topic and one GS3 topic, plus the GS2 section above them."""
+    """One POLITY topic and one ECONOMICS topic, plus the POLITY section above them."""
     polity = await node_service.create_node(
-        db, paper="GS2", title="Polity", parent_id=None, pyq_weight="high"
+        db, subject="POLITY", title="Polity", parent_id=None, pyq_weight="high"
     )
     federalism = await node_service.create_node(
-        db, paper="GS2", title="Federalism", parent_id=str(polity["_id"])
+        db, subject="POLITY", title="Federalism", parent_id=str(polity["_id"])
     )
     economy = await node_service.create_node(
-        db, paper="GS3", title="Economy", parent_id=None
+        db, subject="ECONOMICS", title="Economy", parent_id=None
     )
     inflation = await node_service.create_node(
-        db, paper="GS3", title="Inflation", parent_id=str(economy["_id"])
+        db, subject="ECONOMICS", title="Inflation", parent_id=str(economy["_id"])
     )
     return {
         "section": str(polity["_id"]),
@@ -77,7 +77,7 @@ async def attempt(db) -> str:
         test_schema.TestCreate(
             date=TODAY,
             title="Vision IAS PT Test 6",
-            papers=["GS2"],
+            subjects=["POLITY"],
             total_questions=100,
             attempted=84,
             correct=57,
@@ -112,13 +112,13 @@ class TestBulkEntry:
     async def test_mistakes_are_dated_to_the_test_not_to_data_entry(
         self, db, nodes, attempt
     ):
-        """Typed in on Sunday evening, they still belong to Saturday's paper."""
+        """Typed in on Sunday evening, they still belong to Saturday's subject."""
         doc = await add(db, attempt, nodes["gs2"], "silly")
         assert doc["date"] == TODAY
 
-    async def test_the_paper_is_denormalised_from_the_node(self, db, nodes, attempt):
+    async def test_the_subject_is_denormalised_from_the_node(self, db, nodes, attempt):
         doc = await add(db, attempt, nodes["gs3"], "guess")
-        assert doc["paper"] == "GS3"
+        assert doc["subject"] == "ECONOMICS"
 
     async def test_a_whole_section_is_too_coarse_to_tag(self, db, nodes, attempt):
         with pytest.raises(mistake_service.MistakeError):
@@ -138,11 +138,11 @@ class TestFilters:
         docs, _ = await mistake_service.list_mistakes(db, tag="silly")
         assert [doc["tag"] for doc in docs] == ["silly"]
 
-    async def test_filtering_by_paper(self, db, nodes, attempt):
+    async def test_filtering_by_subject(self, db, nodes, attempt):
         await add(db, attempt, nodes["gs2"], "silly")
         await add(db, attempt, nodes["gs3"], "silly")
-        docs, _ = await mistake_service.list_mistakes(db, paper="GS3")
-        assert [doc["paper"] for doc in docs] == ["GS3"]
+        docs, _ = await mistake_service.list_mistakes(db, subject="ECONOMICS")
+        assert [doc["subject"] for doc in docs] == ["ECONOMICS"]
 
     async def test_free_text_searches_the_question_and_the_note(
         self, db, nodes, attempt
@@ -152,7 +152,7 @@ class TestFilters:
         docs, _ = await mistake_service.list_mistakes(db, query_text="Zonal")
         assert [doc["question"] for doc in docs] == ["Zonal Councils"]
 
-    async def test_rows_carry_the_topic_and_the_paper_they_came_from(
+    async def test_rows_carry_the_topic_and_the_subject_they_came_from(
         self, db, nodes, attempt
     ):
         await add(db, attempt, nodes["gs2"], "silly")
@@ -189,14 +189,14 @@ class TestResolving:
         )
         assert reopened["resolved_at"] is None
 
-    async def test_re_filing_under_another_topic_moves_the_paper_too(
+    async def test_re_filing_under_another_topic_moves_the_subject_too(
         self, db, nodes, attempt
     ):
         doc = await add(db, attempt, nodes["gs2"], "silly")
         moved = await mistake_service.update_mistake(
             db, str(doc["_id"]), MistakeUpdate(node_id=nodes["gs3"])
         )
-        assert moved["paper"] == "GS3"
+        assert moved["subject"] == "ECONOMICS"
 
 
 class TestSummary:
@@ -212,7 +212,7 @@ class TestSummary:
         ]
         assert [row["count"] for row in result["by_tag"]] == [0, 1, 0, 0, 0]
 
-    async def test_counts_split_by_tag_and_by_paper(self, db, nodes, attempt):
+    async def test_counts_split_by_tag_and_by_subject(self, db, nodes, attempt):
         await add(db, attempt, nodes["gs2"], "silly")
         await add(db, attempt, nodes["gs2"], "silly")
         await add(db, attempt, nodes["gs3"], "unknown")
@@ -221,9 +221,9 @@ class TestSummary:
         by_tag = {row["tag"]: row["count"] for row in result["by_tag"]}
         assert by_tag["silly"] == 2
         assert by_tag["unknown"] == 1
-        assert result["by_paper"] == [
-            {"paper": "GS2", "count": 2},
-            {"paper": "GS3", "count": 1},
+        assert result["by_subject"] == [
+            {"subject": "POLITY", "count": 2},
+            {"subject": "ECONOMICS", "count": 1},
         ]
         assert result["total"] == 3
         assert result["unresolved"] == 3
@@ -239,7 +239,7 @@ class TestSummary:
         assert result["total"] == 1
         assert result["unresolved"] == 0
 
-    async def test_the_window_excludes_earlier_papers(self, db, nodes):
+    async def test_the_window_excludes_earlier_subjects(self, db, nodes):
         await mistake_service.create_mistake(
             db,
             MistakeCreate(node_id=nodes["gs2"], tag="silly", date=YESTERDAY),
@@ -251,11 +251,11 @@ class TestSummary:
         result = await mistake_service.summary(db, date_from=TODAY)
         assert result["total"] == 1
 
-    async def test_the_paper_filter_narrows_the_summary_like_the_list(
+    async def test_the_subject_filter_narrows_the_summary_like_the_list(
         self, db, nodes, attempt
     ):
         await add(db, attempt, nodes["gs2"], "silly")
         await add(db, attempt, nodes["gs3"], "unknown")
-        result = await mistake_service.summary(db, paper="GS2")
+        result = await mistake_service.summary(db, subject="POLITY")
         assert result["total"] == 1
-        assert result["by_paper"] == [{"paper": "GS2", "count": 1}]
+        assert result["by_subject"] == [{"subject": "POLITY", "count": 1}]

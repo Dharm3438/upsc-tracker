@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from app.auth import require_api_key
 from app.db import get_db
 from app.models.ca import CaCreate, CaItem, CaMonth, CaPage, CaUpdate
-from app.models.common import Paper
+from app.models.common import Subject
 from app.services import ca as ca_service
 
 router = APIRouter(prefix="/ca", tags=["ca"], dependencies=[Depends(require_api_key)])
@@ -42,7 +42,7 @@ async def create_item(payload: CaCreate) -> CaItem:
 async def list_items(
     month: str | None = Query(default=None, pattern=MONTH_PATTERN),
     node_id: str | None = None,
-    paper: Paper | None = None,
+    subject: Subject | None = None,
     tagged: bool | None = None,
     starred: bool | None = None,
     limit: int = Query(default=30, ge=1, le=100),
@@ -55,7 +55,7 @@ async def list_items(
             get_db(),
             month=month,
             node_id=node_id,
-            paper=paper.value if paper else None,
+            subject=subject.value if subject else None,
             tagged=tagged,
             starred=starred,
             limit=limit,

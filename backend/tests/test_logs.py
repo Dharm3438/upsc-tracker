@@ -15,7 +15,7 @@ from app.models.logs import LogCreate
 from app.services import logs as log_service
 from app.services import nodes as node_service
 from app.services.logs import LogError
-from app.services.rollups import paper_stats
+from app.services.rollups import subject_stats
 from app.services.tree import build_tree
 
 pytestmark = pytest.mark.asyncio(loop_scope="module")
@@ -47,20 +47,20 @@ async def db(client):
 
 @pytest_asyncio.fixture
 async def branch(db) -> dict[str, str]:
-    """A GS2 branch: section → topic → two leaves."""
+    """A POLITY branch: section → topic → two leaves."""
     section = await node_service.create_node(
-        db, paper="GS2", title="Polity", parent_id=None, pyq_weight="high"
+        db, subject="POLITY", title="Polity", parent_id=None, pyq_weight="high"
     )
     topic = await node_service.create_node(
-        db, paper="GS2", title="Federalism", parent_id=str(section["_id"]),
+        db, subject="POLITY", title="Federalism", parent_id=str(section["_id"]),
         pyq_weight="high",
     )
     leaf_a = await node_service.create_node(
-        db, paper="GS2", title="Centre-State relations", parent_id=str(topic["_id"]),
+        db, subject="POLITY", title="Centre-State relations", parent_id=str(topic["_id"]),
         pyq_weight="high",
     )
     leaf_b = await node_service.create_node(
-        db, paper="GS2", title="Inter-State Council", parent_id=str(topic["_id"]),
+        db, subject="POLITY", title="Inter-State Council", parent_id=str(topic["_id"]),
         pyq_weight="low",
     )
     return {
@@ -242,7 +242,7 @@ class TestListing:
         await log_service.create_log(db, read_log(branch["leaf_a"]))
         docs, _ = await log_service.list_logs(db, with_node=True)
         assert docs[0]["node_title"] == "Centre-State relations"
-        assert docs[0]["node_path"] == "GS2/Polity/Federalism/Centre-State relations"
+        assert docs[0]["node_path"] == "POLITY/Polity/Federalism/Centre-State relations"
 
 
 class TestRecentNodes:
@@ -275,7 +275,7 @@ class TestRollups:
             ),
         )
 
-        stats = await paper_stats(db, "GS2")
+        stats = await subject_stats(db, "POLITY")
         leaf = stats[branch["leaf_a"]]
         assert leaf["read_count"] == 1
         assert leaf["revise_count"] == 1
@@ -288,8 +288,8 @@ class TestRollups:
         await log_service.create_log(db, revise_log(branch["leaf_a"], 4))
         await log_service.create_log(db, revise_log(branch["leaf_a"], 5))
 
-        docs = await db.syllabus_nodes.find({"paper": "GS2"}).to_list(length=None)
-        roots = build_tree(docs, await paper_stats(db, "GS2"))
+        docs = await db.syllabus_nodes.find({"subject": "POLITY"}).to_list(length=None)
+        roots = build_tree(docs, await subject_stats(db, "POLITY"))
 
         section = roots[0]
         assert section.leaf_count == 2
@@ -297,6 +297,6 @@ class TestRollups:
         # Two revisions is the threshold for counting as revised.
         assert section.leaf_revised == 1
 
-    async def test_an_untouched_paper_has_empty_stats(self, db, branch):
-        assert await paper_stats(db, "GS2") == {}
-        assert await paper_stats(db, "GS1") == {}
+    async def test_an_untouched_subject_has_empty_stats(self, db, branch):
+        assert await subject_stats(db, "POLITY") == {}
+        assert await subject_stats(db, "GEOGRAPHY") == {}

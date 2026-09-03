@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn'
 
 /**
  * The surface everything sits on. One elevation only: a hairline plus a warm
- * shadow. A second elevation would need a reason, and stacked cards on a paper
+ * shadow. A second elevation would need a reason, and stacked cards on a subject
  * ground start to look like a pile of receipts.
  */
 export function Card({

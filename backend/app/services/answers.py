@@ -59,7 +59,7 @@ async def create_answer(
 
     doc = payload.model_dump(mode="json")
     doc["node_id"] = node["_id"]
-    doc["paper"] = node["paper"]
+    doc["subject"] = node["subject"]
     doc["reviewed"] = False
     doc["reviewed_at"] = None
     doc["created_at"] = datetime.now(UTC)
@@ -122,7 +122,7 @@ async def update_answer(
     if changes.get("node_id"):
         node = await _load_node(db, changes["node_id"])
         changes["node_id"] = node["_id"]
-        changes["paper"] = node["paper"]
+        changes["subject"] = node["subject"]
 
     if "reviewed" in changes:
         changes["reviewed_at"] = datetime.now(UTC) if changes["reviewed"] else None
@@ -193,7 +193,7 @@ async def delete_answer(db: AsyncIOMotorDatabase, answer_id: str) -> None:
 async def list_answers(
     db: AsyncIOMotorDatabase,
     *,
-    paper: str | None = None,
+    subject: str | None = None,
     node_id: str | None = None,
     date_from: str | None = None,
     date_to: str | None = None,
@@ -207,8 +207,8 @@ async def list_answers(
     boundary between them could drop a row.
     """
     query: dict[str, Any] = {}
-    if paper:
-        query["paper"] = paper
+    if subject:
+        query["subject"] = subject
     if node_id:
         query["node_id"] = _oid(node_id, "node")
     if date_from or date_to:

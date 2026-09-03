@@ -1,6 +1,6 @@
 import { api } from './client'
 
-import type { Paper } from './syllabus'
+import type { Subject } from './syllabus'
 
 /** Mirrors the server: under half the marks allotted goes into the redo queue. */
 export const REDO_THRESHOLD = 0.5
@@ -9,7 +9,7 @@ export type Answer = {
   _id: string
   date: string
   node_id: string
-  paper: Paper
+  subject: Subject
   question: string
   marks_allotted: number
   word_limit: number | null

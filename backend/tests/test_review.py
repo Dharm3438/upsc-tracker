@@ -45,7 +45,7 @@ async def db(client):
 @pytest_asyncio.fixture
 async def topic(db) -> str:
     section = await node_service.create_node(
-        db, paper="GS2", title="Polity", parent_id=None, pyq_weight="high"
+        db, subject="POLITY", title="Polity", parent_id=None, pyq_weight="high"
     )
     return str(section["_id"])
 
@@ -53,7 +53,7 @@ async def topic(db) -> str:
 async def leaf(db, topic: str, title: str, weight: str = "medium") -> str:
     """A level-2 topic under the seeded section — the shallowest loggable level."""
     doc = await node_service.create_node(
-        db, paper="GS2", title=title, parent_id=topic, pyq_weight=weight
+        db, subject="POLITY", title=title, parent_id=topic, pyq_weight=weight
     )
     return str(doc["_id"])
 
@@ -151,8 +151,8 @@ class TestDue:
 
         row = (await review_service.due(db, date=TOMORROW))["items"][0]
         assert str(row["node_id"]) == node_id
-        assert row["path"] == "GS2/Polity/Federalism"
-        assert row["paper"] == "GS2"
+        assert row["path"] == "POLITY/Polity/Federalism"
+        assert row["subject"] == "POLITY"
         assert row["pyq_weight"] == "high"
         assert row["notes"] == "Art 246 and 254."
         assert row["lapses"] == 1

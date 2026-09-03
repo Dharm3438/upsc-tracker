@@ -45,5 +45,5 @@ def test_protected_route_accepts_the_right_key(client):
 
 def test_unconfigured_database_returns_503_not_500(client):
     """Without MONGODB_URI the app must still answer, so CORS headers survive."""
-    response = client.get("/api/syllabus/papers", headers={"X-API-Key": "test-key"})
+    response = client.get("/api/syllabus/subjects", headers={"X-API-Key": "test-key"})
     assert response.status_code == 503

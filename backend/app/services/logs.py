@@ -300,7 +300,7 @@ async def recent_nodes(
                 "node_id": "$_id",
                 "title": "$node.title",
                 "path": "$node.path",
-                "paper": "$node.paper",
+                "subject": "$node.subject",
                 "last_logged": 1,
             }
         },

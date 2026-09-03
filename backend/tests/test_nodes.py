@@ -43,18 +43,18 @@ async def db(client):
 
 
 async def seed_branch(db) -> dict[str, str]:
-    """A small GS2 branch: section → topic → two leaves."""
+    """A small POLITY branch: section → topic → two leaves."""
     section = await node_service.create_node(
-        db, paper="GS2", title="Polity", parent_id=None
+        db, subject="POLITY", title="Polity", parent_id=None
     )
     topic = await node_service.create_node(
-        db, paper="GS2", title="Federalism", parent_id=str(section["_id"])
+        db, subject="POLITY", title="Federalism", parent_id=str(section["_id"])
     )
     leaf_a = await node_service.create_node(
-        db, paper="GS2", title="Centre-State relations", parent_id=str(topic["_id"])
+        db, subject="POLITY", title="Centre-State relations", parent_id=str(topic["_id"])
     )
     leaf_b = await node_service.create_node(
-        db, paper="GS2", title="Inter-State Council", parent_id=str(topic["_id"])
+        db, subject="POLITY", title="Inter-State Council", parent_id=str(topic["_id"])
     )
     return {
         "section": str(section["_id"]),
@@ -73,8 +73,8 @@ async def path_of(db, node_id: str) -> str:
 
 async def test_create_derives_level_order_and_path(db):
     ids = await seed_branch(db)
-    assert await path_of(db, ids["topic"]) == "GS2/Polity/Federalism"
-    assert await path_of(db, ids["leaf_b"]) == "GS2/Polity/Federalism/Inter-State Council"
+    assert await path_of(db, ids["topic"]) == "POLITY/Polity/Federalism"
+    assert await path_of(db, ids["leaf_b"]) == "POLITY/Polity/Federalism/Inter-State Council"
 
     from bson import ObjectId
 
@@ -89,7 +89,7 @@ async def test_create_refuses_a_fourth_level(db):
     ids = await seed_branch(db)
     with pytest.raises(NodeError, match="only 3 levels"):
         await node_service.create_node(
-            db, paper="GS2", title="Too deep", parent_id=ids["leaf_a"]
+            db, subject="POLITY", title="Too deep", parent_id=ids["leaf_a"]
         )
 
 
@@ -97,7 +97,7 @@ async def test_create_refuses_a_duplicate_sibling(db):
     ids = await seed_branch(db)
     with pytest.raises(NodeError, match="already exists"):
         await node_service.create_node(
-            db, paper="GS2", title="Inter-State Council", parent_id=ids["topic"]
+            db, subject="POLITY", title="Inter-State Council", parent_id=ids["topic"]
         )
 
 
@@ -106,14 +106,14 @@ async def test_renaming_a_level_two_node_repaths_every_descendant(db):
 
     await node_service.update_node(db, ids["topic"], {"title": "Federal structure"})
 
-    assert await path_of(db, ids["topic"]) == "GS2/Polity/Federal structure"
+    assert await path_of(db, ids["topic"]) == "POLITY/Polity/Federal structure"
     assert (
         await path_of(db, ids["leaf_a"])
-        == "GS2/Polity/Federal structure/Centre-State relations"
+        == "POLITY/Polity/Federal structure/Centre-State relations"
     )
     assert (
         await path_of(db, ids["leaf_b"])
-        == "GS2/Polity/Federal structure/Inter-State Council"
+        == "POLITY/Polity/Federal structure/Inter-State Council"
     )
 
 
@@ -124,7 +124,7 @@ async def test_renaming_a_section_repaths_two_levels_down(db):
 
     assert (
         await path_of(db, ids["leaf_a"])
-        == "GS2/Polity and governance/Federalism/Centre-State relations"
+        == "POLITY/Polity and governance/Federalism/Centre-State relations"
     )
 
 
@@ -132,26 +132,26 @@ async def test_rename_does_not_touch_a_similarly_named_sibling(db):
     """The prefix match must not treat 'Polity' as a prefix of 'Polity notes'."""
     ids = await seed_branch(db)
     sibling = await node_service.create_node(
-        db, paper="GS2", title="Polity notes", parent_id=None
+        db, subject="POLITY", title="Polity notes", parent_id=None
     )
 
     await node_service.update_node(db, ids["section"], {"title": "Constitution"})
 
-    assert await path_of(db, str(sibling["_id"])) == "GS2/Polity notes"
+    assert await path_of(db, str(sibling["_id"])) == "POLITY/Polity notes"
 
 
 async def test_moving_a_topic_carries_its_subtree(db):
     ids = await seed_branch(db)
     other = await node_service.create_node(
-        db, paper="GS2", title="Governance", parent_id=None
+        db, subject="POLITY", title="Governance", parent_id=None
     )
 
     await node_service.move_node(db, ids["topic"], str(other["_id"]), None)
 
-    assert await path_of(db, ids["topic"]) == "GS2/Governance/Federalism"
+    assert await path_of(db, ids["topic"]) == "POLITY/Governance/Federalism"
     assert (
         await path_of(db, ids["leaf_a"])
-        == "GS2/Governance/Federalism/Centre-State relations"
+        == "POLITY/Governance/Federalism/Centre-State relations"
     )
 
 
@@ -160,10 +160,10 @@ async def test_a_move_cannot_push_the_tree_past_three_levels(db):
     # A leaf outside the moving node's own subtree, so the depth check is what
     # rejects the move rather than the cycle check.
     other = await node_service.create_node(
-        db, paper="GS2", title="Governance", parent_id=None
+        db, subject="POLITY", title="Governance", parent_id=None
     )
     other_topic = await node_service.create_node(
-        db, paper="GS2", title="Transparency", parent_id=str(other["_id"])
+        db, subject="POLITY", title="Transparency", parent_id=str(other["_id"])
     )
 
     with pytest.raises(NodeError, match="past 3 levels"):
@@ -200,9 +200,9 @@ async def test_archive_allowed_once_children_are_archived(db):
 
 async def test_titles_cannot_smuggle_a_path_separator(db):
     node = await node_service.create_node(
-        db, paper="GS2", title="Rights / Duties", parent_id=None
+        db, subject="POLITY", title="Rights / Duties", parent_id=None
     )
-    assert node["path"] == "GS2/Rights Duties"
+    assert node["path"] == "POLITY/Rights Duties"
     assert "/" not in node["title"]
 
 
@@ -212,7 +212,7 @@ async def test_a_custom_node_survives_a_re_run_of_the_seed(db):
 
     await seed_syllabus(db)
     custom = await node_service.create_node(
-        db, paper="GS2", title="My own revision list", parent_id=None
+        db, subject="POLITY", title="My own revision list", parent_id=None
     )
     before = await db.syllabus_nodes.count_documents({})
 
