@@ -16,6 +16,10 @@ function useLogInvalidation() {
     void client.invalidateQueries({ queryKey: ['node'] })
     void client.invalidateQueries({ queryKey: ['due'] })
     void client.invalidateQueries({ queryKey: ['upcoming'] })
+    void client.invalidateQueries({ queryKey: ['coverage'] })
+    void client.invalidateQueries({ queryKey: ['burndown'] })
+    void client.invalidateQueries({ queryKey: ['heatmap'] })
+    void client.invalidateQueries({ queryKey: ['effort'] })
   }
 }
 
