@@ -7,8 +7,6 @@ import { useRecentNodes } from '@/hooks/useLogs'
 
 export type PickedNode = { id: string; title: string; path: string }
 
-/** Logs attach to topics and leaves; a whole section is too coarse to study. */
-const MIN_LEVEL = 2
 const SEARCH_DEBOUNCE_MS = 250
 
 /**
@@ -37,7 +35,7 @@ export function NodePicker({
     enabled: debounced.length >= 2,
   })
 
-  const matches = (results.data ?? []).filter((node) => node.level >= MIN_LEVEL)
+  const matches = results.data ?? []
 
   return (
     <div>

@@ -20,10 +20,6 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.dates import today_ist
 from app.models.ca import CaCreate, CaUpdate, month_of
 
-#: An item attaches to a topic or a leaf, never to a whole section — the rule
-#: logs, mistakes and answers all use. "POLITY/Polity" is not a revision unit.
-MIN_TAGGABLE_LEVEL = 2
-
 
 class CaError(Exception):
     """A rejected write, turned into a 4xx by the router."""
@@ -46,8 +42,6 @@ async def _load_node(db: AsyncIOMotorDatabase, node_id: str) -> dict[str, Any]:
         raise CaError("That topic no longer exists.", status=404)
     if node.get("is_archived"):
         raise CaError("That topic is archived.", status=409)
-    if node["level"] < MIN_TAGGABLE_LEVEL:
-        raise CaError("Pick a topic inside this section, not the section itself.")
     return node
 
 

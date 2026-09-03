@@ -155,8 +155,8 @@ export function NodeDetail() {
 
       {logging && (
         <QuickLogSheet
+          node={{ id: data._id, title: data.title, path: data.path }}
           onClose={() => setLogging(false)}
-          initialNode={{ id: data._id, title: data.title, path: data.path }}
         />
       )}
     </>

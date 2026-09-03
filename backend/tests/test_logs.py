@@ -184,9 +184,11 @@ class TestDeleteReversal:
 
 
 class TestRejections:
-    async def test_a_section_cannot_be_logged_against(self, db, branch):
-        with pytest.raises(LogError, match="inside this section"):
-            await log_service.create_log(db, read_log(branch["section"]))
+    async def test_a_top_level_topic_can_be_logged_against(self, db, branch):
+        # The seeded syllabus is flat — a chapter or lecture is a level-1 node —
+        # so depth is no longer what decides whether something is a study unit.
+        doc, _ = await log_service.create_log(db, read_log(branch["section"]))
+        assert str(doc["node_id"]) == branch["section"]
 
     async def test_an_archived_topic_is_refused(self, db, branch):
         await node_service.archive_node(db, branch["leaf_b"])

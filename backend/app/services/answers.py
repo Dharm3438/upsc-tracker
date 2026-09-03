@@ -18,10 +18,6 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.dates import today_ist
 from app.models.answers import AnswerCreate, AnswerUpdate, apply_redo
 
-#: An answer attaches to a topic or a leaf, never to a whole section — the rule
-#: logs and mistakes already use, and for the same reason.
-MIN_TAGGABLE_LEVEL = 2
-
 #: The header trends of plan §8.5.
 TREND_LENGTH = 20
 
@@ -47,8 +43,6 @@ async def _load_node(db: AsyncIOMotorDatabase, node_id: str) -> dict[str, Any]:
         raise AnswerError("That topic no longer exists.", status=404)
     if node.get("is_archived"):
         raise AnswerError("That topic is archived.", status=409)
-    if node["level"] < MIN_TAGGABLE_LEVEL:
-        raise AnswerError("Pick a topic inside this section, not the section itself.")
     return node
 
 

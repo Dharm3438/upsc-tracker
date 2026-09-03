@@ -120,9 +120,10 @@ class TestBulkEntry:
         doc = await add(db, attempt, nodes["gs3"], "guess")
         assert doc["subject"] == "ECONOMICS"
 
-    async def test_a_whole_section_is_too_coarse_to_tag(self, db, nodes, attempt):
-        with pytest.raises(mistake_service.MistakeError):
-            await add(db, attempt, nodes["section"], "silly")
+    async def test_a_top_level_topic_can_be_tagged(self, db, nodes, attempt):
+        # The seeded syllabus is flat, so a level-1 node is a real study unit.
+        doc = await add(db, attempt, nodes["section"], "silly")
+        assert str(doc["node_id"]) == nodes["section"]
 
     async def test_adding_to_a_test_that_is_gone_is_a_404(self, db, nodes, attempt):
         await test_service.delete_test(db, attempt)
