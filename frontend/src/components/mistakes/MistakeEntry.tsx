@@ -2,7 +2,11 @@ import { useState } from 'react'
 
 import { TAGS, type MistakeItem, type MistakeTag } from '@/api/mistakes'
 import { NodePicker, type PickedNode } from '@/components/log/NodePicker'
+import { X } from 'lucide-react'
+
 import { Sheet } from '@/components/shell/Sheet'
+import { Badge, Button, Callout, Field, Input } from '@/components/ui'
+import { cn } from '@/lib/cn'
 import { toast } from '@/components/shell/Toast'
 import { useAddTestMistakes } from '@/hooks/useMistakes'
 import { readable } from '@/lib/errors'
@@ -89,34 +93,45 @@ export function MistakeEntry({
   }
 
   return (
-    <Sheet title="Add mistakes" onClose={onClose}>
-      <div className="max-h-[75vh] space-y-4 overflow-y-auto p-4">
+    <Sheet
+      title="Add mistakes"
+      description="The topic stays selected between rows, so a run of them is fast."
+      onClose={onClose}
+      footer={
+        <div className="flex gap-2">
+          <Button full onClick={queueRow}>
+            Add another
+          </Button>
+          <Button variant="primary" full loading={add.isPending} onClick={save}>
+            Save {saveCount(queue.length, node, tag)}
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4 p-4 sm:p-5">
         {remaining > 0 && (
-          <p className="text-xs text-slate">
+          <Callout tone="accent">
             {remaining} of the {wrong} wrong answers still to record.
-          </p>
+          </Callout>
         )}
 
         {queue.length > 0 && (
-          <ul className="rounded border border-line">
+          <ul className="divide-y divide-hairline rounded-md border border-hairline bg-canvas">
             {queue.map((row, index) => (
-              <li
-                key={index}
-                className="flex items-center gap-2 border-b border-line px-3 py-2 last:border-0"
-              >
-                <span className="min-w-0 flex-1 truncate text-sm">{row.title}</span>
-                <span className="shrink-0 text-xs text-slate">
+              <li key={index} className="flex items-center gap-2 px-3 py-2">
+                <span className="min-w-0 flex-1 truncate text-sm text-ink">{row.title}</span>
+                <Badge size="sm">
                   {TAGS.find((option) => option.value === row.tag)?.short}
-                </span>
+                </Badge>
                 <button
                   type="button"
                   onClick={() =>
                     setQueue((current) => current.filter((_, i) => i !== index))
                   }
                   aria-label={`Remove ${row.title}`}
-                  className="shrink-0 px-1 text-sm text-slate"
+                  className="shrink-0 rounded-md p-1 text-faint transition-colors hover:bg-danger-soft hover:text-danger"
                 >
-                  ×
+                  <X size={14} strokeWidth={2.2} />
                 </button>
               </li>
             ))}
@@ -128,19 +143,19 @@ export function MistakeEntry({
         </Field>
 
         <Field label="What kind of mistake?">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid gap-2 sm:grid-cols-2">
             {TAGS.map((option) => (
               <button
                 key={option.value}
                 type="button"
                 aria-pressed={tag === option.value}
                 onClick={() => setTag(option.value)}
-                className={[
-                  'h-tap rounded border px-2 text-sm',
+                className={cn(
+                  'h-10 rounded-md border px-3 text-left text-sm transition-colors',
                   tag === option.value
-                    ? 'border-signal bg-signal text-surface'
-                    : 'border-line text-slate',
-                ].join(' ')}
+                    ? 'border-accent-ring bg-accent-soft font-medium text-accent'
+                    : 'border-hairline text-muted hover:border-edge hover:text-ink',
+                )}
               >
                 {option.label}
               </button>
@@ -148,43 +163,23 @@ export function MistakeEntry({
           </div>
         </Field>
 
-        <Field label="Question (optional)">
-          <input
+        <Field label="Question" hint="optional">
+          <Input
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
             placeholder="Which of the following are Fundamental Duties…"
-            className="h-tap w-full rounded border border-line px-3 text-sm focus:border-signal"
           />
         </Field>
 
-        <Field label="Why it went wrong (optional)">
-          <input
+        <Field label="Why it went wrong" hint="optional">
+          <Input
             value={note}
             onChange={(event) => setNote(event.target.value)}
             placeholder="Confused Art 51A(g) with (j)"
-            className="h-tap w-full rounded border border-line px-3 text-sm focus:border-signal"
           />
         </Field>
 
-        {error && <p className="text-sm text-overdue">{error}</p>}
-
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={queueRow}
-            className="h-tap flex-1 rounded border border-line text-sm"
-          >
-            Add another
-          </button>
-          <button
-            type="button"
-            onClick={save}
-            disabled={add.isPending}
-            className="h-tap flex-1 rounded bg-signal text-sm font-medium text-surface disabled:opacity-60"
-          >
-            {add.isPending ? 'Saving…' : `Save ${saveCount(queue.length, node, tag)}`}
-          </button>
-        </div>
+        {error && <Callout tone="danger">{error}</Callout>}
       </div>
     </Sheet>
   )
@@ -193,13 +188,4 @@ export function MistakeEntry({
 function saveCount(queued: number, node: PickedNode | null, tag: MistakeTag | null): string {
   const total = queued + (node && tag ? 1 : 0)
   return total === 1 ? 'mistake' : `${total} mistakes`
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="pb-1.5 text-xs text-slate">{label}</p>
-      {children}
-    </div>
-  )
 }

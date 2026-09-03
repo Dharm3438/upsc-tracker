@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { ChevronDown, Star } from 'lucide-react'
 
 import type { CaItem } from '@/api/ca'
-import { EmptyState } from '@/components/EmptyState'
+import { Badge, Button, EmptyState, QueryBoundary, SkeletonRows } from '@/components/ui'
 import { NodePicker, type PickedNode } from '@/components/log/NodePicker'
+import { cn } from '@/lib/cn'
 import { toast } from '@/components/shell/Toast'
 import { useDeleteCaItem, useUpdateCaItem } from '@/hooks/useCa'
 import type { useCaItems } from '@/hooks/useCa'
@@ -23,10 +25,6 @@ export function CaList({
 }) {
   const items = query.data?.pages.flatMap((page) => page.items) ?? []
 
-  if (query.isError) return <EmptyState>Could not load current affairs.</EmptyState>
-  if (!query.data) return <EmptyState>Loading…</EmptyState>
-  if (items.length === 0) return <EmptyState>{empty}</EmptyState>
-
   const groups: { date: string; items: CaItem[] }[] = []
   for (const item of items) {
     const last = groups.at(-1)
@@ -36,24 +34,37 @@ export function CaList({
 
   return (
     <>
-      {groups.map((group) => (
-        <section key={group.date}>
-          <h3 className="border-b border-line bg-paper px-4 py-1.5 text-xs text-slate">
-            {formatDayIST(group.date)}
-          </h3>
-          <CaRows items={group.items} onEdit={onEdit} />
-        </section>
-      ))}
+      <QueryBoundary
+        query={query}
+        error="Could not load current affairs."
+        skeleton={<SkeletonRows rows={5} />}
+        isEmpty={() => items.length === 0}
+        empty={<EmptyState title="Nothing here yet." description={empty} />}
+      >
+        {() => (
+          <>
+            {groups.map((group) => (
+              <section key={group.date}>
+                <h3 className="sticky top-0 z-[1] border-y border-hairline bg-canvas/95 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-faint backdrop-blur sm:px-5">
+                  {formatDayIST(group.date)}
+                </h3>
+                <CaRows items={group.items} onEdit={onEdit} />
+              </section>
+            ))}
+          </>
+        )}
+      </QueryBoundary>
 
       {query.hasNextPage && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          full
+          className="rounded-none border-t border-hairline"
+          loading={query.isFetchingNextPage}
           onClick={() => void query.fetchNextPage()}
-          disabled={query.isFetchingNextPage}
-          className="h-tap w-full text-sm text-signal"
         >
-          {query.isFetchingNextPage ? 'Loading…' : 'Show more'}
-        </button>
+          Show more
+        </Button>
       )}
     </>
   )
@@ -71,9 +82,9 @@ export function CaRows({
   const [open, setOpen] = useState<string | null>(null)
 
   return (
-    <ul>
+    <ul className="divide-y divide-hairline">
       {items.map((item) => (
-        <li key={item._id} className="border-b border-line last:border-0">
+        <li key={item._id}>
           <Row
             item={item}
             open={open === item._id}
@@ -116,32 +127,51 @@ function Row({
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="flex w-full min-h-tap items-start gap-3 px-4 py-2.5 text-left"
+        className="flex w-full min-h-tap items-start gap-3 px-4 py-2.5 text-left transition-colors hover:bg-canvas sm:px-5"
       >
         <div className="min-w-0 flex-1">
-          <p className="text-sm">{item.headline}</p>
-          <p className="truncate text-xs text-slate">
-            {item.node_title ?? 'Not tagged yet'}
-            {item.source ? ` · ${item.source}` : ''}
+          <p className="text-sm text-ink">{item.headline}</p>
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+            {item.tagged ? (
+              <Badge tone="neutral" size="sm">
+                {item.node_title}
+              </Badge>
+            ) : (
+              <Badge tone="accent" size="sm">
+                Not tagged yet
+              </Badge>
+            )}
+            {item.source && <span className="truncate">{item.source}</span>}
           </p>
         </div>
-        {item.starred && (
-          <span className="shrink-0 pt-0.5 text-xs text-signal" aria-label="Starred">
-            ★
-          </span>
-        )}
+        <span className="flex shrink-0 items-center gap-2 pt-0.5">
+          {item.starred && (
+            <Star
+              size={14}
+              strokeWidth={2}
+              className="fill-accent text-accent"
+              aria-label="Starred"
+            />
+          )}
+          <ChevronDown
+            size={14}
+            strokeWidth={2}
+            aria-hidden
+            className={cn('text-faint transition-transform', open && 'rotate-180')}
+          />
+        </span>
       </button>
 
       {open && (
-        <div className="space-y-3 bg-paper px-4 py-3">
+        <div className="space-y-3 bg-canvas px-4 py-3.5 sm:px-5">
           {item.note ? (
-            <p className="text-sm">{item.note}</p>
+            <p className="text-sm text-ink">{item.note}</p>
           ) : (
-            <p className="text-sm text-slate">No note. Add one while it is fresh.</p>
+            <p className="text-sm text-muted">No note. Add one while it is fresh.</p>
           )}
 
           <div>
-            <p className="pb-1.5 text-xs text-slate">
+            <p className="pb-1.5 text-xs font-medium text-muted">
               {item.tagged ? 'Move it to another topic' : 'Tag it to a topic'}
             </p>
             <NodePicker
@@ -158,39 +188,37 @@ function Row({
             />
           </div>
 
-          <div className="flex gap-2">
-            <button
-              type="button"
+          <div className="flex flex-wrap gap-2">
+            <Button
+              icon={
+                <Star
+                  size={14}
+                  strokeWidth={2}
+                  className={item.starred ? 'fill-accent text-accent' : undefined}
+                />
+              }
               onClick={() =>
                 update.mutate(
                   { id: item._id, starred: !item.starred },
-                  { onError: (caught) => toast(readable(caught)) },
+                  { onError: (caught) => toast(readable(caught), 'error') },
                 )
               }
-              className="h-tap flex-1 rounded border border-line bg-surface text-sm"
             >
               {item.starred ? 'Unstar' : 'Star'}
-            </button>
-            <button
-              type="button"
-              onClick={onEdit}
-              className="h-tap flex-1 rounded border border-line bg-surface text-sm"
-            >
-              Edit
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button onClick={onEdit}>Edit</Button>
+            <Button
+              variant="danger"
               onClick={() => {
                 if (!window.confirm('Delete this item?')) return
                 remove.mutate(item._id, {
                   onSuccess: () => toast('Deleted.'),
-                  onError: (caught) => toast(readable(caught)),
+                  onError: (caught) => toast(readable(caught), 'error'),
                 })
               }}
-              className="h-tap w-20 rounded border border-line bg-surface text-sm text-slate"
             >
               Delete
-            </button>
+            </Button>
           </div>
         </div>
       )}

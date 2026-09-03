@@ -1,8 +1,19 @@
+import { PenLine, RotateCcw } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { scoreRatio, type Answer, type AnswerTrends } from '@/api/answers'
-import { EmptyState } from '@/components/EmptyState'
 import { Sparkline, percent } from '@/components/charts/Sparkline'
+import {
+  Badge,
+  Button,
+  Card,
+  CardFooter,
+  CardHeader,
+  EmptyState,
+  QueryBoundary,
+  SkeletonRows,
+  StatTile,
+} from '@/components/ui'
 import { useAnswers, useRedoQueue } from '@/hooks/useAnswers'
 import { formatDayIST } from '@/lib/date'
 
@@ -18,93 +29,137 @@ export function AnswerList() {
   const pages = answers.data?.pages ?? []
   const items = pages.flatMap((page) => page.items)
   const trends = pages[0]?.trends
+  const queue = redo.data ?? []
 
   return (
     <>
-      {trends && trends.count > 0 && <Trends trends={trends} />}
+      <Trends trends={trends} loading={!answers.data} redo={queue.length} />
 
-      {redo.data && redo.data.length > 0 && (
-        <section className="pb-2">
-          <div className="flex items-baseline justify-between px-4 pb-2">
-            <h2 className="text-xs uppercase tracking-wide text-slate">Redo queue</h2>
-            <span className="text-sm tabular-nums text-slate">{redo.data.length}</span>
-          </div>
-          <div className="border-y border-line bg-surface">
-            {redo.data.map((answer) => (
-              <Link
-                key={answer._id}
-                to={`/practice/answers/new?redo=${answer._id}`}
-                className="flex min-h-tap items-center gap-3 border-b border-line px-4 py-2.5 last:border-0"
+      <div className="grid grid-cols-12 gap-4 lg:gap-5">
+        <Card className="col-span-12 lg:col-span-8">
+          <CardHeader
+            title="Answers"
+            count={items.length}
+            icon={<PenLine size={17} strokeWidth={1.8} />}
+          />
+          <QueryBoundary
+            query={answers}
+            error="Could not load your answers."
+            skeleton={<SkeletonRows rows={5} />}
+            isEmpty={() => items.length === 0}
+            empty={
+              <EmptyState
+                icon={PenLine}
+                title="No answers yet."
+                description="Start one on the clock — the minutes matter as much as the score."
+              />
+            }
+          >
+            {() => (
+              <ul className="divide-y divide-hairline">
+                {items.map((answer) => (
+                  <AnswerRow key={answer._id} answer={answer} />
+                ))}
+              </ul>
+            )}
+          </QueryBoundary>
+
+          {answers.hasNextPage && (
+            <CardFooter className="p-0">
+              <Button
+                variant="ghost"
+                full
+                className="rounded-none"
+                loading={answers.isFetchingNextPage}
+                onClick={() => void answers.fetchNextPage()}
               >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm">{answer.question}</p>
-                  <p className="truncate text-xs text-slate">
-                    {answer.node_title ?? answer.paper} · scored{' '}
-                    {percent(scoreRatio(answer))} on {formatDayIST(answer.date)}
-                  </p>
-                </div>
-                <span className="shrink-0 text-sm text-signal">Rewrite</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+                Show older answers
+              </Button>
+            </CardFooter>
+          )}
+        </Card>
 
-      <div className="border-y border-line bg-surface">
-        {answers.isError && <EmptyState>Could not load your answers.</EmptyState>}
-        {!answers.data && !answers.isError && <EmptyState>Loading…</EmptyState>}
-        {items.length === 0 && answers.data && (
-          <EmptyState>
-            No answers yet. Start one on the clock — the minutes matter as much
-            as the score.
-          </EmptyState>
-        )}
-        {items.map((answer) => (
-          <AnswerRow key={answer._id} answer={answer} />
-        ))}
-      </div>
-
-      {answers.hasNextPage && (
-        <button
-          type="button"
-          onClick={() => void answers.fetchNextPage()}
-          disabled={answers.isFetchingNextPage}
-          className="h-tap w-full text-sm text-signal"
-        >
-          {answers.isFetchingNextPage ? 'Loading…' : 'Show older answers'}
-        </button>
-      )}
-
-      <div className="p-4">
-        <Link
-          to="/practice/answers/new"
-          className="flex h-tap w-full items-center justify-center rounded bg-signal text-sm font-medium text-surface"
-        >
-          Start an answer
-        </Link>
+        <Card className="col-span-12 self-start lg:col-span-4">
+          <CardHeader
+            title="Redo queue"
+            count={queue.length}
+            subtitle="Rated under half, thirty days ago."
+            icon={<RotateCcw size={17} strokeWidth={1.8} />}
+          />
+          {queue.length === 0 ? (
+            <EmptyState
+              size="sm"
+              title="Nothing waiting."
+              description="Answers you rated under half come back here after a month."
+            />
+          ) : (
+            <ul className="divide-y divide-hairline">
+              {queue.map((answer) => (
+                <li key={answer._id}>
+                  <Link
+                    to={`/practice/answers/new?redo=${answer._id}`}
+                    className="block px-4 py-3 transition-colors hover:bg-canvas sm:px-5"
+                  >
+                    <p className="line-clamp-2 text-sm text-ink">{answer.question}</p>
+                    <p className="mt-1 flex items-center gap-2 text-xs text-muted">
+                      <Badge tone="accent" size="sm">
+                        {percent(scoreRatio(answer))}
+                      </Badge>
+                      {answer.node_title ?? answer.paper} · {formatDayIST(answer.date)}
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
       </div>
     </>
   )
 }
 
-/** The two header trends of plan §8.5, over the last twenty.
- *
- *  Only the score gets a line. Minutes across a 10-marker and a 125-mark essay
- *  share no band, and a line drawn across both would say something untrue. */
-function Trends({ trends }: { trends: AnswerTrends }) {
+/**
+ * The two header trends over the last twenty. Only the score gets a line:
+ * minutes across a 10-marker and a 125-mark essay share no band, and a line
+ * drawn across both would say something untrue.
+ */
+function Trends({
+  trends,
+  loading,
+  redo,
+}: {
+  trends?: AnswerTrends
+  loading: boolean
+  redo: number
+}) {
   return (
-    <div className="flex items-center justify-between px-4 pb-3 text-slate">
-      <div>
-        <p className="text-xs">Last {trends.count}</p>
-        <p className="text-sm text-ink">
-          {trends.average_minutes === null ? '—' : `${trends.average_minutes} min`}
-          <span className="text-slate"> · </span>
-          {percent(trends.average_score)}
-        </p>
-      </div>
-      <span className="text-signal">
-        <Sparkline values={trends.scores} what="Self-score" />
-      </span>
+    <div className="mb-4 grid grid-cols-2 gap-3 lg:mb-5 lg:grid-cols-4 lg:gap-5">
+      <StatTile label="Written" value={trends?.count ?? 0} loading={loading} sub="last twenty shown" />
+      <StatTile
+        label="Average time"
+        value={trends?.average_minutes ?? '—'}
+        unit={trends?.average_minutes ? 'min' : undefined}
+        loading={loading}
+      />
+      <StatTile
+        label="Average score"
+        value={percent(trends?.average_score ?? null)}
+        loading={loading}
+        sub={
+          trends && trends.scores.length > 1 ? (
+            <span className="block text-accent">
+              <Sparkline values={trends.scores} what="Self-score" width={140} height={30} />
+            </span>
+          ) : undefined
+        }
+      />
+      <StatTile
+        label="Up for a rewrite"
+        value={redo}
+        tone={redo > 0 ? 'accent' : 'default'}
+        loading={loading}
+        sub={redo > 0 ? 'in the redo queue' : 'nothing waiting'}
+      />
     </div>
   )
 }
@@ -113,24 +168,26 @@ function AnswerRow({ answer }: { answer: Answer }) {
   const ratio = scoreRatio(answer)
 
   return (
-    <Link
-      to={`/practice/answers/${answer._id}`}
-      className="flex min-h-tap items-center gap-3 border-b border-line px-4 py-2.5 last:border-0"
-    >
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm">{answer.question}</p>
-        <p className="truncate text-xs text-slate">
-          {formatDayIST(answer.date)} · {answer.paper} · {answer.marks_allotted} marks
-          {answer.minutes_taken !== null && ` · ${answer.minutes_taken} min`}
-        </p>
-      </div>
-      <div className="shrink-0 text-right">
-        <p className="text-sm tabular-nums">
-          {answer.self_score === null ? '—' : answer.self_score}
-          <span className="text-slate">/{answer.marks_allotted}</span>
-        </p>
-        <p className="text-xs tabular-nums text-slate">{percent(ratio)}</p>
-      </div>
-    </Link>
+    <li>
+      <Link
+        to={`/practice/answers/${answer._id}`}
+        className="flex min-h-tap items-center gap-3 px-4 py-2.5 transition-colors hover:bg-canvas sm:px-5"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm text-ink">{answer.question}</span>
+          <span className="block truncate text-xs text-muted">
+            {formatDayIST(answer.date)} · {answer.paper} · {answer.marks_allotted} marks
+            {answer.minutes_taken !== null && ` · ${answer.minutes_taken} min`}
+          </span>
+        </span>
+        <span className="shrink-0 text-right">
+          <span className="block text-sm tabular-nums text-ink">
+            {answer.self_score === null ? '—' : answer.self_score}
+            <span className="text-faint">/{answer.marks_allotted}</span>
+          </span>
+          <span className="block text-xs tabular-nums text-muted">{percent(ratio)}</span>
+        </span>
+      </Link>
+    </li>
   )
 }

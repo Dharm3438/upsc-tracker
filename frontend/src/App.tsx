@@ -3,15 +3,16 @@ import { Route, Routes } from 'react-router-dom'
 
 import { getApiKey, UNAUTHORIZED_EVENT } from '@/api/client'
 import { Unlock } from '@/components/Unlock'
-import { LogButton } from '@/components/log/LogButton'
-import { TabBar } from '@/components/shell/TabBar'
-import { Toaster } from '@/components/shell/Toast'
+import { AppLayout } from '@/components/shell/AppLayout'
+import { FocusLayout } from '@/components/shell/FocusLayout'
+import { SkeletonRows } from '@/components/ui/Skeleton'
 import { AnswerDetail } from '@/screens/AnswerDetail'
 import { AnswerTimer } from '@/screens/AnswerTimer'
 import { NodeDetail } from '@/screens/NodeDetail'
+import { NotFound } from '@/screens/NotFound'
 import { Notes } from '@/screens/Notes'
-import { Placeholder } from '@/screens/Placeholder'
 import { Practice } from '@/screens/Practice'
+import { Settings } from '@/screens/Settings'
 import { Syllabus } from '@/screens/Syllabus'
 import { TestDetail } from '@/screens/TestDetail'
 import { Today } from '@/screens/Today'
@@ -36,24 +37,27 @@ export function App() {
   if (!unlocked) return <Unlock onUnlocked={() => setUnlocked(true)} />
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md pb-tap">
-      <Suspense fallback={null}>
-        <Routes>
-          <Route path="/" element={<Today />} />
-          <Route path="/syllabus" element={<Syllabus />} />
-          <Route path="/syllabus/node/:nodeId" element={<NodeDetail />} />
-          <Route path="/practice" element={<Practice />} />
-          <Route path="/practice/tests/:testId" element={<TestDetail />} />
-          <Route path="/practice/answers/new" element={<AnswerTimer />} />
-          <Route path="/practice/answers/:answerId" element={<AnswerDetail />} />
-          <Route path="/notes" element={<Notes />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="*" element={<Placeholder title="Not found" phase="a later phase" />} />
-        </Routes>
-      </Suspense>
-      <LogButton />
-      <Toaster />
-      <TabBar />
-    </div>
+    <Suspense fallback={<SkeletonRows rows={5} />}>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index element={<Today />} />
+          <Route path="syllabus" element={<Syllabus />}>
+            <Route path="node/:nodeId" element={<NodeDetail />} />
+          </Route>
+          <Route path="practice" element={<Practice />} />
+          <Route path="practice/tests/:testId" element={<TestDetail />} />
+          <Route path="practice/answers/:answerId" element={<AnswerDetail />} />
+          <Route path="notes" element={<Notes />} />
+          <Route path="progress" element={<Progress />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+
+        {/* The timer runs without the shell around it. */}
+        <Route element={<FocusLayout />}>
+          <Route path="practice/answers/new" element={<AnswerTimer />} />
+        </Route>
+      </Routes>
+    </Suspense>
   )
 }

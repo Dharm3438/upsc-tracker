@@ -4,6 +4,7 @@ import type { CaItem, NewCaItem } from '@/api/ca'
 import { NodePicker, type PickedNode } from '@/components/log/NodePicker'
 import { Sheet } from '@/components/shell/Sheet'
 import { toast } from '@/components/shell/Toast'
+import { Button, Callout, Field, Input, Textarea } from '@/components/ui'
 import { useCreateCaItem, useUpdateCaItem } from '@/hooks/useCa'
 import { todayIST } from '@/lib/date'
 import { readable } from '@/lib/errors'
@@ -68,93 +69,68 @@ export function CaSheet({
   }
 
   return (
-    <Sheet title={existing ? 'Edit item' : 'Add a current affair'} onClose={onClose}>
-      <div className="max-h-[75vh] space-y-4 overflow-y-auto p-4">
+    <Sheet
+      title={existing ? 'Edit item' : 'Add a current affair'}
+      description="Two lines a day is enough."
+      onClose={onClose}
+      footer={
+        <Button variant="primary" size="lg" full loading={saving} onClick={save}>
+          {existing ? 'Save changes' : 'Save item'}
+        </Button>
+      }
+    >
+      <div className="space-y-4 p-4 sm:p-5">
         <Field label="What happened">
-          <input
+          <Input
             value={headline}
             onChange={(event) => setHeadline(event.target.value)}
             placeholder="Sixteenth Finance Commission constituted"
-            className="h-tap w-full rounded border border-line px-3 text-sm focus:border-signal"
           />
         </Field>
 
         <Field label="In your words">
-          <textarea
+          <Textarea
             value={note}
             onChange={(event) => setNote(event.target.value)}
             rows={3}
             placeholder="Why it matters, in a line or two."
-            className="w-full rounded border border-line p-3 text-sm focus:border-signal"
           />
         </Field>
 
-        <div className="flex gap-3">
-          <Field label="Source" className="flex-1">
-            <input
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Source">
+            <Input
               value={source}
               onChange={(event) => setSource(event.target.value)}
               placeholder="The Hindu"
-              className="h-tap w-full rounded border border-line px-3 text-sm focus:border-signal"
             />
           </Field>
-          <Field label="Date" className="w-40">
-            <input
+          <Field label="Date">
+            <Input
               type="date"
               value={date}
               onChange={(event) => setDate(event.target.value)}
-              className="h-tap w-full rounded border border-line px-3 text-sm focus:border-signal"
             />
           </Field>
         </div>
 
-        <Field label="Topic (optional)">
+        <Field label="Topic" hint="optional">
           {topicOpen || node ? (
             <NodePicker value={node} onChange={setNode} />
           ) : (
-            <button
-              type="button"
-              onClick={() => setTopicOpen(true)}
-              className="h-tap w-full rounded border border-line text-sm text-slate"
-            >
+            <Button full onClick={() => setTopicOpen(true)}>
               Tag it now
-            </button>
+            </Button>
           )}
           {!node && (
-            <p className="pt-1.5 text-xs text-slate">
+            <p className="pt-1.5 text-xs text-muted">
               Leave it and the item waits in the inbox until you know where it goes.
             </p>
           )}
         </Field>
 
-        {error && <p className="text-sm text-overdue">{error}</p>}
-
-        <button
-          type="button"
-          onClick={save}
-          disabled={saving}
-          className="h-tap w-full rounded bg-signal text-sm font-medium text-surface disabled:opacity-60"
-        >
-          {saving ? 'Saving…' : existing ? 'Save changes' : 'Save item'}
-        </button>
+        {error && <Callout tone="danger">{error}</Callout>}
       </div>
     </Sheet>
-  )
-}
-
-function Field({
-  label,
-  className,
-  children,
-}: {
-  label: string
-  className?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className={className}>
-      <p className="pb-1.5 text-xs text-slate">{label}</p>
-      {children}
-    </div>
   )
 }

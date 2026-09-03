@@ -1,23 +1,44 @@
 # UPSC Prep Tracker
 
 A single-user study tracker for a UPSC Civil Services aspirant covering GS 1–4, CSAT,
-Essay and Anthropology optional. Phone-first PWA, built to be opened a few times a day
-for two years. `UPSC_TRACKER_PLAN.md` is the brief; this README is how to run it.
+Essay and Anthropology optional. A responsive web dashboard that works as well on a
+phone as it does at 1440px, built to be opened a few times a day for two years.
 
 ## Status
 
 | Phase | Scope | State |
 |---|---|---|
-| 0 | Scaffold — FastAPI, Mongo, API-key auth, tab shell, unlock screen | done |
-| 1 | Syllabus seed, tree, node CRUD | done, except the log-derived rollups on tree rows, which need phase 2 |
-| 2–8 | Logging, revision engine, tests, answers, current affairs, progress, PWA polish | not started |
+| 0 | Scaffold — FastAPI, Mongo, API-key auth, app shell, unlock screen | done |
+| 1 | Syllabus seed, tree, node CRUD | done |
+| 2 | Activity logging and its side-effects | done |
+| 3 | Revision queue and grading (SM-2) | done |
+| 4 | Test attempts and the mistake notebook | done |
+| 5 | Answer writing, the timer and the redo queue | done |
+| 6 | Current affairs capture, tagging and the inbox | done |
+| 7 | Progress aggregations, settings document, countdown | done |
+| 8 | UI redesign — design system, responsive shell, dashboard, Settings screen | done |
+| 9 | PWA polish, offline shell, icons | not started |
 
 ## Layout
 
 ```
 backend/     FastAPI + Motor. Syllabus seed lives in data/syllabus/<paper>.json
 frontend/    Vite + React + TypeScript + Tailwind, TanStack Query, React Router
+             src/components/ui/  the design-system primitives every screen composes
 ```
+
+## The interface
+
+Desktop-first and fully responsive. A sticky top nav carries the five sections from
+`lg` up; below that the same five live in a bottom tab bar, where a thumb can reach
+them. Dialogs are centred modals from `sm` up and bottom sheets below it — one
+component, `components/shell/Sheet.tsx`, decides that for all of them.
+
+The palette is warm paper and deep navy with a single amber action colour, defined
+once in `tailwind.config.ts`. Two rules constrain it: confidence is *depth of fill*
+rather than a red-to-green ramp, and alerts are rationed — the crimson `danger` tone
+is reserved for lateness past a fortnight. Charts cannot read Tailwind classes, so
+`src/lib/tokens.ts` mirrors the palette as literal strings for them.
 
 ## Running it
 

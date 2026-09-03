@@ -1,32 +1,29 @@
 import type { Paper, PaperSummary } from '@/api/syllabus'
+import { Chip, ChipRow } from '@/components/ui'
 
 export function PaperChips({
   papers,
   selected,
   onSelect,
+  showCounts = false,
 }: {
   papers: PaperSummary[]
   selected: Paper
   onSelect: (paper: Paper) => void
+  showCounts?: boolean
 }) {
   return (
-    <div className="flex gap-2 overflow-x-auto px-4 pb-3 pt-1">
+    <ChipRow>
       {papers.map((paper) => (
-        <button
+        <Chip
           key={paper.paper}
-          type="button"
+          selected={paper.paper === selected}
           onClick={() => onSelect(paper.paper)}
-          aria-pressed={paper.paper === selected}
-          className={[
-            'shrink-0 rounded-full border px-3 py-1.5 text-sm',
-            paper.paper === selected
-              ? 'border-signal bg-signal text-white'
-              : 'border-line bg-surface text-slate',
-          ].join(' ')}
+          count={showCounts ? paper.leaves : undefined}
         >
           {paper.label}
-        </button>
+        </Chip>
       ))}
-    </div>
+    </ChipRow>
   )
 }

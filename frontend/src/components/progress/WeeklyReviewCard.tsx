@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import type { WeeklyReview } from '@/api/settings'
 import { toast } from '@/components/shell/Toast'
+import { Button, Field, Textarea } from '@/components/ui'
 import { useSaveWeeklyReview, useWeeklyReviews } from '@/hooks/useSettings'
 import { formatDayIST, weekStartIST } from '@/lib/date'
 
@@ -46,39 +47,50 @@ export function WeeklyReviewCard() {
           setDraft(null)
           toast('Week saved.')
         },
-        onError: () => toast('Could not save that.'),
+        onError: () => toast('Could not save that.', 'error'),
       },
     )
   }
 
   return (
-    <div className="mx-4 rounded-lg border border-line bg-surface p-4">
-      <p className="pb-3 text-xs text-slate">Week of {formatDayIST(week)}</p>
+    <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-5 lg:gap-6">
+      <div className="space-y-3.5 lg:col-span-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-faint">
+          Week of {formatDayIST(week)}
+        </p>
 
-      {PROMPTS.map(({ field, label }) => (
-        <label key={field} className="block pb-3">
-          <span className="text-sm">{label}</span>
-          <textarea
-            value={values[field]}
-            onChange={(event) =>
-              setDraft({ ...values, [field]: event.target.value } as Record<Field, string>)
-            }
-            rows={2}
-            className="mt-1 w-full resize-none rounded border border-line bg-surface px-3 py-2 text-sm focus:border-signal"
-          />
-        </label>
-      ))}
+        {PROMPTS.map(({ field, label }) => (
+          <Field key={field} label={label}>
+            <Textarea
+              value={values[field]}
+              onChange={(event) =>
+                setDraft({ ...values, [field]: event.target.value } as Record<Field, string>)
+              }
+              rows={2}
+            />
+          </Field>
+        ))}
 
-      <button
-        type="button"
-        onClick={submit}
-        disabled={save.isPending || empty || (!dirty && current !== undefined)}
-        className="h-tap w-full rounded border border-signal text-sm font-medium text-signal disabled:border-line disabled:text-slate"
-      >
-        {current ? 'Save the week again' : 'Save the week'}
-      </button>
+        <Button
+          variant="primary"
+          onClick={submit}
+          loading={save.isPending}
+          disabled={empty || (!dirty && current !== undefined)}
+        >
+          {current ? 'Save the week again' : 'Save the week'}
+        </Button>
+      </div>
 
-      {current && <Snapshot review={current} />}
+      <div className="lg:col-span-2">
+        {current ? (
+          <Snapshot review={current} />
+        ) : (
+          <p className="rounded-lg border border-dashed border-hairline p-4 text-sm text-muted">
+            The week's numbers are snapshotted when you save, and kept as they were. Past weeks
+            live in Settings.
+          </p>
+        )}
+      </div>
     </div>
   )
 }
@@ -96,11 +108,13 @@ function Snapshot({ review }: { review: WeeklyReview }) {
   ] as const
 
   return (
-    <dl className="mt-4 grid grid-cols-4 gap-2 border-t border-line pt-3">
+    <dl className="grid grid-cols-2 gap-3 rounded-lg border border-hairline bg-canvas p-4">
       {figures.map(([label, value]) => (
         <div key={label}>
-          <dt className="text-xs text-slate">{label}</dt>
-          <dd className="text-sm tabular-nums">{value}</dd>
+          <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-faint">
+            {label}
+          </dt>
+          <dd className="font-display text-2xl font-semibold tabular-nums text-ink">{value}</dd>
         </div>
       ))}
     </dl>

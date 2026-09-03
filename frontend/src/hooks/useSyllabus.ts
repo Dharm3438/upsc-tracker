@@ -7,6 +7,7 @@ import {
   getPapers,
   getTree,
   moveNode,
+  searchNodes,
   updateNode,
   type NodeCreate,
   type NodePatch,
@@ -21,6 +22,17 @@ export function useTree(paper: Paper) {
   return useQuery({
     queryKey: ['tree', paper],
     queryFn: () => getTree(paper),
+    staleTime: 60_000,
+  })
+}
+
+/** Full-text search over node paths. Debounce at the call site; this only
+ *  caches what comes back. */
+export function useNodeSearch(query: string) {
+  return useQuery({
+    queryKey: ['node-search', query],
+    queryFn: () => searchNodes(query),
+    enabled: query.length > 1,
     staleTime: 60_000,
   })
 }

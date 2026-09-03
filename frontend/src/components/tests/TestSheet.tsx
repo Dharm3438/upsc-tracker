@@ -4,6 +4,7 @@ import type { Paper } from '@/api/syllabus'
 import { TEST_KINDS, type NewTest, type Test, type TestKind } from '@/api/tests'
 import { Sheet } from '@/components/shell/Sheet'
 import { toast } from '@/components/shell/Toast'
+import { Button, Callout, Chip, Field, Input, NumberInput, Textarea } from '@/components/ui'
 import { useCreateTest, useUpdateTest } from '@/hooks/useTests'
 import { todayIST } from '@/lib/date'
 import { readable } from '@/lib/errors'
@@ -82,14 +83,22 @@ export function TestSheet({
   }
 
   return (
-    <Sheet title={existing ? 'Edit attempt' : 'Add a test'} onClose={onClose}>
-      <div className="max-h-[70vh] space-y-4 overflow-y-auto p-4">
+    <Sheet
+      title={existing ? 'Edit attempt' : 'Add a test'}
+      description="Three numbers and the rest is worked out."
+      onClose={onClose}
+      footer={
+        <Button variant="primary" size="lg" full loading={saving} onClick={save}>
+          {existing ? 'Save changes' : 'Save attempt'}
+        </Button>
+      }
+    >
+      <div className="space-y-4 p-4 sm:p-5">
         <Field label="Paper">
-          <input
+          <Input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Vision IAS PT Test 6"
-            className="h-tap w-full rounded border border-line px-3 text-sm focus:border-signal"
           />
         </Field>
 
@@ -127,54 +136,46 @@ export function TestSheet({
           </div>
         </Field>
 
-        <Field label="Questions: in the paper, attempted, correct">
-          <div className="flex items-center gap-2">
+        <Field
+          label="Questions"
+          hint="in the paper · attempted · correct"
+        >
+          <div className="grid grid-cols-3 gap-2">
             <NumberInput value={total} onChange={setTotal} placeholder="100" />
             <NumberInput value={attempted} onChange={setAttempted} placeholder="84" />
             <NumberInput value={correct} onChange={setCorrect} placeholder="57" />
           </div>
-          <p className="pt-1.5 text-xs text-slate">
+          <p className="pt-1.5 text-xs text-muted">
             Wrong, skipped, accuracy and the score are worked out from these.
           </p>
         </Field>
 
-        <div className="flex gap-3">
-          <Field label="Date" className="flex-1">
-            <input
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label="Date">
+            <Input
               type="date"
               value={date}
               onChange={(event) => setDate(event.target.value)}
-              className="h-tap w-full rounded border border-line px-3 text-sm focus:border-signal"
             />
           </Field>
-          <Field label="Max marks" className="w-24">
+          <Field label="Max marks">
             <NumberInput value={maxMarks} onChange={setMaxMarks} placeholder="200" />
           </Field>
-          <Field label="Minutes" className="w-24">
+          <Field label="Minutes">
             <NumberInput value={minutes} onChange={setMinutes} placeholder="120" />
           </Field>
         </div>
 
-        <Field label="Notes (optional)">
-          <textarea
+        <Field label="Notes" hint="optional">
+          <Textarea
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             rows={2}
             placeholder="Ran out of time on the last 20."
-            className="w-full rounded border border-line p-3 text-sm focus:border-signal"
           />
         </Field>
 
-        {error && <p className="text-sm text-overdue">{error}</p>}
-
-        <button
-          type="button"
-          onClick={save}
-          disabled={saving}
-          className="h-tap w-full rounded bg-signal text-sm font-medium text-surface disabled:opacity-60"
-        >
-          {saving ? 'Saving…' : existing ? 'Save changes' : 'Save attempt'}
-        </button>
+        {error && <Callout tone="danger">{error}</Callout>}
       </div>
     </Sheet>
   )
@@ -183,66 +184,4 @@ export function TestSheet({
 function number(value: string): number | null {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : null
-}
-
-function Field({
-  label,
-  className,
-  children,
-}: {
-  label: string
-  className?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className={className}>
-      <p className="pb-1.5 text-xs text-slate">{label}</p>
-      {children}
-    </div>
-  )
-}
-
-function Chip({
-  selected,
-  onClick,
-  children,
-}: {
-  selected: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={selected}
-      onClick={onClick}
-      className={[
-        'h-9 shrink-0 rounded-full border px-3 text-sm',
-        selected ? 'border-signal bg-signal text-surface' : 'border-line text-slate',
-      ].join(' ')}
-    >
-      {children}
-    </button>
-  )
-}
-
-function NumberInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string
-  onChange: (value: string) => void
-  placeholder: string
-}) {
-  return (
-    <input
-      inputMode="numeric"
-      pattern="[0-9]*"
-      value={value}
-      onChange={(event) => onChange(event.target.value.replace(/\D/g, ''))}
-      placeholder={placeholder}
-      className="h-tap w-full min-w-0 rounded border border-line px-3 text-sm tabular-nums focus:border-signal"
-    />
-  )
 }
