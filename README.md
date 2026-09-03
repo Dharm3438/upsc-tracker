@@ -87,6 +87,27 @@ kept in `localStorage` and cleared automatically on a 401.
 cd backend && ./.venv/Scripts/python.exe -m pytest -q
 ```
 
+## Deployment
+
+The frontend is a static bundle on **Cloudflare Pages**; the API runs on **Render**
+against **MongoDB Atlas**. `render.yaml` describes the API service; Pages is
+configured from its dashboard (root `frontend/`, build `npm run build`, output `dist`).
+
+Two env vars tie the halves together and must agree:
+
+- Render `ALLOWED_ORIGINS` — the Pages origin, no trailing slash. It is an exact
+  list, so preview deployments on `*.pages.dev` are not covered by the production
+  entry and need their own.
+- Pages `VITE_API_BASE_URL` — the Render origin plus `/api`. Vite inlines it at
+  build time, so changing it needs a redeploy, not just a restart.
+
+Atlas must allow `0.0.0.0/0` under Network Access — Render's free tier has no
+static outbound IP — so the database password carries the whole perimeter there.
+
+Seeding is a one-off from a laptop with `MONGODB_URI` pointed at Atlas
+(`python scripts/seed_db.py`); the free Render tier has no shell. The free API
+instance also sleeps after 15 minutes idle and takes roughly a minute to wake.
+
 ## The syllabus seed
 
 Authored from the official UPSC CSE notification syllabus, one file per paper under

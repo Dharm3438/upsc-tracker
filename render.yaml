@@ -1,0 +1,25 @@
+# Render Blueprint. Point Render at this file (New → Blueprint) and it creates
+# the API service; the three secret env vars below are left blank on purpose and
+# are filled in from the dashboard after the first sync.
+services:
+  - type: web
+    name: upsc-tracker-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: MONGODB_DB
+        value: upsc_tracker
+      - key: TZ
+        value: Asia/Kolkata
+      # Set these in the Render dashboard — sync:false keeps them out of git.
+      - key: MONGODB_URI
+        sync: false
+      - key: API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
