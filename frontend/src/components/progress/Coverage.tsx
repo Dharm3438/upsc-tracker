@@ -8,25 +8,35 @@ import type { Coverage as CoverageData, SubjectCoverage } from '@/api/progress'
  *
  * Depth of fill carries the meaning: the deeper the bar, the further through
  * that topic she is.
+ *
+ * Fourteen subjects in one column is a scroll rather than a picture, so on a
+ * wide screen they lay out two and then three across. On a phone the single
+ * column stays — a list is the right shape there.
  */
 export function Coverage({ data }: { data: CoverageData }) {
   return (
     <div>
-      {data.subjects.map((subject) => (
-        <SubjectRow key={subject.subject} row={subject} />
-      ))}
+      <div className="overflow-hidden">
+        <div className="-mb-px -mr-px grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+          {data.subjects.map((subject) => (
+            <SubjectCell key={subject.subject} row={subject} />
+          ))}
+        </div>
+      </div>
       {data.totals && data.subjects.length > 1 && (
-        <SubjectRow row={data.totals} muted />
+        <div className="border-t border-hairline bg-canvas">
+          <SubjectCell row={data.totals} muted />
+        </div>
       )}
     </div>
   )
 }
 
-function SubjectRow({ row, muted = false }: { row: SubjectCoverage; muted?: boolean }) {
+function SubjectCell({ row, muted = false }: { row: SubjectCoverage; muted?: boolean }) {
   return (
     <div
-      className={`border-b border-hairline px-4 py-3.5 last:border-b-0 sm:px-5 ${
-        muted ? 'bg-canvas' : ''
+      className={`border-hairline px-4 py-3.5 sm:px-5 ${
+        muted ? '' : 'border-b border-r'
       }`}
     >
       <div className="flex items-baseline justify-between pb-2">
@@ -56,8 +66,8 @@ function Bar({
   const share = total ? value / total : 0
   return (
     <div className="flex items-center gap-3 py-1">
-      <span className="w-24 shrink-0 text-xs text-muted lg:w-28">{label}</span>
-      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-hairline">
+      <span className="w-24 shrink-0 text-xs text-muted">{label}</span>
+      <div className="h-2.5 min-w-8 flex-1 overflow-hidden rounded-full bg-hairline">
         <div
           className={`h-full rounded-full transition-[width] duration-700 ${depth}`}
           style={{ width: `${share * 100}%` }}

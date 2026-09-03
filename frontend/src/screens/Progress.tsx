@@ -6,7 +6,6 @@ import type { Subject } from '@/api/syllabus'
 import { SubjectChips } from '@/components/SubjectChips'
 import { Burndown } from '@/components/progress/Burndown'
 import { Coverage } from '@/components/progress/Coverage'
-import { EffortChart } from '@/components/progress/EffortChart'
 import { Heatmap, HeatmapLegend } from '@/components/progress/Heatmap'
 import { WeeklyReviewCard } from '@/components/progress/WeeklyReviewCard'
 import {
@@ -30,9 +29,9 @@ import { useSubjects } from '@/hooks/useSyllabus'
 import { formatDayIST } from '@/lib/date'
 
 /**
- * A weekly screen, not a daily one. It answers four questions in order — how
- * much is left, how much is covered, how strong each topic is, and what the
- * month of effort actually looked like — and then asks three of its own.
+ * A weekly screen, not a daily one. It answers three questions in order — how
+ * much is left, how much is covered, and how strong each topic is — and then
+ * asks three of its own.
  *
  * Nothing here is a streak and nothing is red for its own sake. The honest
  * figures are hard enough without the interface having an opinion about them.
@@ -125,7 +124,7 @@ export function Progress() {
           </QueryBoundary>
         </Card>
 
-        <Card className="col-span-12 self-start lg:col-span-6">
+        <Card className="col-span-12">
           <CardHeader
             title="Coverage"
             subtitle="Read once, revised twice, practised."
@@ -144,25 +143,6 @@ export function Progress() {
             }
           >
             {(data) => <Coverage data={data} />}
-          </QueryBoundary>
-        </Card>
-
-        <Card className="col-span-12 self-start lg:col-span-6">
-          <CardHeader
-            title="Effort"
-            subtitle={
-              effort.data
-                ? `${formatMinutes(effort.data.total_minutes)} over the last 30 days.`
-                : 'The last 30 days.'
-            }
-            icon={<Timer size={17} strokeWidth={1.8} />}
-          />
-          <QueryBoundary
-            query={effort}
-            error="Could not load effort."
-            skeleton={<SkeletonChart className="h-24" />}
-          >
-            {(data) => <EffortChart data={data} />}
           </QueryBoundary>
         </Card>
 
