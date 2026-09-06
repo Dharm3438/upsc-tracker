@@ -15,7 +15,7 @@ few times a day for two years.
 | 3 | Revision queue and grading (SM-2) | done |
 | 4 | Test attempts and the mistake notebook | done |
 | 5 | Answer writing, the timer and the redo queue | done |
-| 6 | Current affairs capture, tagging and the inbox | done |
+| 6 | Current affairs capture, tagging and the inbox | removed — see below |
 | 7 | Progress aggregations, settings document, countdown | done |
 | 8 | UI redesign — design system, responsive shell, dashboard, Settings screen | done |
 | 9 | PWA polish, offline shell, icons | not started |
@@ -30,8 +30,8 @@ frontend/    Vite + React + TypeScript + Tailwind, TanStack Query, React Router
 
 ## The interface
 
-Desktop-first and fully responsive. A sticky top nav carries the five sections from
-`lg` up; below that the same five live in a bottom tab bar, where a thumb can reach
+Desktop-first and fully responsive. A sticky top nav carries the four sections from
+`lg` up; below that the same four live in a bottom tab bar, where a thumb can reach
 them. Dialogs are centred modals from `sm` up and bottom sheets below it — one
 component, `components/shell/Sheet.tsx`, decides that for all of them.
 
@@ -112,7 +112,7 @@ instance also sleeps after 15 minutes idle and takes roughly a minute to wake.
 ## The syllabus seed
 
 The syllabus is a flat list of subjects, each holding one level of topics — a lecture
-or a book chapter. One file per subject under `backend/data/syllabus/`, 437 topics in
+or a book chapter. One file per subject under `backend/data/syllabus/`, 449 topics in
 all. Subjects are labelled Prelims or Mains, which only groups the chips in the rail.
 
 | Subject | Topics | Followed as |
@@ -124,12 +124,17 @@ all. Subjects are labelled Prelims or Mains, which only groups the chips in the 
 | Polity & Governance | 65 | lectures |
 | Science | 31 | lectures |
 | CSAT | 10 | Arihant (placeholders) |
+| Current Affairs | 12 | monthly magazines |
 | Disaster Management | 4 | lectures |
 | International Relations | 22 | lectures |
 | Security | 10 | lectures |
 | World History | 12 | lectures |
 | Ethics | 24 | lectures |
 | Anthropology | 90 | lectures |
+
+Current affairs seeds as one topic per monthly magazine, `June 2026` through
+`May 2027` — the twelve issues before Prelims. It is read, revised and graded
+like any other chapter, so nothing about it is a special case downstream.
 
 Lecture topics seed as `Lecture 1 … Lecture N` and chapters as `Chapter N — Title`;
 they are meant to be renamed in the app as the real titles become known. Only the
@@ -149,3 +154,24 @@ Because it never deletes, it cannot clear a syllabus seeded under a different su
 list. When the subjects themselves change, start over with
 `python scripts/seed_db.py --reset` — which drops the syllabus and everything logged
 against it, after asking.
+
+## Current affairs, and what replaced the Notes screen
+
+Current affairs used to be per-article capture: a headline, a line in her own
+words, an untagged inbox, and a `/notes` screen to browse it from. That is gone.
+It asked for an entry every day and answered a question — "what did I read this
+month" — that a magazine already answers by being finished or not.
+
+In its place, `CURRENT_AFFAIRS` is an ordinary syllabus subject of twelve monthly
+magazines. Reading one is a `read` log like any other, it earns a revision slot
+from SM-2 like any other, and it counts toward Coverage and the burndown like any
+other — which is why the remaining-topics figure moved from 437 to 449.
+
+Removed with it: the `/api/ca` routes, the `ca_items` collection, the `ca` log
+type, and the "current affairs to capture" daily target in Settings. The mistake
+notebook, which shared the Notes screen with it, was *not* removed — it lives on
+each test's page under Practice, where the wrong answers it explains already are.
+
+`scripts/drop_current_affairs.py` clears the leftover data from a database that
+was in use before the change: it drops `ca_items` and deletes the `type: "ca"`
+activity logs, and asks first. It is a one-off — a fresh database never needs it.

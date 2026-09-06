@@ -10,7 +10,6 @@ import { AnswerDetail } from '@/screens/AnswerDetail'
 import { AnswerTimer } from '@/screens/AnswerTimer'
 import { NodeDetail } from '@/screens/NodeDetail'
 import { NotFound } from '@/screens/NotFound'
-import { Notes } from '@/screens/Notes'
 import { Practice } from '@/screens/Practice'
 import { Settings } from '@/screens/Settings'
 import { Syllabus } from '@/screens/Syllabus'
@@ -47,7 +46,6 @@ export function App() {
           <Route path="practice" element={<Practice />} />
           <Route path="practice/tests/:testId" element={<TestDetail />} />
           <Route path="practice/answers/:answerId" element={<AnswerDetail />} />
-          <Route path="notes" element={<Notes />} />
           <Route path="progress" element={<Progress />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />

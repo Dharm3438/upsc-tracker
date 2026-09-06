@@ -43,13 +43,6 @@ export type MistakeItem = {
 
 export type MistakePage = { items: Mistake[]; next_cursor: string | null }
 
-export type MistakeSummary = {
-  total: number
-  unresolved: number
-  by_tag: { tag: MistakeTag; label: string; count: number }[]
-  by_subject: { subject: Subject; count: number }[]
-}
-
 export type MistakeFilters = {
   tag?: MistakeTag
   subject?: Subject
@@ -74,10 +67,6 @@ export function getMistakes(filters: MistakeFilters & { cursor?: string } = {}) 
   const query = toQuery(filters)
   if (filters.cursor) query.set('cursor', filters.cursor)
   return api<MistakePage>(`/mistakes?${query.toString()}`)
-}
-
-export function getMistakeSummary(filters: Pick<MistakeFilters, 'subject'> = {}) {
-  return api<MistakeSummary>(`/mistakes/summary?${toQuery(filters).toString()}`)
 }
 
 export const addTestMistakes = (testId: string, items: MistakeItem[]) =>

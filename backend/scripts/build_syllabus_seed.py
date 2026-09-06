@@ -99,6 +99,25 @@ def singhania() -> list[dict]:
     return [{"title": f"Chapter {n} — {t}"} for n, t in topics]
 
 
+MONTHS = ["January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"]
+
+
+def magazines(start: tuple[int, int], count: int) -> list[dict]:
+    """One topic per monthly magazine, from `start` forward.
+
+    Current affairs is read on the magazine's schedule, so a month is the unit
+    that gets read and revised — there is no per-article capture anywhere in the
+    app. Listed oldest first, which is also the order they are read in.
+    """
+    year, month = start
+    out: list[dict] = []
+    for _ in range(count):
+        out.append({"title": f"{MONTHS[month - 1]} {year}"})
+        year, month = (year + 1, 1) if month == 12 else (year, month + 1)
+    return out
+
+
 def arihant() -> list[dict]:
     """Placeholders until the real Arihant TOC lands; the user renames in-app."""
     return [{"title": f"Chapter {i}"} for i in range(1, 11)]
@@ -112,6 +131,8 @@ SUBJECTS: dict[str, list[dict]] = {
     "POLITY": lectures(65),
     "SCIENCE": lectures(31),
     "CSAT": arihant(),
+    # June 2026 through May 2027 — the twelve issues before Prelims.
+    "CURRENT_AFFAIRS": magazines((2026, 6), 12),
     "DISASTER_MGMT": lectures(4),
     "IR": lectures(22),
     "SECURITY": lectures(10),

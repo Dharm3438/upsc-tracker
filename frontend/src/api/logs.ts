@@ -2,7 +2,7 @@ import { api } from './client'
 
 import type { Subject } from './syllabus'
 
-export type LogType = 'read' | 'revise' | 'mcq' | 'answer' | 'ca'
+export type LogType = 'read' | 'revise' | 'mcq' | 'answer'
 export type ReviseMethod = 'notes' | 'book' | 'recall' | 'mindmap'
 
 export type ReadPayload = {

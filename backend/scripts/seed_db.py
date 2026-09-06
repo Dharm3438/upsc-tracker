@@ -9,8 +9,8 @@ over:
     python scripts/seed_db.py --reset
 
 That drops the syllabus and everything logged against it — every node id in
-`logs`, `review_state`, `mistakes`, `answers` and `ca_items` would otherwise
-point at a topic that no longer exists. It asks before it does it.
+`logs`, `review_state`, `mistakes` and `answers` would otherwise point at a
+topic that no longer exists. It asks before it does it.
 """
 
 import asyncio
@@ -31,7 +31,6 @@ RESET_COLLECTIONS = [
     "review_state",
     "mistakes",
     "answers",
-    "ca_items",
     "tests",
     "weekly_reviews",
 ]

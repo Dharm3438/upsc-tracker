@@ -32,7 +32,6 @@ class DailyTargets(BaseModel):
     revision_nodes: int = Field(default=6, ge=0, le=100)
     answers: int = Field(default=2, ge=0, le=20)
     mcqs: int = Field(default=25, ge=0, le=500)
-    ca_items: int = Field(default=5, ge=0, le=100)
     study_minutes: int = Field(default=420, ge=0, le=1440)
 
 

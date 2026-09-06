@@ -21,7 +21,6 @@ class LogType(StrEnum):
     REVISE = "revise"
     MCQ = "mcq"
     ANSWER = "answer"
-    CA = "ca"
 
 
 class ReviseMethod(StrEnum):
@@ -69,18 +68,11 @@ class AnswerPayload(BaseModel):
     answer_id: PyObjectId
 
 
-class CaPayload(BaseModel):
-    """Written when a current-affairs item is tagged to a node (phase 6)."""
-
-    ca_id: PyObjectId
-
-
 PAYLOAD_MODELS: dict[LogType, type[BaseModel]] = {
     LogType.READ: ReadPayload,
     LogType.REVISE: RevisePayload,
     LogType.MCQ: McqPayload,
     LogType.ANSWER: AnswerPayload,
-    LogType.CA: CaPayload,
 }
 
 #: Types whose side-effect touches `review_state`, and which therefore have to
@@ -99,7 +91,7 @@ class LogCreate(BaseModel):
     def validate_payload(self) -> "LogCreate":
         """Coerce the payload through the model for this type.
 
-        Keeping payloads as a dict on the wire keeps one endpoint for all five
+        Keeping payloads as a dict on the wire keeps one endpoint for all four
         types; validating here means a malformed payload is still a 422 rather
         than a surprise three screens later.
         """

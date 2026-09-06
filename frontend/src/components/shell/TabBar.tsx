@@ -4,9 +4,9 @@ import { cn } from '@/lib/cn'
 import { NAV } from './TopNav'
 
 /**
- * Phone navigation. The five sections are all top-level and equally used, so a
+ * Phone navigation. The four sections are all top-level and equally used, so a
  * bottom bar beats a drawer: it costs no taps and sits under the thumb. Hidden
- * from `lg` up, where TopNav carries the same five links.
+ * from `lg` up, where TopNav carries the same four links.
  */
 export function TabBar() {
   return (

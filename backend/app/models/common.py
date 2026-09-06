@@ -32,6 +32,7 @@ class Subject(StrEnum):
     POLITY = "POLITY"
     SCIENCE = "SCIENCE"
     CSAT = "CSAT"
+    CURRENT_AFFAIRS = "CURRENT_AFFAIRS"
     DISASTER_MGMT = "DISASTER_MGMT"
     IR = "IR"
     SECURITY = "SECURITY"
@@ -80,6 +81,12 @@ SUBJECT_META: dict[Subject, SubjectMeta] = {
     Subject.POLITY: SubjectMeta("Polity & Governance", Stage.PRELIMS, SourceKind.LECTURES),
     Subject.SCIENCE: SubjectMeta("Science", Stage.PRELIMS, SourceKind.LECTURES),
     Subject.CSAT: SubjectMeta("CSAT", Stage.PRELIMS, SourceKind.BOOK, "Arihant"),
+    # One topic per monthly magazine rather than per article. Current affairs is
+    # read on a magazine's schedule, so the magazine is the unit that gets read,
+    # revised and graded like any other chapter.
+    Subject.CURRENT_AFFAIRS: SubjectMeta(
+        "Current Affairs", Stage.PRELIMS, SourceKind.BOOK, "Monthly magazine"
+    ),
     Subject.DISASTER_MGMT: SubjectMeta(
         "Disaster Management", Stage.MAINS, SourceKind.LECTURES
     ),

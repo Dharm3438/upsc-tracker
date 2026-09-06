@@ -27,7 +27,6 @@ const TARGETS: { key: keyof DailyTargets; label: string; suffix?: string }[] = [
   { key: 'revision_nodes', label: 'Topics to revise' },
   { key: 'answers', label: 'Answers to write' },
   { key: 'mcqs', label: 'MCQs to attempt' },
-  { key: 'ca_items', label: 'Current affairs to capture' },
   { key: 'study_minutes', label: 'Study time', suffix: 'min' },
 ]
 

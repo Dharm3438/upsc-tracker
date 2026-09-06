@@ -63,6 +63,7 @@ def test_every_subject_has_the_topic_count_it_was_specified_with(flat):
         "POLITY": 65,
         "SCIENCE": 31,
         "CSAT": 10,  # placeholders until the Arihant contents land
+        "CURRENT_AFFAIRS": 12,  # June 2026 - May 2027, one magazine each
         "DISASTER_MGMT": 4,
         "IR": 22,
         "SECURITY": 10,

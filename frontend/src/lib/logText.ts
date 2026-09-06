@@ -1,4 +1,4 @@
-import { BookOpen, ListChecks, Newspaper, PenLine, RotateCcw } from 'lucide-react'
+import { BookOpen, ListChecks, PenLine, RotateCcw } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 import type { Log, LogType } from '@/api/logs'
@@ -29,8 +29,7 @@ export function describeLog(log: Log): string {
     return `${correct}/${attempted} MCQs${accuracy}${minutes}`
   }
 
-  if (log.type === 'answer') return `Answer written${minutes}`
-  return `Current affairs tagged${minutes}`
+  return `Answer written${minutes}`
 }
 
 export const LOG_ICON: Record<LogType, LucideIcon> = {
@@ -38,7 +37,6 @@ export const LOG_ICON: Record<LogType, LucideIcon> = {
   revise: RotateCcw,
   mcq: ListChecks,
   answer: PenLine,
-  ca: Newspaper,
 }
 
 export const LOG_LABEL: Record<LogType, string> = {
@@ -46,5 +44,4 @@ export const LOG_LABEL: Record<LogType, string> = {
   revise: 'Revised',
   mcq: 'MCQs',
   answer: 'Answer',
-  ca: 'Current affairs',
 }

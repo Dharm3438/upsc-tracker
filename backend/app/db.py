@@ -61,11 +61,6 @@ INDEXES: dict[str, list[IndexModel]] = {
         IndexModel([("node_id", ASCENDING), ("date", DESCENDING)]),
         IndexModel([("subject", ASCENDING), ("date", DESCENDING)]),
     ],
-    "ca_items": [
-        IndexModel([("month", ASCENDING), ("date", DESCENDING)]),
-        IndexModel([("node_id", ASCENDING)]),
-        IndexModel([("tagged", ASCENDING)]),
-    ],
     "pyqs": [
         IndexModel([("node_ids", ASCENDING)]),
         IndexModel([("year", DESCENDING), ("subject", ASCENDING)]),

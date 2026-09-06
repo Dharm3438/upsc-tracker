@@ -27,7 +27,7 @@ type Section = 'tests' | 'answers'
 
 /**
  * Practice holds tests and answer writing. Which half is open lives in the URL,
- * the same way the Notes screen does it, so a link can point at either.
+ * so a link can point at either.
  */
 export function Practice() {
   const [params, setParams] = useSearchParams()
