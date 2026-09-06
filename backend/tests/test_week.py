@@ -1,8 +1,7 @@
-"""The weekly tracker.
+"""The weekly to-do list.
 
-The plan is stored and the week's numbers are not, so the tests are mostly
-about the counting: what a new topic is, when a committed topic ticks itself,
-and that the week is the Monday-to-Sunday one the review already uses.
+Free text, one list per week, and nothing tied to the syllabus — so the tests
+are about the week the list lands in and the four things she can do to it.
 """
 
 import pytest
@@ -10,21 +9,17 @@ import pytest_asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.config import get_settings
-from app.models.logs import LogCreate
-from app.models.settings import AppSettings
-from app.models.week import WeekPlanUpdate, WeekTargets
-from app.services import logs as log_service
-from app.services import nodes as node_service
+from app.models.week import TodoCreate, TodoUpdate
 from app.services import week as week_service
 
 pytestmark = pytest.mark.asyncio(loop_scope="module")
 
 TEST_DB = "upsc_tracker_test"
 #: A Wednesday. Its week runs Monday the 31st to Sunday the 6th.
-TODAY = "2026-09-02"
+WEDNESDAY = "2026-09-02"
 MONDAY = "2026-08-31"
 SUNDAY_END = "2026-09-06"
-PRELIMS = "2027-05-30"
+LAST_MONDAY = "2026-08-24"
 
 
 @pytest_asyncio.fixture(scope="module")
@@ -47,121 +42,86 @@ async def db(client):
     return client[TEST_DB]
 
 
-@pytest.fixture
-def settings() -> AppSettings:
-    """No weekly off, so a week is seven study days and the suggestion is
-    plain multiplication."""
-    return AppSettings(prelims_date=PRELIMS, weekly_off_weekday=None, off_days=[])
-
-
-@pytest_asyncio.fixture
-async def leaves(db) -> list[str]:
-    section = await node_service.create_node(
-        db, subject="POLITY", title="Polity", parent_id=None, pyq_weight="high"
-    )
-    titles = ["Federalism", "Emergency", "Judiciary", "Panchayats"]
-    return [
-        str(
-            (
-                await node_service.create_node(
-                    db, subject="POLITY", title=title, parent_id=str(section["_id"])
-                )
-            )["_id"]
-        )
-        for title in titles
-    ]
-
-
-async def log(db, node_id: str, kind: str, date: str, **payload) -> None:
-    minutes = payload.pop("minutes", None)
-    await log_service.create_log(
-        db,
-        LogCreate(node_id=node_id, type=kind, date=date, minutes=minutes, payload=payload),
+async def add(db, text: str, week_start: str = WEDNESDAY) -> dict:
+    return await week_service.add_todo(
+        db, TodoCreate(week_start=week_start, text=text)
     )
 
 
-async def test_week_rounds_any_day_back_to_its_monday(db, settings):
-    week = await week_service.get_week(db, settings, start="2026-09-04", date=TODAY)
+async def test_an_empty_week_is_an_empty_list_not_an_error(db):
+    week = await week_service.get_week(db, start=WEDNESDAY)
 
     assert week["week_start"] == MONDAY
     assert week["week_end"] == SUNDAY_END
+    assert week["todos"] == []
 
 
-async def test_new_topics_counts_first_touches_inside_the_week(db, leaves, settings):
-    """A topic opened in August is not new in September, and re-reading it does
-    not make it new again."""
-    await log(db, leaves[0], "read", "2026-08-20", source="Book", confidence=3)
-    await log(db, leaves[0], "read", "2026-09-01", source="Book", confidence=4)
-    await log(db, leaves[1], "read", "2026-09-01", source="Book", confidence=3)
+async def test_items_keep_the_order_they_were_written_in(db):
+    await add(db, "Geography lecture 4")
+    await add(db, "Revise Polity notes")
+    week = await add(db, "Spectrum ch. 12")
 
-    week = await week_service.get_week(db, settings, date=TODAY)
-
-    assert week["actuals"]["new_topics"] == 1
-
-
-async def test_actuals_sum_minutes_mcqs_and_answers_in_the_week(db, leaves, settings):
-    await log(db, leaves[0], "read", "2026-09-01", minutes=90, source="Book", confidence=3)
-    await log(db, leaves[1], "mcq", "2026-09-02", minutes=30, attempted=25, correct=18)
-    # Outside the week, so neither figure moves.
-    await log(db, leaves[2], "read", "2026-08-25", minutes=60, source="Book", confidence=3)
-
-    actuals = (await week_service.get_week(db, settings, date=TODAY))["actuals"]
-
-    assert actuals["study_minutes"] == 120
-    assert actuals["mcqs"] == 25
+    assert [item["text"] for item in week["todos"]] == [
+        "Geography lecture 4",
+        "Revise Polity notes",
+        "Spectrum ch. 12",
+    ]
+    assert all(item["done"] is False for item in week["todos"])
 
 
-async def test_commitments_tick_themselves_when_the_topic_is_logged(
-    db, leaves, settings
-):
-    """Nothing on the list is checked by hand: a reading inside the week is
-    what marks a topic done."""
-    await week_service.save_plan(
-        db,
-        settings,
-        WeekPlanUpdate(week_start=TODAY, commitments=[leaves[0], leaves[1]]),
-    )
-    await log(db, leaves[0], "read", "2026-09-01", source="Book", confidence=3)
-    # Last week's reading does not count towards this week's commitment.
-    await log(db, leaves[1], "read", "2026-08-25", source="Book", confidence=3)
+async def test_text_is_trimmed_and_free_of_any_syllabus(db):
+    week = await add(db, "  buy the new Spectrum  ")
 
-    commitments = (await week_service.get_week(db, settings, date=TODAY))["commitments"]
-
-    assert [item["done"] for item in commitments] == [True, False]
-    assert commitments[0]["title"] == "Federalism"
+    assert week["todos"][0]["text"] == "buy the new Spectrum"
 
 
-async def test_saving_the_plan_twice_replaces_it(db, leaves, settings):
-    await week_service.save_plan(
-        db,
-        settings,
-        WeekPlanUpdate(
-            week_start=TODAY,
-            targets=WeekTargets(new_topics=8),
-            commitments=[leaves[0]],
-        ),
-    )
-    week = await week_service.save_plan(
-        db,
-        settings,
-        WeekPlanUpdate(
-            week_start=TODAY,
-            targets=WeekTargets(new_topics=5, answers=10),
-            commitments=[leaves[1], leaves[1]],
-        ),
+async def test_ticking_an_item_leaves_it_where_it_is(db):
+    week = await add(db, "Geography lecture 4")
+    await add(db, "Revise Polity notes")
+    first = week["todos"][0]["id"]
+
+    week = await week_service.update_todo(db, MONDAY, first, TodoUpdate(done=True))
+
+    assert [item["done"] for item in week["todos"]] == [True, False]
+
+
+async def test_an_item_can_be_reworded(db):
+    week = await add(db, "Geograhy lecture 4")
+    todo_id = week["todos"][0]["id"]
+
+    week = await week_service.update_todo(
+        db, MONDAY, todo_id, TodoUpdate(text="Geography lecture 4")
     )
 
-    assert week["targets"]["new_topics"] == 5
-    assert week["targets"]["answers"] == 10
-    # Duplicates are a double tap, not a plan to read the same topic twice.
-    assert [item["node_id"] for item in week["commitments"]] == [leaves[1]]
+    assert week["todos"][0]["text"] == "Geography lecture 4"
+    assert week["todos"][0]["id"] == todo_id
 
 
-async def test_suggestion_scales_the_required_pace_to_the_week(db, leaves, settings):
-    """Four topics left over the 270 study days to Prelims, across a
-    seven-study-day week."""
-    week = await week_service.get_week(db, settings, date=TODAY)
+async def test_deleting_the_same_item_twice_is_not_an_error(db):
+    week = await add(db, "Geography lecture 4")
+    todo_id = week["todos"][0]["id"]
 
-    assert week["study_days"] == 7
-    assert week["suggested"]["new_topics"] == round(4 / 270 * 7)
-    assert week["suggested"]["study_minutes"] == 420 * 7
+    await week_service.delete_todo(db, MONDAY, todo_id)
+    week = await week_service.delete_todo(db, MONDAY, todo_id)
+
+    assert week["todos"] == []
+
+
+async def test_editing_an_item_that_is_gone_says_so(db):
+    week = await add(db, "Geography lecture 4")
+    todo_id = week["todos"][0]["id"]
+    await week_service.delete_todo(db, MONDAY, todo_id)
+
+    with pytest.raises(week_service.WeekError):
+        await week_service.update_todo(db, MONDAY, todo_id, TodoUpdate(done=True))
+
+
+async def test_each_week_keeps_its_own_list(db):
+    await add(db, "This week's reading")
+    await add(db, "Last week's reading", week_start=LAST_MONDAY)
+
+    this_week = await week_service.get_week(db, start=WEDNESDAY)
+    last_week = await week_service.get_week(db, start=LAST_MONDAY)
+
+    assert [item["text"] for item in this_week["todos"]] == ["This week's reading"]
+    assert [item["text"] for item in last_week["todos"]] == ["Last week's reading"]

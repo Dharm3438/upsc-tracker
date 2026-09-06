@@ -72,7 +72,7 @@ def effective_study_days(
     )
 
 
-def study_days_in(
+def _study_days_in(
     first: str, last: str, off_days: Iterable[str], weekly_off: int | None
 ) -> int:
     """Study days in a closed past window — both ends included.
@@ -156,23 +156,6 @@ async def _first_touch(
     return {row["_id"]: row["first"] async for row in db.logs.aggregate(pipeline)}
 
 
-async def first_touch_summary(
-    db: AsyncIOMotorDatabase, *, first: str, last: str, on: str
-) -> dict[str, int]:
-    """Leaves opened inside a window, and leaves still unopened as of `on`.
-
-    Both come from the same two queries the burn-down uses, so the weekly page
-    and the burn-down can never disagree about what counts as a topic or about
-    when it stopped being a new one.
-    """
-    leaves = _leaves(await _live_nodes(db))
-    touched = await _first_touch(db, [leaf["_id"] for leaf in leaves])
-    return {
-        "new_in_window": sum(1 for when in touched.values() if first <= when <= last),
-        "remaining": len(leaves) - sum(1 for when in touched.values() if when <= on),
-    }
-
-
 async def burndown(
     db: AsyncIOMotorDatabase,
     settings: AppSettings,
@@ -238,7 +221,7 @@ def _recent_pace(
         window_start = earliest
 
     opened = sum(1 for when in touched.values() if window_start <= when <= day)
-    study_days = study_days_in(window_start, day, off_days, weekly_off)
+    study_days = _study_days_in(window_start, day, off_days, weekly_off)
     pace = round(opened / study_days, 3) if study_days else None
     return window_start, pace
 

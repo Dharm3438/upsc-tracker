@@ -19,7 +19,7 @@ few times a day for two years.
 | 7 | Progress aggregations, settings document, countdown | done |
 | 8 | UI redesign — design system, responsive shell, dashboard, Settings screen | done |
 | 9 | PWA polish, offline shell, icons | not started |
-| 10 | Weekly tracker — weekly targets, the week's topics, review moved across | done |
+| 10 | Weekly tracker — a free-text to-do list, with the weekly review moved onto it | done |
 
 ## Layout
 
