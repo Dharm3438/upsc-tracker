@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import {
+  CalendarCheck,
   LayoutDashboard,
   ListTree,
   Lock,
   PenLine,
   Plus,
   Settings,
-  Target,
   TrendingUp,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -21,7 +21,7 @@ import { useDue } from '@/hooks/useReview'
 
 export const NAV: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = [
   { to: '/', label: 'Today', icon: LayoutDashboard, end: true },
-  { to: '/week', label: 'Week', icon: Target },
+  { to: '/week', label: 'Week', icon: CalendarCheck },
   { to: '/syllabus', label: 'Syllabus', icon: ListTree },
   { to: '/practice', label: 'Practice', icon: PenLine },
   { to: '/progress', label: 'Progress', icon: TrendingUp },
