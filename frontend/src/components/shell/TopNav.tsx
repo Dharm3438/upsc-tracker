@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   ListTree,
   Lock,
-  NotebookPen,
   PenLine,
   Plus,
   Settings,
@@ -17,14 +16,12 @@ import { LinkButton } from '@/components/ui/Button'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { cn } from '@/lib/cn'
 import { formatDayIST } from '@/lib/date'
-import { useCaInbox } from '@/hooks/useCa'
 import { useDue } from '@/hooks/useReview'
 
 export const NAV: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = [
   { to: '/', label: 'Today', icon: LayoutDashboard, end: true },
   { to: '/syllabus', label: 'Syllabus', icon: ListTree },
   { to: '/practice', label: 'Practice', icon: PenLine },
-  { to: '/notes', label: 'Notes', icon: NotebookPen },
   { to: '/progress', label: 'Progress', icon: TrendingUp },
 ]
 
@@ -32,11 +29,9 @@ export const NAV: { to: string; label: string; icon: LucideIcon; end?: boolean }
  *  than a sheet with nothing to attach itself to. */
 export function TopNav() {
   const due = useDue()
-  const inbox = useCaInbox()
 
   const badges: Record<string, number | undefined> = {
     '/': due.data?.total,
-    '/notes': inbox.data?.total,
   }
 
   return (

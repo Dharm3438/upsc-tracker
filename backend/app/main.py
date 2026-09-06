@@ -12,7 +12,6 @@ from app.config import get_settings
 from app.routers import (
     answers,
     auth,
-    ca,
     health,
     logs,
     mistakes,
@@ -78,7 +77,6 @@ def create_app() -> FastAPI:
     app.include_router(tests.router, prefix="/api")
     app.include_router(mistakes.router, prefix="/api")
     app.include_router(answers.router, prefix="/api")
-    app.include_router(ca.router, prefix="/api")
     app.include_router(progress.router, prefix="/api")
     app.include_router(settings_router.router, prefix="/api")
     return app

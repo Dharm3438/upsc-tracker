@@ -4,7 +4,6 @@ export type DailyTargets = {
   revision_nodes: number
   answers: number
   mcqs: number
-  ca_items: number
   study_minutes: number
 }
 
