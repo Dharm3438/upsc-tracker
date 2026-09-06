@@ -20,6 +20,7 @@ from app.routers import (
     settings as settings_router,
     syllabus,
     tests,
+    week,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -79,6 +80,7 @@ def create_app() -> FastAPI:
     app.include_router(answers.router, prefix="/api")
     app.include_router(progress.router, prefix="/api")
     app.include_router(settings_router.router, prefix="/api")
+    app.include_router(week.router, prefix="/api")
     return app
 
 

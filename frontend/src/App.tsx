@@ -15,6 +15,7 @@ import { Settings } from '@/screens/Settings'
 import { Syllabus } from '@/screens/Syllabus'
 import { TestDetail } from '@/screens/TestDetail'
 import { Today } from '@/screens/Today'
+import { Week } from '@/screens/Week'
 
 // Recharts is most of the JavaScript in this app and only the Progress screen
 // uses it. Splitting that screen out keeps the three-times-a-day screens —
@@ -46,6 +47,7 @@ export function App() {
           <Route path="practice" element={<Practice />} />
           <Route path="practice/tests/:testId" element={<TestDetail />} />
           <Route path="practice/answers/:answerId" element={<AnswerDetail />} />
+          <Route path="week" element={<Week />} />
           <Route path="progress" element={<Progress />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
