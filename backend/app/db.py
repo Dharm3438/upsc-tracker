@@ -67,6 +67,7 @@ INDEXES: dict[str, list[IndexModel]] = {
     ],
     "sources": [IndexModel([("status", ASCENDING)])],
     "weekly_reviews": [IndexModel([("week_start", DESCENDING)], unique=True)],
+    "weekly_plans": [IndexModel([("week_start", DESCENDING)], unique=True)],
 }
 
 

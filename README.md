@@ -19,6 +19,7 @@ few times a day for two years.
 | 7 | Progress aggregations, settings document, countdown | done |
 | 8 | UI redesign — design system, responsive shell, dashboard, Settings screen | done |
 | 9 | PWA polish, offline shell, icons | not started |
+| 10 | Weekly tracker — weekly targets, the week's topics, review moved across | done |
 
 ## Layout
 
@@ -30,8 +31,8 @@ frontend/    Vite + React + TypeScript + Tailwind, TanStack Query, React Router
 
 ## The interface
 
-Desktop-first and fully responsive. A sticky top nav carries the four sections from
-`lg` up; below that the same four live in a bottom tab bar, where a thumb can reach
+Desktop-first and fully responsive. A sticky top nav carries the five sections from
+`lg` up; below that the same five live in a bottom tab bar, where a thumb can reach
 them. Dialogs are centred modals from `sm` up and bottom sheets below it — one
 component, `components/shell/Sheet.tsx`, decides that for all of them.
 

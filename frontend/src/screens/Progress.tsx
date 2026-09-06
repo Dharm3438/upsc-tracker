@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CalendarDays, ClipboardList, Grid3x3, Layers, Timer, TrendingDown } from 'lucide-react'
+import { CalendarDays, Grid3x3, Layers, Timer, TrendingDown } from 'lucide-react'
 
 import { formatMinutes } from '@/api/progress'
 import type { Subject } from '@/api/syllabus'
@@ -7,7 +7,6 @@ import { SubjectChips } from '@/components/SubjectChips'
 import { Burndown } from '@/components/progress/Burndown'
 import { Coverage } from '@/components/progress/Coverage'
 import { Heatmap, HeatmapLegend } from '@/components/progress/Heatmap'
-import { WeeklyReviewCard } from '@/components/progress/WeeklyReviewCard'
 import {
   Card,
   CardHeader,
@@ -30,8 +29,9 @@ import { formatDayIST } from '@/lib/date'
 
 /**
  * A weekly screen, not a daily one. It answers three questions in order — how
- * much is left, how much is covered, and how strong each topic is — and then
- * asks three of its own.
+ * much is left, how much is covered, and how strong each topic is. The
+ * questions it used to ask back are on the Week screen now, next to the plan
+ * they are really about.
  *
  * Nothing here is a streak and nothing is red for its own sake. The honest
  * figures are hard enough without the interface having an opinion about them.
@@ -167,15 +167,6 @@ export function Progress() {
           >
             {(data) => <Heatmap sections={data.sections} />}
           </QueryBoundary>
-        </Card>
-
-        <Card className="col-span-12">
-          <CardHeader
-            title="Weekly review"
-            subtitle="Three questions, written once a week, kept with the week's numbers."
-            icon={<ClipboardList size={17} strokeWidth={1.8} />}
-          />
-          <WeeklyReviewCard />
         </Card>
       </div>
     </>

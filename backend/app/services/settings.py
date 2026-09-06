@@ -111,8 +111,8 @@ async def create_weekly_review(
 async def list_weekly_reviews(
     db: AsyncIOMotorDatabase, *, limit: int = 12
 ) -> list[dict[str, Any]]:
-    """Newest first — the card on the Progress screen shows the last one and
-    the history sits under it."""
+    """Newest first — the card on the Week screen shows the last one and the
+    history sits in Settings."""
     return await db.weekly_reviews.find().sort("week_start", -1).to_list(length=limit)
 
 
